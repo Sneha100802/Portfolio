@@ -1,0 +1,1181 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400;1,500;1,600&family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500&display=swap');
+
+/* ==========================================================================
+   DESIGN TOKENS — LUMINOUS INDIAN WATERCOLOR JOURNAL PALETTE
+   (Pure warm ivory handmade paper, soft parchment beige, delicate rose & sage washes)
+   ========================================================================== */
+:root {
+  color-scheme: light;
+  
+  /* Luminous Ambient Background: Soft warm ivory & delicate botanical watercolor washes */
+  --desk-bg: 
+    radial-gradient(circle at 12% 18%, rgba(200, 118, 131, 0.08) 0%, transparent 45%),
+    radial-gradient(circle at 88% 82%, rgba(95, 127, 100, 0.08) 0%, transparent 45%),
+    radial-gradient(circle at 50% 30%, #fdfcf9 0%, #f8f3ea 50%, #eee4d4 100%);
+  
+  /* Journal Binding & Cover: Warm handmade ivory paper with soft antique gold trim */
+  --journal-ivory: #faf5eb;
+  --journal-ivory-dark: #f0e5d4;
+  --journal-spine: #e8ded0;
+  --journal-spine-edge: #dacbb8;
+  --binding-vellum: #f6f0e4;
+  --binding-edge: #ded2be;
+  
+  /* Accent Colors: Indian botanical journal harmony */
+  --gold-foil: #c89d4b;
+  --gold-leaf: #dfba6d;
+  --gold-gleam: #f5d996;
+  --parchment: #faf5ed;
+  --parchment-shade: #f2e9dc;
+  --parchment-dark: #e8dccb;
+  --ink: #2b2229;
+  --ink-secondary: #483d46;
+  --muted: #796873;
+  --maroon: #5e1f2b;
+  --maroon-light: #80283b;
+  --maroon-pill: #b34a5b;
+  --terra: #b2583f;
+  --rose: #c87683;
+  --rose-wash: rgba(200, 118, 131, 0.12);
+  --sage: #5f7f64;
+  --sage-wash: rgba(95, 127, 100, 0.12);
+  --line-antique: #dcd0be;
+  --line-strong: #c4b59f;
+  --shadow-book: 0 24px 60px rgba(80, 60, 50, 0.14), 0 8px 20px rgba(80, 60, 50, 0.08);
+  --shadow-page: inset 0 0 50px rgba(110, 80, 50, 0.05), 0 4px 16px rgba(70, 50, 40, 0.08);
+}
+
+/* ==========================================================================
+   OPTIONAL EVENING / MIDNIGHT ILLUMINATED JOURNAL PALETTE
+   (Deep starry midnight indigo, warm gold leaf accents, illuminated vellum)
+   ========================================================================== */
+[data-theme="dark"] {
+  color-scheme: dark;
+  --desk-bg: 
+    radial-gradient(circle at 15% 18%, rgba(223, 186, 109, 0.06) 0%, transparent 45%),
+    radial-gradient(circle at 85% 82%, rgba(200, 118, 131, 0.06) 0%, transparent 45%),
+    radial-gradient(circle at 50% 30%, #171321 0%, #120e1b 50%, #0a0711 100%);
+  --journal-ivory: #221a2d;
+  --journal-ivory-dark: #191223;
+  --journal-spine: #281f34;
+  --journal-spine-edge: #150f1d;
+  --binding-vellum: #251d31;
+  --binding-edge: #1a1324;
+  --parchment: #251d30;
+  --parchment-shade: #1d1628;
+  --parchment-dark: #160f21;
+  --ink: #f4ecdf;
+  --ink-secondary: #dcd0be;
+  --muted: #a797ad;
+  --maroon: #f095a5;
+  --maroon-light: #f6b5c1;
+  --maroon-pill: #8d2e41;
+  --terra: #e28e75;
+  --rose: #e8a2ad;
+  --rose-wash: rgba(232, 162, 173, 0.15);
+  --sage: #93bfa0;
+  --sage-wash: rgba(147, 191, 160, 0.15);
+  --line-antique: #3f314f;
+  --line-strong: #57446d;
+  --shadow-book: 0 24px 60px rgba(0, 0, 0, 0.6), 0 8px 20px rgba(0, 0, 0, 0.45);
+  --shadow-page: inset 0 0 50px rgba(0, 0, 0, 0.35), 0 4px 16px rgba(0, 0, 0, 0.35);
+}
+
+/* ==========================================================================
+   RESET & FOUNDATIONS
+   ========================================================================== */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--desk-bg);
+  background-attachment: fixed;
+  color: var(--ink);
+  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 16px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(12px, 2vw, 28px) clamp(10px, 2vw, 24px);
+  overflow-x: hidden;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+button, a {
+  font: inherit;
+  color: inherit;
+}
+
+a {
+  text-decoration: none;
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  background: transparent;
+}
+
+::selection {
+  background: color-mix(in srgb, var(--maroon) 30%, transparent);
+  color: var(--ink);
+}
+
+:focus-visible {
+  outline: 2px solid var(--gold-foil);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+.skip-link {
+  position: fixed;
+  top: -80px;
+  left: 20px;
+  z-index: 9999;
+  padding: 12px 20px;
+  background: var(--parchment);
+  color: var(--maroon);
+  font-weight: 700;
+  border: 1px solid var(--gold-foil);
+  border-radius: 6px;
+  box-shadow: 0 8px 24px rgba(80, 60, 50, 0.12);
+  transition: top 0.25s ease;
+}
+
+.skip-link:focus {
+  top: 20px;
+}
+
+/* ==========================================================================
+   MASTER WRAPPER: PERSPECTIVE CONTAINER
+   ========================================================================== */
+.storybook-app-wrapper {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  perspective: 2200px;
+}
+
+/* ==========================================================================
+   1. ELEGANT INDIAN ILLUSTRATED JOURNAL COVER
+   (Warm ivory handmade paper, delicate Madhubani motifs, dusty rose & sage)
+   ========================================================================== */
+.closed-book-scene {
+  width: min(510px, 92vw);
+  aspect-ratio: 0.72;
+  position: relative;
+  transform-style: preserve-3d;
+  transform: rotateX(4deg) rotateY(-5deg);
+  transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.4s ease;
+  margin-block: 20px;
+}
+
+.closed-book-scene:hover {
+  transform: rotateX(2deg) rotateY(-2deg) translateY(-4px);
+}
+
+.closed-book-scene.is-hidden {
+  display: none !important;
+}
+
+/* The Warm Ivory Journal Cover */
+.closed-cover-frame {
+  position: absolute;
+  inset: 0;
+  border-radius: 6px 14px 14px 6px;
+  background: var(--journal-ivory);
+  background-image: 
+    radial-gradient(circle at 15% 15%, var(--rose-wash) 0%, transparent 40%),
+    radial-gradient(circle at 85% 85%, var(--sage-wash) 0%, transparent 40%),
+    radial-gradient(circle at 50% 50%, #ffffff 0%, var(--journal-ivory) 65%, var(--journal-ivory-dark) 100%);
+  padding: 26px 22px 22px;
+  box-shadow: var(--shadow-book);
+  border: 1.5px solid var(--line-strong);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  text-align: center;
+  transform-origin: left center;
+  transform-style: preserve-3d;
+  transition: transform 0.85s cubic-bezier(0.25, 1, 0.35, 1), box-shadow 0.85s ease;
+  cursor: pointer;
+}
+
+/* Delicate Madhubani-Inspired Outer Fillet & Floral Corner Flourishes */
+.closed-cover-frame::before {
+  content: '';
+  position: absolute;
+  inset: 10px;
+  border: 1px dashed rgba(200, 118, 131, 0.55);
+  border-radius: 4px 10px 10px 4px;
+  pointer-events: none;
+}
+
+.closed-cover-frame::after {
+  content: '';
+  position: absolute;
+  inset: 15px;
+  border: 1.5px solid rgba(200, 157, 75, 0.65);
+  border-radius: 3px 8px 8px 3px;
+  pointer-events: none;
+}
+
+/* 3D Cover Opening Animation */
+.closed-book-scene.opening {
+  pointer-events: none;
+}
+
+.closed-book-scene.opening .closed-cover-frame {
+  transform: rotateY(-140deg);
+  box-shadow: -18px 18px 45px rgba(80, 60, 50, 0.22);
+}
+
+/* Linen/Vellum Spine */
+.closed-book-spine {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 26px;
+  background: linear-gradient(90deg, #dfd3c0, #ebe0cd 45%, #ded0ba);
+  border-radius: 6px 0 0 6px;
+  transform: rotateY(90deg) translateZ(13px);
+  box-shadow: inset 1px 0 4px rgba(90,65,50,0.1);
+}
+
+/* Stacked Cream Page Edges */
+.closed-page-edges {
+  position: absolute;
+  inset: 7px 5px 7px 22px;
+  background: repeating-linear-gradient(0deg, #fdfbf7, #fdfbf7 2px, #ece1ce 3px, #fdfbf7 4px);
+  border: 1px solid var(--line-strong);
+  border-radius: 0 8px 8px 0;
+  box-shadow: inset -4px 0 10px rgba(90, 65, 50, 0.06), 6px 10px 20px rgba(80, 60, 50, 0.1);
+  transform: translateZ(-13px);
+}
+
+/* Cover Content Typography */
+.cover-header-kicker {
+  font-family: 'Playfair Display', serif;
+  font-size: 0.84rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--maroon);
+  margin-top: 8px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.cover-header-kicker::before, .cover-header-kicker::after {
+  content: '';
+  width: 22px;
+  height: 1px;
+  background: var(--gold-foil);
+}
+
+.cover-author-title {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: clamp(2.5rem, 5.2vw, 3.8rem);
+  font-weight: 700;
+  color: #481422;
+  margin: 4px 0 6px 0;
+  line-height: 1.05;
+  letter-spacing: 0.02em;
+}
+
+.cover-role-subtitle {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.86rem;
+  font-weight: 600;
+  color: #682635;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+/* Center Watercolor Vignette: India Gate */
+.cover-center-medallion {
+  width: 155px;
+  height: 155px;
+  border-radius: 50%;
+  border: 2px solid var(--gold-foil);
+  box-shadow: 0 0 0 4px var(--journal-ivory), 0 6px 18px rgba(78, 62, 54, 0.16);
+  overflow: hidden;
+  position: relative;
+  margin-block: 4px;
+}
+
+.cover-center-medallion img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.cover-story-tagline {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-style: italic;
+  font-size: 1.25rem;
+  color: #55444e;
+  margin-block: 6px 14px;
+}
+
+/* Refined "Open Journal" Button */
+.cover-open-portfolio-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 28px;
+  border-radius: 99px;
+  background: linear-gradient(135deg, #ffffff 0%, #faf3ea 100%);
+  color: var(--maroon);
+  border: 1.5px solid var(--gold-foil);
+  font-family: 'Playfair Display', serif;
+  font-size: 1.02rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  box-shadow: 0 4px 14px rgba(78, 62, 54, 0.12);
+  transition: transform 0.25s ease, background 0.25s ease, box-shadow 0.25s ease;
+  margin-bottom: 6px;
+}
+
+.cover-open-portfolio-btn:hover {
+  transform: translateY(-2px) scale(1.02);
+  background: linear-gradient(135deg, #ffffff 0%, #f6e6e8 100%);
+  box-shadow: 0 8px 20px rgba(100, 30, 45, 0.18);
+  color: #7a1d2e;
+}
+
+.closed-book-skip-bar {
+  margin-top: 4px;
+  display: flex;
+  justify-content: center;
+}
+
+.skip-intro-text-btn {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #79505a;
+  letter-spacing: 0.03em;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  opacity: 0.85;
+  transition: opacity 0.2s ease, color 0.2s ease;
+}
+
+.skip-intro-text-btn:hover {
+  opacity: 1;
+  color: var(--maroon);
+}
+
+/* ==========================================================================
+   2. OPEN BOOK STAGE (LUSH, STABLE TWO-PAGE SPREAD)
+   ========================================================================== */
+.storybook-stage {
+  width: min(1280px, 96vw);
+  position: relative;
+  margin-inline: auto;
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  transition: opacity 0.35s ease, transform 0.35s ease;
+}
+
+.storybook-stage.is-hidden {
+  display: none !important;
+}
+
+.storybook-stage.fade-unfold {
+  animation: bookUnfold 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes bookUnfold {
+  from {
+    opacity: 0;
+    transform: scale(0.97) translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* Antique Vellum/Linen Outer Binding Rim */
+.leather-hardcover-shell {
+  width: 100%;
+  position: relative;
+  border-radius: 12px;
+  background: var(--binding-vellum);
+  background-image: 
+    radial-gradient(circle at 50% 50%, #ffffff 0%, var(--binding-vellum) 70%, var(--binding-edge) 100%);
+  padding: 10px 12px 12px 12px;
+  box-shadow: var(--shadow-book);
+  border: 1.5px solid var(--line-strong);
+}
+
+/* ==========================================================================
+   THE OPEN TWO-PAGE SPREAD CONTAINER
+   ========================================================================== */
+.stacked-pages-block {
+  position: relative;
+  border-radius: 6px;
+  background: repeating-linear-gradient(90deg, #ede3d2 0px, #faf5ed 2px, #e2d6c3 3px);
+  padding: 2px 3px 3px 3px;
+}
+
+.open-pages-spread {
+  display: flex;
+  flex-direction: column;
+  min-height: 700px;
+  background-color: var(--parchment);
+  background-image: 
+    radial-gradient(circle at 50% 50%, #ffffff 0%, var(--parchment) 70%, var(--parchment-shade) 100%);
+  border-radius: 4px;
+  position: relative;
+  box-shadow: var(--shadow-page);
+  border: 1px solid var(--line-antique);
+}
+
+/* ==========================================================================
+   TOP HEADER & INTEGRATED CHAPTER NAVIGATION
+   (Single-line desktop layout, clean typography, balanced spacing)
+   ========================================================================== */
+.book-integrated-header {
+  position: relative;
+  z-index: 30;
+  padding: 10px 24px 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(196, 181, 159, 0.4);
+  gap: 12px;
+}
+
+.header-brand-title {
+  font-family: 'Playfair Display', 'Cormorant Garamond', Georgia, serif;
+  font-style: italic;
+  font-weight: 600;
+  font-size: clamp(1.4rem, 1.8vw, 1.85rem);
+  color: var(--ink);
+  letter-spacing: -0.01em;
+  line-height: 1;
+  white-space: nowrap;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 32;
+}
+
+.book-nav-menu {
+  display: flex;
+  align-items: center;
+  gap: clamp(4px, 0.7vw, 10px);
+  flex-wrap: nowrap;
+  white-space: nowrap;
+  justify-content: center;
+  position: relative;
+  z-index: 32;
+}
+
+.book-nav-link {
+  position: relative;
+  padding: 4px 7px;
+  font-family: 'Playfair Display', 'Cormorant Garamond', Georgia, serif;
+  font-size: clamp(0.82rem, 0.88vw, 0.94rem);
+  font-weight: 500;
+  color: var(--ink-secondary);
+  transition: color 0.2s ease, background 0.2s ease;
+  border-radius: 12px;
+  white-space: nowrap;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.book-nav-link:hover {
+  color: var(--maroon);
+}
+
+/* Maroon Watercolor Brushstroke on Active Link */
+.book-nav-link.active {
+  background: var(--maroon-pill);
+  color: #ffffff !important;
+  font-weight: 600;
+  padding: 4px 11px;
+  box-shadow: 0 2px 6px rgba(179, 74, 91, 0.35);
+}
+
+.header-right-tools {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 32;
+}
+
+/* Return to Index, Cover & Theme Tool Buttons */
+.return-to-index-tool-btn,
+.close-book-tool-btn,
+.theme-tool-btn {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--maroon);
+  padding: 3px 8px;
+  border-radius: 4px;
+  border: 1px solid var(--line-antique);
+  background: var(--parchment-shade);
+  transition: background 0.2s ease, transform 0.2s ease, color 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  cursor: pointer;
+}
+
+.return-to-index-tool-btn:hover,
+.close-book-tool-btn:hover,
+.theme-tool-btn:hover {
+  background: #fdf5ea;
+  transform: translateY(-1px);
+}
+
+[data-theme="dark"] .return-to-index-tool-btn:hover,
+[data-theme="dark"] .close-book-tool-btn:hover,
+[data-theme="dark"] .theme-tool-btn:hover {
+  background: #332742;
+}
+
+/* ==========================================================================
+   CENTRAL SPINE CREASE GUTTER
+   (Soft translucent warmth, zero dark line)
+   ========================================================================== */
+.spine-gutter {
+  position: absolute;
+  top: 55px;
+  bottom: 45px;
+  left: 50%;
+  width: 40px;
+  transform: translateX(-50%);
+  background: linear-gradient(
+    90deg,
+    rgba(90, 60, 45, 0.0) 0%,
+    rgba(90, 60, 45, 0.04) 25%,
+    rgba(90, 60, 45, 0.14) 50%,
+    rgba(90, 60, 45, 0.04) 75%,
+    rgba(90, 60, 45, 0.0) 100%
+  );
+  pointer-events: none;
+  z-index: 20;
+}
+
+/* ==========================================================================
+   CHAPTER SPREAD CONTAINER
+   ========================================================================== */
+.chapter-content-spread {
+  display: none;
+  grid-template-columns: 1fr 1fr;
+  gap: 44px;
+  position: relative;
+  width: 100%;
+  flex: 1;
+}
+
+.chapter-content-spread.active-spread {
+  display: grid;
+  animation: pageFadeIn 0.35s ease forwards;
+}
+
+@keyframes pageFadeIn {
+  from {
+    opacity: 0.4;
+    transform: translateY(3px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ==========================================================================
+   INDIVIDUAL BOOK PAGES
+   ========================================================================== */
+.book-page {
+  padding: 16px 24px 24px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.book-page-left {
+  padding-left: clamp(24px, 3vw, 36px);
+  padding-right: 12px;
+}
+
+.book-page-right {
+  padding-left: 12px;
+  padding-right: clamp(24px, 3vw, 36px);
+}
+
+/* ==========================================================================
+   DEDICATED TABLE OF CONTENTS / INDEX SPREAD (#spread-index)
+   ========================================================================== */
+.index-header-block {
+  margin-bottom: 20px;
+}
+
+.index-discover-question {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: clamp(1.85rem, 2.5vw, 2.6rem);
+  font-weight: 700;
+  color: var(--maroon);
+  line-height: 1.12;
+  margin: 6px 0 6px 0;
+}
+
+.index-discover-subtitle {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-style: italic;
+  font-size: 1.15rem;
+  color: #4a3c45;
+  line-height: 1.4;
+  margin: 0;
+}
+
+/* Interactive Chapter Cards in Index */
+.index-chapters-column {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.index-chapter-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 16px;
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid var(--line-antique);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: transform 0.22s ease, background 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+  position: relative;
+  text-align: left;
+  width: 100%;
+}
+
+.index-chapter-card:hover {
+  transform: translateX(5px);
+  background: #ffffff;
+  border-color: var(--gold-foil);
+  box-shadow: 0 4px 14px rgba(95, 31, 43, 0.12);
+}
+
+.index-card-badge {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--maroon);
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #fbf5ec;
+  border: 1px solid var(--line-strong);
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+.index-card-motif {
+  font-size: 1.35rem;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.index-card-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.index-card-title {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 1.22rem;
+  font-weight: 700;
+  color: #351a22;
+  margin: 0 0 2px 0;
+  line-height: 1.25;
+}
+
+.index-card-subtitle {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.86rem;
+  color: #55444e;
+  line-height: 1.4;
+  margin: 0;
+}
+
+.index-card-page-ref {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-style: italic;
+  font-size: 0.95rem;
+  color: #8c5a65;
+  font-weight: 600;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* Index Centerpiece Artwork on Right Page */
+.index-right-intro-box {
+  background: rgba(255, 255, 255, 0.55);
+  border: 1px solid var(--line-antique);
+  border-radius: 6px;
+  padding: 14px 18px;
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+.index-intro-quote {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-style: italic;
+  font-size: 1.2rem;
+  color: var(--maroon);
+  line-height: 1.45;
+  margin: 0;
+}
+
+/* ==========================================================================
+   CHAPTER 5: PROJECTS SPREAD STYLING
+   ========================================================================== */
+.projects-header-block {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.projects-header-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.chapter-ribbon-tag {
+  display: inline-block;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-style: italic;
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: #5c351b;
+  background: #ecd9ba;
+  padding: 2px 12px;
+  border-radius: 4px;
+  border: 1px solid #d4be9b;
+  margin-bottom: 4px;
+}
+
+.projects-main-title {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: clamp(2.4rem, 3.2vw, 3.4rem);
+  font-weight: 700;
+  color: var(--maroon);
+  line-height: 1.05;
+  margin: 0 0 6px 0;
+}
+
+.projects-subtitle-text {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-style: italic;
+  font-size: clamp(1.05rem, 1.15vw, 1.18rem);
+  color: #3b2c34;
+  line-height: 1.4;
+  margin: 0;
+}
+
+/* Top-Right Lakeside Ghat Watercolor Landscape */
+.lakeside-ghat-landscape {
+  width: clamp(150px, 16vw, 195px);
+  aspect-ratio: 1.5;
+  border-radius: 4px;
+  overflow: hidden;
+  flex-shrink: 0;
+  mix-blend-mode: multiply;
+  opacity: 0.95;
+  box-shadow: 0 3px 10px rgba(80, 60, 50, 0.08);
+}
+
+.lakeside-ghat-landscape img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Project Entry Rows */
+.projects-entries-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  position: relative;
+  z-index: 10;
+}
+
+.project-item-row {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  min-width: 0;
+}
+
+.project-item-thumb {
+  width: clamp(130px, 13vw, 165px);
+  aspect-ratio: 1.5;
+  border-radius: 4px;
+  overflow: hidden;
+  flex-shrink: 0;
+  box-shadow: 0 3px 10px rgba(80, 60, 50, 0.1);
+  border: 1px solid var(--line-antique);
+  background: #f5ede1;
+}
+
+.project-item-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.3s ease;
+}
+
+.project-item-row:hover .project-item-thumb img {
+  transform: scale(1.03);
+}
+
+.project-item-details {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.project-item-title {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: clamp(1.15rem, 1.3vw, 1.38rem);
+  font-weight: 700;
+  color: #351a22;
+  margin: 0 0 4px 0;
+  line-height: 1.25;
+}
+
+.project-item-desc {
+  font-family: 'DM Sans', sans-serif;
+  font-size: clamp(0.88rem, 0.94vw, 0.96rem);
+  color: #3c2f38;
+  line-height: 1.52;
+  margin: 0 0 8px 0;
+}
+
+.project-tech-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.tech-pill {
+  padding: 3px 10px;
+  border-radius: 99px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #42353d;
+  background: #fbf7f0;
+  border: 1px solid #d8cdbe;
+  white-space: nowrap;
+}
+
+/* Bottom Bridge Landscape on Right Page */
+.bridge-landscape-bottom {
+  width: 88%;
+  height: clamp(50px, 5vw, 65px);
+  margin-top: 14px;
+  margin-inline: auto;
+  overflow: hidden;
+  border-radius: 4px;
+  mix-blend-mode: multiply;
+  opacity: 0.95;
+  box-shadow: 0 2px 8px rgba(80, 60, 50, 0.06);
+}
+
+.bridge-landscape-bottom img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Page Numbers with Flourishes */
+.page-number-flourish {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-style: italic;
+  font-size: 1.15rem;
+  color: #682635;
+  margin-top: auto;
+  padding-top: 10px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.page-number-flourish::before, .page-number-flourish::after {
+  content: '';
+  display: inline-block;
+  width: 36px;
+  height: 1px;
+  background: #caa894;
+}
+
+.page-num-left {
+  justify-content: flex-start;
+}
+
+.page-num-right {
+  justify-content: flex-end;
+}
+
+/* ==========================================================================
+   FLOATING PAGINATION CONTROLS (ACROSS CENTRAL SPINE)
+   ========================================================================== */
+.floating-spine-pagination {
+  position: absolute;
+  bottom: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 5px 16px;
+  border-radius: 99px;
+  background: #f6ecdc;
+  border: 1px solid #c8b7a0;
+  box-shadow: 0 3px 10px rgba(80, 60, 50, 0.1);
+  z-index: 30;
+}
+
+.pagination-arrow-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1px solid #d0c1ac;
+  background: #ffffff;
+  display: grid;
+  place-items: center;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #5e1f2b;
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.pagination-arrow-btn:hover:not(:disabled) {
+  transform: scale(1.08);
+  background: #fbf5eb;
+}
+
+.pagination-arrow-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.pagination-dots {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.pag-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #c2b19b;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.pag-dot.active {
+  background: #681f30;
+  transform: scale(1.35);
+}
+
+/* ==========================================================================
+   ACTUAL SCHOOL & COLLEGE PICTURE PAINTINGS (EDUCATION & RESEARCH)
+   ========================================================================== */
+.actual-institution-card {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  margin-bottom: 20px;
+  min-width: 0;
+}
+
+.actual-institution-card > div:not(.institution-real-artwork) {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.institution-real-artwork {
+  width: clamp(130px, 13vw, 165px);
+  aspect-ratio: 1.45;
+  border-radius: 4px;
+  overflow: hidden;
+  border: 1px solid var(--line-antique);
+  box-shadow: 0 3px 10px rgba(80, 60, 50, 0.1);
+  background: #f5ede1;
+  flex-shrink: 0;
+}
+
+.institution-real-artwork img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Illuminated Detail Cards for Education, Experience & Skills */
+.illuminated-info-card {
+  background: rgba(255, 255, 255, 0.65);
+  border: 1px solid var(--line-antique);
+  border-radius: 6px;
+  padding: 14px 18px;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 8px rgba(80, 60, 50, 0.04);
+}
+
+.card-kicker-meta {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: 1.05rem;
+  color: #682635;
+  margin: 0 0 5px 0;
+  font-weight: 600;
+}
+
+/* ==========================================================================
+   RESPONSIVE DESIGN BREAKPOINTS
+   ========================================================================== */
+@media (max-width: 920px) {
+  body {
+    padding: 10px 8px;
+  }
+  .storybook-stage {
+    width: 100%;
+    max-width: 640px;
+  }
+  .leather-hardcover-shell {
+    padding: 8px 8px 12px;
+  }
+  .open-pages-spread {
+    min-height: auto;
+  }
+  .book-integrated-header {
+    flex-direction: column;
+    padding: 10px 14px 8px;
+    gap: 8px;
+  }
+  .header-brand-title {
+    text-align: center;
+  }
+  .book-nav-menu {
+    width: 100%;
+    overflow-x: auto;
+    white-space: nowrap;
+    justify-content: flex-start;
+    padding: 4px 6px 6px;
+    gap: 6px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .book-nav-menu::-webkit-scrollbar {
+    display: none;
+  }
+  .header-right-tools {
+    justify-content: center;
+    width: 100%;
+    gap: 6px;
+  }
+  .book-nav-link {
+    font-size: 0.88rem;
+    padding: 3px 8px;
+  }
+  .spine-gutter {
+    display: none;
+  }
+  .chapter-content-spread {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+  .book-page {
+    padding: 14px 16px 20px;
+  }
+  .book-page-left, .book-page-right {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+  .projects-header-block {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .lakeside-ghat-landscape {
+    width: 100%;
+    aspect-ratio: 2;
+  }
+  .floating-spine-pagination {
+    position: relative;
+    bottom: auto;
+    left: auto;
+    transform: none;
+    margin: 16px auto 10px;
+  }
+}
+
+@media (max-width: 540px) {
+  .project-item-row {
+    flex-direction: column;
+  }
+  .project-item-thumb {
+    width: 100%;
+    aspect-ratio: 1.8;
+  }
+  .actual-institution-card {
+    flex-direction: column;
+  }
+  .institution-real-artwork {
+    width: 100%;
+    aspect-ratio: 1.8;
+  }
+  .bridge-landscape-bottom {
+    width: 100%;
+  }
+  .index-chapter-card {
+    padding: 10px 12px;
+  }
+}

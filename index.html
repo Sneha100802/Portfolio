@@ -1,783 +1,1019 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html lang="en" data-theme="light">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sneha Jha — AI Engineer & Python Developer</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
-<style>
-:root{
-  --ink:#1C0A00;
-  --red:#9B1B10;
-  --saffron:#D4720A;
-  --gold:#B8860B;
-  --cream:#FDF4E3;
-  --ivory:#FAF0D7;
-  --parchment:#F0E2C0;
-  --green:#275C3E;
-  --teal:#1A6B5F;
-  --blue:#1A3F6E;
-  --off:#6B4226;
-}
-*{margin:0;padding:0;box-sizing:border-box}
-html{scroll-behavior:smooth}
-body{background:var(--cream);color:var(--ink);font-family:'DM Sans',sans-serif;overflow-x:hidden}
-
-/* ── CURSOR DOT ── */
-.cursor{width:8px;height:8px;background:var(--saffron);border-radius:50%;position:fixed;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:transform 0.1s}
-
-/* ── NAV ── */
-nav{
-  position:fixed;top:0;left:0;right:0;z-index:100;
-  display:flex;align-items:center;justify-content:space-between;
-  padding:0 6%;height:64px;
-  background:rgba(253,244,227,0.92);backdrop-filter:blur(12px);
-  border-bottom:1.5px solid var(--parchment);
-}
-.nav-brand{
-  font-family:'Playfair Display',serif;font-size:22px;font-weight:900;
-  color:var(--red);letter-spacing:1px;text-decoration:none;
-  display:flex;align-items:center;gap:10px;
-}
-.nav-brand svg{width:24px;height:24px}
-.nav-links{display:flex;gap:32px;list-style:none;align-items:center}
-.nav-links a{
-  font-size:13px;font-weight:500;color:var(--off);text-decoration:none;
-  letter-spacing:0.8px;text-transform:uppercase;transition:color 0.2s;
-}
-.nav-links a:hover{color:var(--saffron)}
-.nav-cta{
-  padding:8px 20px;background:var(--red);color:white !important;
-  font-size:12px !important;font-weight:600 !important;
-  letter-spacing:1.5px !important;text-transform:uppercase !important;
-  border:2px solid var(--red) !important;transition:all 0.25s !important;
-}
-.nav-cta:hover{background:transparent !important;color:var(--red) !important}
-
-/* ── HERO ── */
-.hero{
-  min-height:100vh;display:flex;align-items:center;
-  position:relative;overflow:hidden;padding:100px 6% 60px;
-  background:linear-gradient(160deg, #FDF4E3 0%, #F5E5C0 60%, #EDD49A 100%);
-}
-
-.hero-left{flex:1;max-width:640px;position:relative;z-index:2}
-
-.eyebrow{
-  display:inline-flex;align-items:center;gap:10px;
-  font-size:11px;font-weight:600;letter-spacing:3px;text-transform:uppercase;
-  color:var(--saffron);margin-bottom:20px;
-}
-.eyebrow-line{width:40px;height:1.5px;background:var(--saffron)}
-
-.hero-name{
-  font-family:'Playfair Display',serif;
-  font-size:clamp(64px,10vw,108px);
-  font-weight:900;line-height:0.9;
-  color:var(--red);letter-spacing:-2px;
-  margin-bottom:6px;
-}
-.hero-name em{
-  font-style:italic;color:var(--saffron);
-  font-size:0.7em;display:block;letter-spacing:0px;
-}
-
-.hero-role{
-  font-family:'DM Serif Display',serif;font-size:22px;
-  color:var(--ink);margin:20px 0 28px;font-weight:400;
-  line-height:1.4;
-}
-
-.hero-desc{
-  font-size:15px;color:var(--off);line-height:1.85;
-  max-width:480px;margin-bottom:40px;font-weight:300;
-}
-
-.hero-chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:44px}
-.chip{
-  font-size:11px;font-weight:600;letter-spacing:1.2px;text-transform:uppercase;
-  padding:6px 16px;border:1.5px solid;border-radius:0;
-  transition:all 0.2s;cursor:default;
-}
-.chip-r{border-color:var(--red);color:var(--red);background:rgba(155,27,16,0.05)}
-.chip-r:hover{background:var(--red);color:white}
-.chip-s{border-color:var(--saffron);color:var(--saffron);background:rgba(212,114,10,0.05)}
-.chip-s:hover{background:var(--saffron);color:white}
-.chip-g{border-color:var(--green);color:var(--green);background:rgba(39,92,62,0.05)}
-.chip-g:hover{background:var(--green);color:white}
-
-.hero-btns{display:flex;gap:16px;flex-wrap:wrap}
-
-/* ATTRACTIVE BUTTONS */
-.btn-fire{
-  position:relative;overflow:hidden;
-  padding:14px 36px;background:var(--red);color:white;
-  text-decoration:none;font-size:13px;font-weight:600;
-  letter-spacing:1.5px;text-transform:uppercase;
-  border:2px solid var(--red);
-  display:inline-flex;align-items:center;gap:10px;
-  transition:all 0.3s;clip-path:polygon(0 0,calc(100% - 12px) 0,100% 12px,100% 100%,0 100%);
-}
-.btn-fire::before{
-  content:'';position:absolute;inset:0;
-  background:linear-gradient(135deg,var(--saffron),var(--red));
-  opacity:0;transition:opacity 0.3s;
-}
-.btn-fire:hover::before{opacity:1}
-.btn-fire:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(155,27,16,0.35)}
-.btn-fire span{position:relative;z-index:1}
-
-.btn-ghost{
-  padding:14px 36px;background:transparent;color:var(--red);
-  text-decoration:none;font-size:13px;font-weight:600;
-  letter-spacing:1.5px;text-transform:uppercase;
-  border:2px solid var(--red);
-  display:inline-flex;align-items:center;gap:10px;
-  transition:all 0.3s;
-  clip-path:polygon(12px 0,100% 0,100% calc(100% - 12px),calc(100% - 12px) 100%,0 100%,0 12px);
-}
-.btn-ghost:hover{background:var(--red);color:white;transform:translateY(-2px);box-shadow:0 8px 24px rgba(155,27,16,0.2)}
-
-/* Hero art */
-.hero-right{
-  position:absolute;right:-20px;top:50%;transform:translateY(-50%);
-  z-index:1;opacity:0.9;
-}
-
-/* ── MADHUBANI BORDER ── */
-.mband{
-  width:100%;background:var(--red);
-  display:flex;align-items:center;overflow:hidden;
-  height:28px;
-}
-.mband svg{width:100%;height:28px}
-
-/* ── ABOUT ── */
-.about{padding:90px 6%;max-width:1160px;margin:0 auto;display:grid;grid-template-columns:1fr 1.2fr;gap:80px;align-items:start}
-.about-left{}
-.section-eyebrow{font-size:11px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:var(--saffron);margin-bottom:12px}
-.section-heading{font-family:'Playfair Display',serif;font-size:clamp(36px,5vw,52px);font-weight:900;color:var(--red);line-height:1.05;margin-bottom:0}
-.section-heading em{font-style:italic;color:var(--ink)}
-.about-divider{width:60px;height:3px;background:var(--saffron);margin:20px 0}
-.about-text p{font-size:15px;color:var(--off);line-height:1.85;margin-bottom:16px;font-weight:300}
-.about-text strong{color:var(--ink);font-weight:500}
-
-.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-.stat{
-  background:var(--ivory);border:1.5px solid var(--parchment);
-  border-left:4px solid var(--saffron);padding:22px 20px;
-}
-.stat-num{font-family:'Playfair Display',serif;font-size:42px;font-weight:900;color:var(--red);line-height:1}
-.stat-label{font-size:11px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--off);margin-top:6px}
-.stat-sub{font-size:12px;color:var(--saffron);margin-top:2px}
-
-/* ── SKILLS dark ── */
-.skills-wrap{background:var(--ink);padding:90px 6%}
-.skills-inner{max-width:1160px;margin:0 auto}
-.skills-wrap .section-eyebrow{color:var(--saffron)}
-.skills-wrap .section-heading{color:var(--ivory)}
-.skills-wrap .section-heading em{color:var(--saffron)}
-
-.skills-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px;margin-top:50px}
-.skill-card{
-  background:rgba(253,244,227,0.04);
-  border:1px solid rgba(212,114,10,0.15);
-  padding:26px 24px;
-  transition:all 0.3s;position:relative;overflow:hidden;
-}
-.skill-card::before{
-  content:'';position:absolute;top:0;left:0;right:0;height:2px;
-  background:linear-gradient(90deg,var(--saffron),var(--red));
-  transform:scaleX(0);transition:transform 0.3s;transform-origin:left;
-}
-.skill-card:hover::before{transform:scaleX(1)}
-.skill-card:hover{border-color:rgba(212,114,10,0.4);transform:translateY(-3px)}
-.skill-emoji{font-size:28px;margin-bottom:14px;display:block}
-.skill-title{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--saffron);margin-bottom:10px}
-.skill-list{font-size:13px;color:rgba(253,244,227,0.65);line-height:1.9;font-weight:300}
-
-/* ── PROJECTS ── */
-.projects-wrap{padding:90px 6%;max-width:1160px;margin:0 auto}
-.projects-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:22px;margin-top:50px}
-
-.proj{
-  background:var(--ivory);border:1.5px solid var(--parchment);
-  padding:30px 28px;position:relative;overflow:hidden;
-  transition:all 0.3s;
-  clip-path:polygon(0 0,calc(100% - 16px) 0,100% 16px,100% 100%,0 100%);
-}
-.proj::after{
-  content:'';position:absolute;bottom:0;left:0;right:0;height:3px;
-  background:linear-gradient(90deg,var(--red),var(--saffron));
-  transform:scaleX(0);transition:transform 0.35s;transform-origin:left;
-}
-.proj:hover::after{transform:scaleX(1)}
-.proj:hover{transform:translateY(-4px);box-shadow:0 12px 32px rgba(28,10,0,0.12)}
-
-.proj-cat{
-  font-size:10px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;
-  color:var(--saffron);margin-bottom:12px;display:flex;align-items:center;gap:8px;
-}
-.proj-cat::before{content:'';display:inline-block;width:20px;height:1.5px;background:var(--saffron)}
-
-.proj-title{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:var(--red);margin-bottom:10px;line-height:1.2}
-.proj-desc{font-size:13px;color:var(--off);line-height:1.75;margin-bottom:18px;font-weight:300}
-
-.proj-tags{display:flex;flex-wrap:wrap;gap:6px}
-.tag{
-  font-size:10px;font-weight:600;letter-spacing:0.8px;
-  padding:4px 11px;background:var(--cream);color:var(--off);
-  border:1px solid var(--parchment);text-transform:uppercase;
-}
-
-/* ── EXPERIENCE ── */
-.exp-wrap{background:var(--parchment);padding:90px 6%}
-.exp-inner{max-width:900px;margin:0 auto}
-.exp-list{margin-top:50px;position:relative}
-.exp-list::before{
-  content:'';position:absolute;left:170px;top:0;bottom:0;
-  width:1.5px;background:var(--saffron);opacity:0.3;
-}
-
-.exp-item{display:grid;grid-template-columns:170px 1fr;gap:0 56px;padding:30px 0;border-bottom:1px solid rgba(212,114,10,0.15)}
-.exp-item:last-child{border-bottom:none}
-.exp-date{font-size:12px;font-weight:600;color:var(--saffron);text-align:right;padding-top:5px;line-height:1.5;position:relative}
-.exp-date::after{
-  content:'';position:absolute;right:-64px;top:10px;
-  width:14px;height:14px;border-radius:50%;
-  background:var(--red);border:3px solid var(--parchment);
-  box-shadow:0 0 0 2px var(--saffron);
-}
-.exp-role{font-family:'Playfair Display',serif;font-size:21px;font-weight:700;color:var(--red);margin-bottom:4px}
-.exp-org{font-size:13px;color:var(--saffron);font-weight:600;margin-bottom:12px;letter-spacing:0.5px}
-.exp-bul{list-style:none;padding:0}
-.exp-bul li{font-size:13px;color:var(--off);padding-left:16px;position:relative;margin-bottom:5px;line-height:1.65;font-weight:300}
-.exp-bul li::before{content:'◆';font-size:6px;color:var(--saffron);position:absolute;left:0;top:5px}
-
-/* ── PUBLICATIONS ── */
-.pub-wrap{padding:90px 6%;max-width:1160px;margin:0 auto}
-.pub-cards{display:flex;flex-direction:column;gap:18px;margin-top:50px}
-.pub-card{
-  display:grid;grid-template-columns:100px 1fr;gap:28px;
-  background:var(--ivory);border:1.5px solid var(--parchment);
-  border-left:4px solid var(--gold);padding:28px;
-  transition:all 0.3s;
-}
-.pub-card:hover{border-left-color:var(--red);transform:translateX(4px)}
-.pub-year{font-family:'Playfair Display',serif;font-size:40px;font-weight:900;color:var(--gold);line-height:1}
-.pub-title{font-size:15px;color:var(--ink);font-weight:500;margin-bottom:8px;line-height:1.5}
-.pub-venue{font-size:12px;color:var(--off);font-weight:300}
-.pub-badge{
-  display:inline-block;margin-top:10px;font-size:10px;font-weight:700;
-  padding:4px 12px;background:rgba(184,134,11,0.1);color:var(--gold);
-  border:1px solid rgba(184,134,11,0.3);letter-spacing:1.5px;text-transform:uppercase;
-}
-
-/* ── CONTACT ── */
-.contact-wrap{
-  background:var(--ink);padding:100px 6%;text-align:center;
-  position:relative;overflow:hidden;
-}
-.contact-bg-art{position:absolute;inset:0;opacity:0.04;pointer-events:none}
-.contact-inner{max-width:640px;margin:0 auto;position:relative;z-index:1}
-.contact-tag{font-size:11px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:var(--saffron);margin-bottom:16px}
-.contact-heading{
-  font-family:'Playfair Display',serif;font-size:clamp(42px,7vw,72px);
-  font-weight:900;color:var(--ivory);line-height:1;margin-bottom:10px;
-}
-.contact-heading em{font-style:italic;color:var(--saffron)}
-.contact-sub{font-size:15px;color:rgba(253,244,227,0.6);margin-bottom:48px;font-weight:300;line-height:1.7}
-.contact-btns{display:flex;justify-content:center;flex-wrap:wrap;gap:14px}
-
-.btn-contact{
-  padding:14px 32px;text-decoration:none;font-size:12px;font-weight:700;
-  letter-spacing:2px;text-transform:uppercase;
-  display:inline-flex;align-items:center;gap:10px;
-  transition:all 0.3s;position:relative;overflow:hidden;
-}
-.btn-email{
-  background:var(--saffron);color:white;border:2px solid var(--saffron);
-  clip-path:polygon(0 0,calc(100% - 10px) 0,100% 10px,100% 100%,0 100%);
-}
-.btn-email:hover{background:var(--red);border-color:var(--red);transform:translateY(-3px);box-shadow:0 8px 24px rgba(212,114,10,0.4)}
-.btn-ln{background:transparent;color:var(--ivory);border:2px solid rgba(253,244,227,0.3)}
-.btn-ln:hover{border-color:var(--saffron);color:var(--saffron);transform:translateY(-3px)}
-.btn-gh{background:transparent;color:var(--ivory);border:2px solid rgba(253,244,227,0.3)}
-.btn-gh:hover{border-color:var(--ivory);transform:translateY(-3px)}
-
-/* ── FOOTER ── */
-footer{
-  background:#0D0500;padding:28px 6%;
-  display:flex;align-items:center;justify-content:space-between;
-  flex-wrap:wrap;gap:12px;
-}
-.footer-text{font-size:12px;color:rgba(253,244,227,0.35);letter-spacing:0.5px}
-.footer-brand{font-family:'Playfair Display',serif;font-size:16px;font-weight:900;color:rgba(253,244,227,0.5)}
-
-/* ── RESPONSIVE ── */
-@media(max-width:900px){
-  .hero-right{display:none}
-  .about{grid-template-columns:1fr;gap:40px}
-  .exp-item{grid-template-columns:1fr}
-  .exp-date{text-align:left}
-  .exp-date::after{display:none}
-  .exp-list::before{display:none}
-  .pub-card{grid-template-columns:1fr}
-  nav{padding:0 4%}
-  .nav-links{gap:16px}
-}
-</style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#fcf9f2">
+  <meta name="description" content="Sneha Jha — Antique Indian Illustrated Storybook Portfolio. Python Developer, AI/ML Engineer, Generative AI.">
+  <meta name="author" content="Sneha Jha">
+  <title>Sneha Jha — Illustrated Journal & Storybook Portfolio · Python · AI/ML · Generative AI</title>
+  
+  <link rel="stylesheet" href="styles.css">
+  <script src="script.js" defer></script>
 </head>
 <body>
+  <!-- Accessibility Skip Link -->
+  <a class="skip-link" href="#bookSpreadContainer">Skip to storybook content</a>
 
-<!-- NAV -->
-<nav>
-  <a class="nav-brand" href="#home">
-    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <ellipse cx="12" cy="4" rx="4" ry="10" fill="#9B1B10" opacity="0.8"/>
-      <ellipse cx="12" cy="4" rx="4" ry="10" fill="#D4720A" opacity="0.7" transform="rotate(60 12 12)"/>
-      <ellipse cx="12" cy="4" rx="4" ry="10" fill="#9B1B10" opacity="0.8" transform="rotate(120 12 12)"/>
-      <ellipse cx="12" cy="4" rx="4" ry="10" fill="#D4720A" opacity="0.7" transform="rotate(180 12 12)"/>
-      <ellipse cx="12" cy="4" rx="4" ry="10" fill="#9B1B10" opacity="0.8" transform="rotate(240 12 12)"/>
-      <ellipse cx="12" cy="4" rx="4" ry="10" fill="#D4720A" opacity="0.7" transform="rotate(300 12 12)"/>
-      <circle cx="12" cy="12" r="4" fill="#9B1B10"/>
-      <circle cx="12" cy="12" r="2" fill="#D4720A"/>
-    </svg>
-    SJ
-  </a>
-  <ul class="nav-links">
-    <li><a href="#about">About</a></li>
-    <li><a href="#skills">Skills</a></li>
-    <li><a href="#projects">Projects</a></li>
-    <li><a href="#experience">Experience</a></li>
-    <li><a href="#contact" class="nav-cta">Hire Me</a></li>
-  </ul>
-</nav>
+  <!-- ==========================================================================
+       MASTER WRAPPER: CLOSED JOURNAL COVER & OPEN TWO-PAGE SPREAD
+       ========================================================================== -->
+  <div class="storybook-app-wrapper" id="storybookAppWrapper">
 
-<!-- HERO -->
-<section class="hero" id="home">
-  <div class="hero-left">
-    <div class="eyebrow"><span class="eyebrow-line"></span>AI Engineer & Python Developer</div>
-    <h1 class="hero-name">
-      Sneha
-      <em>Jha.</em>
-    </h1>
-    <p class="hero-role">Building intelligent systems<br>that work in the real world.</p>
-    <p class="hero-desc">
-      Fresher based in New Delhi. I build production-grade RAG pipelines, LLM integrations, and FastAPI backends. IEEE-published researcher. 2 papers. Immediate joiner.
-    </p>
-    <div class="hero-chips">
-      <span class="chip chip-r">RAG Pipelines</span>
-      <span class="chip chip-s">Generative AI</span>
-      <span class="chip chip-g">LangChain</span>
-      <span class="chip chip-r">FastAPI</span>
-      <span class="chip chip-s">LLM APIs</span>
-      <span class="chip chip-g">IEEE Published</span>
-    </div>
-    <div class="hero-btns">
-      <a href="#projects" class="btn-fire"><span>View Projects</span><span>→</span></a>
-      <a href="#contact" class="btn-ghost">Get In Touch</a>
-    </div>
-  </div>
+    <!-- ========================================================================
+         1. THE CLOSED BOOK (ELEGANT WARM IVORY JOURNAL COVER)
+         ======================================================================== -->
+    <section class="closed-book-scene" id="closedBookScene" aria-label="Closed illustrated journal cover">
+      <div class="closed-cover-frame" id="closedCoverFrame" role="region" aria-label="Cover of Sneha Jha's Illustrated Portfolio">
+        <div class="closed-book-spine" aria-hidden="true"></div>
+        <div class="closed-page-edges" aria-hidden="true"></div>
 
-  <!-- Peacock SVG -->
-  <div class="hero-right">
-    <svg width="380" height="480" viewBox="0 0 380 480" xmlns="http://www.w3.org/2000/svg">
-      <!-- Background mandala -->
-      <circle cx="190" cy="220" r="180" fill="none" stroke="#D4720A" stroke-width="0.8" opacity="0.12"/>
-      <circle cx="190" cy="220" r="150" fill="none" stroke="#9B1B10" stroke-width="0.5" opacity="0.1"/>
-      <circle cx="190" cy="220" r="120" fill="none" stroke="#D4720A" stroke-width="0.5" opacity="0.08"/>
+        <!-- Cover Top Ornament Kicker -->
+        <div class="cover-header-kicker">An Illustrated Journal</div>
 
-      <!-- Madhubani decorative border pattern -->
-      <rect x="10" y="10" width="360" height="460" fill="none" stroke="#D4720A" stroke-width="0.8" stroke-dasharray="8,5" opacity="0.2"/>
-
-      <!-- Peacock feathers - main fan -->
-      <g transform="translate(190, 300)">
-        <!-- Outer feathers -->
-        <ellipse cx="0" cy="-140" rx="14" ry="80" fill="#275C3E" opacity="0.75" transform="rotate(0)"/>
-        <ellipse cx="0" cy="-140" rx="14" ry="80" fill="#1A6B5F" opacity="0.7" transform="rotate(18)"/>
-        <ellipse cx="0" cy="-140" rx="14" ry="80" fill="#275C3E" opacity="0.75" transform="rotate(36)"/>
-        <ellipse cx="0" cy="-140" rx="14" ry="80" fill="#1A6B5F" opacity="0.7" transform="rotate(54)"/>
-        <ellipse cx="0" cy="-140" rx="14" ry="80" fill="#275C3E" opacity="0.75" transform="rotate(72)"/>
-        <ellipse cx="0" cy="-140" rx="14" ry="80" fill="#1A6B5F" opacity="0.7" transform="rotate(-18)"/>
-        <ellipse cx="0" cy="-140" rx="14" ry="80" fill="#275C3E" opacity="0.75" transform="rotate(-36)"/>
-        <ellipse cx="0" cy="-140" rx="14" ry="80" fill="#1A6B5F" opacity="0.7" transform="rotate(-54)"/>
-        <ellipse cx="0" cy="-140" rx="14" ry="80" fill="#275C3E" opacity="0.75" transform="rotate(-72)"/>
-
-        <!-- Eye spots -->
-        <circle cx="0" cy="-170" r="16" fill="#1A3F6E" opacity="0.85"/>
-        <circle cx="0" cy="-170" r="10" fill="#D4720A"/>
-        <circle cx="0" cy="-170" r="5" fill="#9B1B10"/>
-        <circle cx="0" cy="-170" r="2" fill="#1C0A00"/>
-
-        <!-- Side eye spots -->
-        <g transform="rotate(22)"><circle cx="0" cy="-165" r="12" fill="#1A3F6E" opacity="0.8"/><circle cx="0" cy="-165" r="7" fill="#D4720A"/><circle cx="0" cy="-165" r="3.5" fill="#9B1B10"/></g>
-        <g transform="rotate(-22)"><circle cx="0" cy="-165" r="12" fill="#1A3F6E" opacity="0.8"/><circle cx="0" cy="-165" r="7" fill="#D4720A"/><circle cx="0" cy="-165" r="3.5" fill="#9B1B10"/></g>
-        <g transform="rotate(44)"><circle cx="0" cy="-155" r="10" fill="#1A3F6E" opacity="0.75"/><circle cx="0" cy="-155" r="6" fill="#D4720A"/><circle cx="0" cy="-155" r="3" fill="#9B1B10"/></g>
-        <g transform="rotate(-44)"><circle cx="0" cy="-155" r="10" fill="#1A3F6E" opacity="0.75"/><circle cx="0" cy="-155" r="6" fill="#D4720A"/><circle cx="0" cy="-155" r="3" fill="#9B1B10"/></g>
-        <g transform="rotate(66)"><circle cx="0" cy="-140" r="8" fill="#1A3F6E" opacity="0.7"/><circle cx="0" cy="-140" r="5" fill="#D4720A"/><circle cx="0" cy="-140" r="2.5" fill="#9B1B10"/></g>
-        <g transform="rotate(-66)"><circle cx="0" cy="-140" r="8" fill="#1A3F6E" opacity="0.7"/><circle cx="0" cy="-140" r="5" fill="#D4720A"/><circle cx="0" cy="-140" r="2.5" fill="#9B1B10"/></g>
-
-        <!-- Body -->
-        <ellipse cx="0" cy="30" rx="26" ry="60" fill="#1A6B5F"/>
-        <ellipse cx="0" cy="20" rx="18" ry="42" fill="#275C3E"/>
-
-        <!-- Neck -->
-        <ellipse cx="0" cy="-28" rx="11" ry="32" fill="#1A6B5F"/>
-
-        <!-- Head -->
-        <circle cx="0" cy="-60" r="20" fill="#275C3E"/>
-        <circle cx="6" cy="-65" r="6" fill="#1C0A00"/>
-        <circle cx="7" cy="-66" r="2.5" fill="white"/>
-
-        <!-- Crest -->
-        <line x1="0" y1="-80" x2="-7" y2="-100" stroke="#D4720A" stroke-width="2"/>
-        <line x1="0" y1="-80" x2="0" y2="-104" stroke="#D4720A" stroke-width="2"/>
-        <line x1="0" y1="-80" x2="7" y2="-100" stroke="#D4720A" stroke-width="2"/>
-        <circle cx="-7" cy="-102" r="5" fill="#D4720A"/>
-        <circle cx="0" cy="-106" r="5" fill="#B8860B"/>
-        <circle cx="7" cy="-102" r="5" fill="#D4720A"/>
-
-        <!-- Beak -->
-        <path d="M8,−56 L20,−52 L8,−48 Z" fill="#B8860B"/>
-
-        <!-- Legs -->
-        <line x1="-8" y1="88" x2="-12" y2="128" stroke="#6B4226" stroke-width="2.5"/>
-        <line x1="8" y1="88" x2="12" y2="128" stroke="#6B4226" stroke-width="2.5"/>
-        <line x1="-12" y1="128" x2="-22" y2="140" stroke="#6B4226" stroke-width="2"/>
-        <line x1="-12" y1="128" x2="-10" y2="142" stroke="#6B4226" stroke-width="2"/>
-        <line x1="-12" y1="128" x2="-2" y2="138" stroke="#6B4226" stroke-width="2"/>
-        <line x1="12" y1="128" x2="2" y2="140" stroke="#6B4226" stroke-width="2"/>
-        <line x1="12" y1="128" x2="12" y2="143" stroke="#6B4226" stroke-width="2"/>
-        <line x1="12" y1="128" x2="22" y2="138" stroke="#6B4226" stroke-width="2"/>
-      </g>
-
-      <!-- Corner lotus motifs -->
-      <g transform="translate(30,30)" opacity="0.5">
-        <ellipse cx="0" cy="-12" rx="5" ry="14" fill="#D4720A"/>
-        <ellipse cx="0" cy="-12" rx="5" ry="14" fill="#9B1B10" transform="rotate(72,0,0)"/>
-        <ellipse cx="0" cy="-12" rx="5" ry="14" fill="#D4720A" transform="rotate(144,0,0)"/>
-        <ellipse cx="0" cy="-12" rx="5" ry="14" fill="#9B1B10" transform="rotate(216,0,0)"/>
-        <ellipse cx="0" cy="-12" rx="5" ry="14" fill="#D4720A" transform="rotate(288,0,0)"/>
-        <circle cx="0" cy="0" r="5" fill="#9B1B10"/>
-      </g>
-      <g transform="translate(350,30)" opacity="0.5">
-        <ellipse cx="0" cy="-12" rx="5" ry="14" fill="#D4720A"/>
-        <ellipse cx="0" cy="-12" rx="5" ry="14" fill="#9B1B10" transform="rotate(72,0,0)"/>
-        <ellipse cx="0" cy="-12" rx="5" ry="14" fill="#D4720A" transform="rotate(144,0,0)"/>
-        <ellipse cx="0" cy="-12" rx="5" ry="14" fill="#9B1B10" transform="rotate(216,0,0)"/>
-        <ellipse cx="0" cy="-12" rx="5" ry="14" fill="#D4720A" transform="rotate(288,0,0)"/>
-        <circle cx="0" cy="0" r="5" fill="#9B1B10"/>
-      </g>
-      <g transform="translate(30,450)" opacity="0.5">
-        <ellipse cx="0" cy="-12" rx="5" ry="14" fill="#D4720A"/>
-        <ellipse cx="0" cy="-12" rx="5" ry="14" fill="#9B1B10" transform="rotate(72,0,0)"/>
-        <ellipse cx="0" cy="-12" rx="5" ry="14" fill="#D4720A" transform="rotate(144,0,0)"/>
-        <ellipse cx="0" cy="-12" rx="5" ry="14" fill="#9B1B10" transform="rotate(216,0,0)"/>
-        <ellipse cx="0" cy="-12" rx="5" ry="14" fill="#D4720A" transform="rotate(288,0,0)"/>
-        <circle cx="0" cy="0" r="5" fill="#9B1B10"/>
-      </g>
-      <g transform="translate(350,450)" opacity="0.5">
-        <ellipse cx="0" cy="-12" rx="5" ry="14" fill="#D4720A"/>
-        <ellipse cx="0" cy="-12" rx="5" ry="14" fill="#9B1B10" transform="rotate(72,0,0)"/>
-        <ellipse cx="0" cy="-12" rx="5" ry="14" fill="#D4720A" transform="rotate(144,0,0)"/>
-        <ellipse cx="0" cy="-12" rx="5" ry="14" fill="#9B1B10" transform="rotate(216,0,0)"/>
-        <ellipse cx="0" cy="-12" rx="5" ry="14" fill="#D4720A" transform="rotate(288,0,0)"/>
-        <circle cx="0" cy="0" r="5" fill="#9B1B10"/>
-      </g>
-
-      <!-- Mithila fish -->
-      <g transform="translate(60,200)" opacity="0.35">
-        <ellipse cx="0" cy="0" rx="7" ry="16" fill="#9B1B10"/>
-        <path d="M0,-16 L-5,-24 L5,-24 Z" fill="#D4720A"/>
-        <circle cx="4" cy="-6" r="2.5" fill="#1C0A00"/>
-        <path d="M-7,0 Q-14,5 -12,10" fill="none" stroke="#D4720A" stroke-width="1"/>
-        <path d="M-7,-3 Q-13,-2 -13,3" fill="none" stroke="#D4720A" stroke-width="1"/>
-      </g>
-      <g transform="translate(320,350)" opacity="0.3">
-        <ellipse cx="0" cy="0" rx="6" ry="13" fill="#D4720A"/>
-        <path d="M0,-13 L-4,-20 L4,-20 Z" fill="#9B1B10"/>
-        <circle cx="-3" cy="-5" r="2" fill="#1C0A00"/>
-      </g>
-    </svg>
-  </div>
-</section>
-
-<!-- MADHUBANI BAND -->
-<div class="mband">
-  <svg viewBox="0 0 1400 28" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-    <rect width="1400" height="28" fill="#9B1B10"/>
-    <path d="M0,14 Q17,4 35,14 Q52,24 70,14 Q87,4 105,14 Q122,24 140,14 Q157,4 175,14 Q192,24 210,14 Q227,4 245,14 Q262,24 280,14 Q297,4 315,14 Q332,24 350,14 Q367,4 385,14 Q402,24 420,14 Q437,4 455,14 Q472,24 490,14 Q507,4 525,14 Q542,24 560,14 Q577,4 595,14 Q612,24 630,14 Q647,4 665,14 Q682,24 700,14 Q717,4 735,14 Q752,24 770,14 Q787,4 805,14 Q822,24 840,14 Q857,4 875,14 Q892,24 910,14 Q927,4 945,14 Q962,24 980,14 Q997,4 1015,14 Q1032,24 1050,14 Q1067,4 1085,14 Q1102,24 1120,14 Q1137,4 1155,14 Q1172,24 1190,14 Q1207,4 1225,14 Q1242,24 1260,14 Q1277,4 1295,14 Q1312,24 1330,14 Q1347,4 1365,14 Q1382,24 1400,14"
-    fill="none" stroke="#D4720A" stroke-width="1.5"/>
-    <g fill="#FDF4E3" opacity="0.4">
-      <circle cx="35" cy="14" r="2.5"/><circle cx="70" cy="14" r="2.5"/><circle cx="105" cy="14" r="2.5"/>
-      <circle cx="140" cy="14" r="2.5"/><circle cx="175" cy="14" r="2.5"/><circle cx="210" cy="14" r="2.5"/>
-      <circle cx="245" cy="14" r="2.5"/><circle cx="280" cy="14" r="2.5"/><circle cx="315" cy="14" r="2.5"/>
-      <circle cx="350" cy="14" r="2.5"/><circle cx="385" cy="14" r="2.5"/><circle cx="420" cy="14" r="2.5"/>
-      <circle cx="455" cy="14" r="2.5"/><circle cx="490" cy="14" r="2.5"/><circle cx="525" cy="14" r="2.5"/>
-      <circle cx="560" cy="14" r="2.5"/><circle cx="595" cy="14" r="2.5"/><circle cx="630" cy="14" r="2.5"/>
-      <circle cx="665" cy="14" r="2.5"/><circle cx="700" cy="14" r="2.5"/><circle cx="735" cy="14" r="2.5"/>
-      <circle cx="770" cy="14" r="2.5"/><circle cx="805" cy="14" r="2.5"/><circle cx="840" cy="14" r="2.5"/>
-      <circle cx="875" cy="14" r="2.5"/><circle cx="910" cy="14" r="2.5"/><circle cx="945" cy="14" r="2.5"/>
-      <circle cx="980" cy="14" r="2.5"/><circle cx="1015" cy="14" r="2.5"/><circle cx="1050" cy="14" r="2.5"/>
-      <circle cx="1085" cy="14" r="2.5"/><circle cx="1120" cy="14" r="2.5"/><circle cx="1155" cy="14" r="2.5"/>
-      <circle cx="1190" cy="14" r="2.5"/><circle cx="1225" cy="14" r="2.5"/><circle cx="1260" cy="14" r="2.5"/>
-      <circle cx="1295" cy="14" r="2.5"/><circle cx="1330" cy="14" r="2.5"/><circle cx="1365" cy="14" r="2.5"/>
-    </g>
-  </svg>
-</div>
-
-<!-- ABOUT -->
-<section id="about">
-  <div class="about">
-    <div class="about-left">
-      <div class="section-eyebrow">Who I Am</div>
-      <h2 class="section-heading">About <em>Me</em></h2>
-      <div class="about-divider"></div>
-      <div class="about-text">
-        <p>I'm a Python developer and AI/ML engineer from <strong>New Delhi, India</strong>. I graduated with a B.Tech Honours in Data Science in 2025 and spent 9 months building a production-grade multimodal RAG platform at Survatra.</p>
-        <p>My work sits at the intersection of <strong>backend engineering and applied AI</strong> — I care about systems that are reliable, secure, and actually useful in production. I've also published <strong>two IEEE research papers</strong> on deep learning applied to medical diagnostics.</p>
-        <p>I'm immediately available and looking for roles in backend, AI/ML, or Generative AI engineering.</p>
-      </div>
-    </div>
-    <div class="about-right">
-      <div class="stat-grid">
-        <div class="stat">
-          <div class="stat-num">2</div>
-          <div class="stat-label">IEEE Papers</div>
-          <div class="stat-sub">Published 2024</div>
-        </div>
-        <div class="stat">
-          <div class="stat-num">1yr</div>
-          <div class="stat-label">Production AI</div>
-          <div class="stat-sub">Real systems</div>
-        </div>
-        <div class="stat">
-          <div class="stat-num">9+</div>
-          <div class="stat-label">Projects Built</div>
-          <div class="stat-sub">Not tutorials</div>
-        </div>
-        <div class="stat">
-          <div class="stat-num">0</div>
-          <div class="stat-label">Notice Period</div>
-          <div class="stat-sub">Immediate joiner</div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- SKILLS -->
-<div class="skills-wrap" id="skills">
-  <div class="skills-inner">
-    <div class="section-eyebrow">What I Work With</div>
-    <h2 class="section-heading">Skills & <em>Tools</em></h2>
-    <div class="skills-grid">
-      <div class="skill-card"><span class="skill-emoji">🤖</span><div class="skill-title">Generative AI & LLMs</div><div class="skill-list">Generative AI · RAG Pipelines · LangChain · LLM APIs · Prompt Engineering · OpenAI-compatible APIs · FAISS · ChromaDB</div></div>
-      <div class="skill-card"><span class="skill-emoji">🐍</span><div class="skill-title">Languages & Core</div><div class="skill-list">Python · JavaScript · HTML/CSS · SQL</div></div>
-      <div class="skill-card"><span class="skill-emoji">🧠</span><div class="skill-title">AI / ML Frameworks</div><div class="skill-list">TensorFlow · Keras · 1D CNN · DenseNet · NLP · Audio ML (Librosa)</div></div>
-      <div class="skill-card"><span class="skill-emoji">⚡</span><div class="skill-title">Backend & APIs</div><div class="skill-list">FastAPI · Flask · Django · REST API Development · Data Pipelines</div></div>
-      <div class="skill-card"><span class="skill-emoji">🗄️</span><div class="skill-title">Databases & Cloud</div><div class="skill-list">PostgreSQL · AWS S3 · AWS EC2 · Docker (basic)</div></div>
-      <div class="skill-card"><span class="skill-emoji">🛠️</span><div class="skill-title">Tools & Platforms</div><div class="skill-list">Git · Postman · Jira · Google Drive API · React (basics) · Streamlit · Gradio</div></div>
-    </div>
-  </div>
-</div>
-
-<!-- MADHUBANI BAND 2 -->
-<div class="mband" style="transform:scaleY(-1)">
-  <svg viewBox="0 0 1400 28" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-    <rect width="1400" height="28" fill="#9B1B10"/>
-    <path d="M0,14 Q17,4 35,14 Q52,24 70,14 Q87,4 105,14 Q122,24 140,14 Q157,4 175,14 Q192,24 210,14 Q227,4 245,14 Q262,24 280,14 Q297,4 315,14 Q332,24 350,14 Q367,4 385,14 Q402,24 420,14 Q437,4 455,14 Q472,24 490,14 Q507,4 525,14 Q542,24 560,14 Q577,4 595,14 Q612,24 630,14 Q647,4 665,14 Q682,24 700,14 Q717,4 735,14 Q752,24 770,14 Q787,4 805,14 Q822,24 840,14 Q857,4 875,14 Q892,24 910,14 Q927,4 945,14 Q962,24 980,14 Q997,4 1015,14 Q1032,24 1050,14 Q1067,4 1085,14 Q1102,24 1120,14 Q1137,4 1155,14 Q1172,24 1190,14 Q1207,4 1225,14 Q1242,24 1260,14 Q1277,4 1295,14 Q1312,24 1330,14 Q1347,4 1365,14 Q1382,24 1400,14"
-    fill="none" stroke="#D4720A" stroke-width="1.5"/>
-  </svg>
-</div>
-
-<!-- PROJECTS -->
-<section id="projects">
-  <div class="projects-wrap">
-    <div class="section-eyebrow">What I've Built</div>
-    <h2 class="section-heading">Featured <em>Projects</em></h2>
-    <div class="projects-grid">
-
-      <div class="proj">
-        <div class="proj-cat">Generative AI · RAG</div>
-        <div class="proj-title">Multimodal RAG Platform</div>
-        <p class="proj-desc">Production-grade RAG system with document ingestion, PHI/PII masking, LLM-powered querying, and multi-project isolation. Built for CPU-constrained AWS EC2 with a 4-pass memory-optimized PDF extraction pipeline.</p>
-        <div class="proj-tags"><span class="tag">FastAPI</span><span class="tag">PostgreSQL</span><span class="tag">AWS S3</span><span class="tag">FAISS</span><span class="tag">LLM APIs</span></div>
-      </div>
-
-      <div class="proj">
-        <div class="proj-cat">NLP · Chatbot</div>
-        <div class="proj-title">Entrepreneur AI Chatbot</div>
-        <p class="proj-desc">NLP-powered chatbot guiding startup founders through legal, financial, and operational workflows using RAG, LangChain, and structured knowledge bases with advanced prompt engineering.</p>
-        <div class="proj-tags"><span class="tag">LangChain</span><span class="tag">RAG</span><span class="tag">FastAPI</span><span class="tag">Prompt Eng.</span></div>
-      </div>
-
-      <div class="proj">
-        <div class="proj-cat">RAG · Vector DB</div>
-        <div class="proj-title">Hotel Booking RAG Q&A</div>
-        <p class="proj-desc">RAG pipeline using FAISS and Sentence Transformers for semantic search on hotel booking data. Flask API with analytics endpoints and natural language querying. Cloud-deployable on AWS/GCP/Azure.</p>
-        <div class="proj-tags"><span class="tag">FAISS</span><span class="tag">Sentence Transformers</span><span class="tag">Flask</span><span class="tag">LLM</span></div>
-      </div>
-
-      <div class="proj">
-        <div class="proj-cat">Multi-Agent · AI</div>
-        <div class="proj-title">Multi-Agent System</div>
-        <p class="proj-desc">Python-based multi-agent system with Gradio web interface routing user inputs to specialized agents based on content type and intent — text, file uploads, and structured queries.</p>
-        <div class="proj-tags"><span class="tag">Python</span><span class="tag">Gradio</span><span class="tag">Multi-Agent</span><span class="tag">NLP</span></div>
-      </div>
-
-      <div class="proj">
-        <div class="proj-cat">Deep Learning · IEEE</div>
-        <div class="proj-title">COPD Detection (Published)</div>
-        <p class="proj-desc">DenseNet + 1D CNN models for early COPD detection from pulmonary audio data. 94% training accuracy with Adam optimizer. Published at 15th ICCCNT & IEEE TENSYMP 2024 — IEEE Xplore.</p>
-        <div class="proj-tags"><span class="tag">TensorFlow</span><span class="tag">1D CNN</span><span class="tag">DenseNet</span><span class="tag">Librosa</span><span class="tag">IEEE</span></div>
-      </div>
-
-      <div class="proj">
-        <div class="proj-cat">ML · Forecasting</div>
-        <div class="proj-title">Stock Price Prediction</div>
-        <p class="proj-desc">Hybrid text + ML prediction system achieving 0.99 accuracy. Built with Streamlit, Flask, Sentiment Analysis, and Grafana dashboards for real-time monitoring and visualization.</p>
-        <div class="proj-tags"><span class="tag">Streamlit</span><span class="tag">Flask</span><span class="tag">Sentiment Analysis</span><span class="tag">Grafana</span></div>
-      </div>
-
-    </div>
-  </div>
-</section>
-
-<!-- EXPERIENCE -->
-<div class="exp-wrap" id="experience">
-  <div class="exp-inner">
-    <div class="section-eyebrow">My Journey</div>
-    <h2 class="section-heading">Work <em>Experience</em></h2>
-    <div class="exp-list">
-
-      <div class="exp-item">
-        <div class="exp-date">Sep 2025<br>Jun 2026</div>
+        <!-- Main Author Calligraphy & Title -->
         <div>
-          <div class="exp-role">Python Developer</div>
-          <div class="exp-org">Survatra · New Delhi, India</div>
-          <ul class="exp-bul">
-            <li>Architected a multimodal RAG platform using Python/FastAPI, PostgreSQL, and AWS S3 — integrating LLM APIs with vector-based semantic retrieval and FAISS/ChromaDB.</li>
-            <li>Implemented PHI data governance with 3-level admin approval, immutable audit trails, and optimized PHI/PII masking using regex alternation.</li>
-            <li>Built multi-project isolation with scoped API keys, OTP brute-force protection, and HTTP 429 rate limiting.</li>
-          </ul>
+          <h1 class="cover-author-title">Sneha Jha</h1>
+          <div class="cover-role-subtitle">Python Developer · AI/ML Engineer · Generative AI</div>
+        </div>
+
+        <!-- Central Watercolor Vignette: New Delhi India Gate & Boulevards -->
+        <div class="cover-center-medallion">
+          <img src="assets/new-delhi-childhood-light.webp" alt="Delhi India Gate watercolor vignette">
+        </div>
+
+        <!-- Story Subtitle Tagline -->
+        <div class="cover-story-tagline">“Code, Culture, and Creation”</div>
+
+        <!-- Open Portfolio Action Button (Opens into Interactive Index) -->
+        <button class="cover-open-portfolio-btn" id="openCoverBtn" type="button" aria-label="Click to open portfolio journal">
+          <span>Open Portfolio · Explore Index</span> <span aria-hidden="true">↗</span>
+        </button>
+
+        <!-- Skip Direct Link -->
+        <div class="closed-book-skip-bar">
+          <button class="skip-intro-text-btn" id="skipIntroCoverBtn" type="button">
+            Skip Intro · Direct to Index <span aria-hidden="true">→</span>
+          </button>
         </div>
       </div>
+    </section>
 
-      <div class="exp-item">
-        <div class="exp-date">Mar 2025<br>Jun 2025</div>
-        <div>
-          <div class="exp-role">AI Developer</div>
-          <div class="exp-org">The Idea Company</div>
-          <ul class="exp-bul">
-            <li>Built NLP-powered chatbot for startup founders using LLM APIs, LangChain, and structured knowledge bases.</li>
-            <li>Delivered within 4-month window collaborating with cross-functional stakeholders on AI product features.</li>
-          </ul>
+    <!-- ========================================================================
+         2. THE OPEN BOOK (ACTIVATED ON CLICK)
+         ======================================================================== -->
+    <main class="storybook-stage is-hidden" id="openBookStage" role="main" aria-label="Sneha Jha Interactive Illustrated Portfolio Book">
+      
+      <!-- Hardcover Vellum Outer Shell with Gold Foil Tooling -->
+      <div class="leather-hardcover-shell">
+        
+        <!-- Realistic Stacked Paper Thickness Layer -->
+        <div class="stacked-pages-block">
+          
+          <!-- Open Two-Page Spread Frame -->
+          <div class="open-pages-spread" id="bookSpreadContainer">
+            
+            <!-- Central Spine Binding Crease Gutter -->
+            <div class="spine-gutter" aria-hidden="true"></div>
+
+            <!-- ==================================================================
+                 INTEGRATED TOP HEADER & NAVIGATION MENU
+                 ================================================================== -->
+            <header class="book-integrated-header" role="banner">
+              <!-- Author Calligraphy Script -->
+              <div class="header-brand-title">Sneha Jha</div>
+
+              <!-- Integrated Top Navigation (Active Maroon Brushstroke on Current Chapter) -->
+              <nav class="book-nav-menu" id="topNavMenu" aria-label="Storybook chapter navigation">
+                <button class="book-nav-link active" type="button" data-chapter="index" aria-current="page">Index</button>
+                <button class="book-nav-link" type="button" data-chapter="home">About</button>
+                <button class="book-nav-link" type="button" data-chapter="journey">Journey</button>
+                <button class="book-nav-link" type="button" data-chapter="education">Education</button>
+                <button class="book-nav-link" type="button" data-chapter="experience">Experience</button>
+                <button class="book-nav-link" type="button" data-chapter="projects">Projects</button>
+                <button class="book-nav-link" type="button" data-chapter="skills">Skills</button>
+                <button class="book-nav-link" type="button" data-chapter="publications">Publications</button>
+                <button class="book-nav-link" type="button" data-chapter="contact">Contact</button>
+              </nav>
+
+              <!-- Header Tools: Return to Index, Close Book & Theme Toggle -->
+              <div class="header-right-tools">
+                <button class="return-to-index-tool-btn" id="returnIndexBtn" type="button" title="Return to Table of Contents">
+                  Index
+                </button>
+                <button class="close-book-tool-btn" id="closeBookBtn" type="button" title="Return to closed journal cover">
+                  Cover
+                </button>
+                <button class="theme-tool-btn" id="themeToggleBtn" type="button" title="Switch Day/Evening reading mode" aria-label="Toggle theme">
+                  ☼ Day
+                </button>
+              </div>
+            </header>
+
+            <!-- ==================================================================
+                 CHAPTER 00: DEDICATED TABLE OF CONTENTS / INDEX SPREAD
+                 "What would you like to discover about me?"
+                 ================================================================== -->
+            <section class="chapter-content-spread active-spread" id="spread-index" aria-labelledby="indexMainHeading">
+              
+              <!-- LEFT PAGE OF INDEX: Chapters 01 - 04 -->
+              <article class="book-page book-page-left">
+                <div class="index-header-block">
+                  <span class="chapter-ribbon-tag">Table of Contents</span>
+                  <h1 class="index-discover-question" id="indexMainHeading">What would you like to discover about me?</h1>
+                  <p class="index-discover-subtitle">Select a chapter below to explore my engineering journey, AI research, and projects.</p>
+                </div>
+
+                <!-- Chapter Cards 01-04 -->
+                <div class="index-chapters-column">
+                  
+                  <!-- Chapter 01 Card -->
+                  <button class="index-chapter-card" type="button" data-chapter="home" aria-label="Go to Chapter 1: About Me">
+                    <span class="index-card-badge">01</span>
+                    <span class="index-card-motif" aria-hidden="true">🍃</span>
+                    <div class="index-card-body">
+                      <div class="index-card-title">About Me</div>
+                      <div class="index-card-subtitle">Python Developer & AI/ML Engineer · Profile, core pillars & philosophy</div>
+                    </div>
+                    <span class="index-card-page-ref">p. 01 →</span>
+                  </button>
+
+                  <!-- Chapter 02 Card -->
+                  <button class="index-chapter-card" type="button" data-chapter="journey" aria-label="Go to Chapter 2: My Journey">
+                    <span class="index-card-badge">02</span>
+                    <span class="index-card-motif" aria-hidden="true">📍</span>
+                    <div class="index-card-body">
+                      <div class="index-card-title">My Journey</div>
+                      <div class="index-card-subtitle">New Delhi upbringing & schooling, Bihar roots, and systems evolution</div>
+                    </div>
+                    <span class="index-card-page-ref">p. 03 →</span>
+                  </button>
+
+                  <!-- Chapter 03 Card -->
+                  <button class="index-chapter-card" type="button" data-chapter="education" aria-label="Go to Chapter 3: Education & Research">
+                    <span class="index-card-badge">03</span>
+                    <span class="index-card-motif" aria-hidden="true">🎓</span>
+                    <div class="index-card-body">
+                      <div class="index-card-title">Education & Research</div>
+                      <div class="index-card-subtitle">CSVTU Bhilai Honours in Data Science & IIIT Naya Raipur research</div>
+                    </div>
+                    <span class="index-card-page-ref">p. 05 →</span>
+                  </button>
+
+                  <!-- Chapter 04 Card -->
+                  <button class="index-chapter-card" type="button" data-chapter="experience" aria-label="Go to Chapter 4: Experience">
+                    <span class="index-card-badge">04</span>
+                    <span class="index-card-motif" aria-hidden="true">💼</span>
+                    <div class="index-card-body">
+                      <div class="index-card-title">Experience</div>
+                      <div class="index-card-subtitle">Survatra sole backend developer, Blazetrail fintech & The Idea Company</div>
+                    </div>
+                    <span class="index-card-page-ref">p. 07 →</span>
+                  </button>
+
+                </div>
+
+                <div class="page-number-flourish page-num-left" style="margin-top: auto;">
+                  <span>Index I</span>
+                </div>
+              </article>
+
+              <!-- RIGHT PAGE OF INDEX: Chapters 05 - 08 -->
+              <article class="book-page book-page-right">
+                
+                <div class="index-right-intro-box">
+                  <p class="index-intro-quote">
+                    “Code, Culture, and Creation — An illustrated chronicle of an AI/ML Engineer.”
+                  </p>
+                </div>
+
+                <!-- Chapter Cards 05-08 -->
+                <div class="index-chapters-column">
+                  
+                  <!-- Chapter 05 Card -->
+                  <button class="index-chapter-card" type="button" data-chapter="projects" aria-label="Go to Chapter 5: Technical Projects">
+                    <span class="index-card-badge">05</span>
+                    <span class="index-card-motif" aria-hidden="true">💻</span>
+                    <div class="index-card-body">
+                      <div class="index-card-title">Technical Projects</div>
+                      <div class="index-card-subtitle">Multimodal RAG, Hotel Q&A, Multi-Agent Systems, Audio ML & Factsheets</div>
+                    </div>
+                    <span class="index-card-page-ref">p. 07 →</span>
+                  </button>
+
+                  <!-- Chapter 06 Card -->
+                  <button class="index-chapter-card" type="button" data-chapter="skills" aria-label="Go to Chapter 6: Skills">
+                    <span class="index-card-badge">06</span>
+                    <span class="index-card-motif" aria-hidden="true">⚙️</span>
+                    <div class="index-card-body">
+                      <div class="index-card-title">Skills & Toolchains</div>
+                      <div class="index-card-subtitle">Languages, AI/LLMs, Vector Databases, Backend Engineering & Cloud</div>
+                    </div>
+                    <span class="index-card-page-ref">p. 09 →</span>
+                  </button>
+
+                  <!-- Chapter 07 Card -->
+                  <button class="index-chapter-card" type="button" data-chapter="publications" aria-label="Go to Chapter 7: Publications">
+                    <span class="index-card-badge">07</span>
+                    <span class="index-card-motif" aria-hidden="true">📖</span>
+                    <div class="index-card-body">
+                      <div class="index-card-title">Publications</div>
+                      <div class="index-card-subtitle">IEEE ICCCNT & IEEE TENSYMP 2024 peer-reviewed research papers</div>
+                    </div>
+                    <span class="index-card-page-ref">p. 11 →</span>
+                  </button>
+
+                  <!-- Chapter 08 Card -->
+                  <button class="index-chapter-card" type="button" data-chapter="contact" aria-label="Go to Chapter 8: Contact">
+                    <span class="index-card-badge">08</span>
+                    <span class="index-card-motif" aria-hidden="true">✉️</span>
+                    <div class="index-card-body">
+                      <div class="index-card-title">Contact & Résumé</div>
+                      <div class="index-card-subtitle">Direct email, LinkedIn, GitHub & downloadable official résumé (PDF)</div>
+                    </div>
+                    <span class="index-card-page-ref">p. 13 →</span>
+                  </button>
+
+                </div>
+
+                <div class="page-number-flourish page-num-right" style="margin-top: auto;">
+                  <span>Index II</span>
+                </div>
+              </article>
+
+            </section>
+
+            <!-- ==================================================================
+                 CHAPTER 01: ABOUT ME SPREAD
+                 ================================================================== -->
+            <section class="chapter-content-spread" id="spread-home" aria-labelledby="chapterHomeHeading">
+              <article class="book-page book-page-left">
+                <span class="chapter-ribbon-tag">Chapter 1</span>
+                <h1 class="projects-main-title" id="chapterHomeHeading">About Me</h1>
+                <p class="projects-subtitle-text" style="margin-bottom: 20px;">Python Developer · AI/ML Engineer · Generative AI</p>
+                
+                <p class="project-item-desc" style="font-size: 1.05rem; line-height: 1.62; margin-bottom: 16px;">
+                  I architect intelligent, production-grade systems at the intersection of Python engineering, machine learning research, and resilient backend architecture. Open to full-time Software Engineering and AI/ML roles as an immediate joiner.
+                </p>
+
+                <div class="illuminated-info-card">
+                  <h2 class="project-item-title" style="font-size: 1.25rem; margin-bottom: 6px;">Core Engineering Pillars</h2>
+                  <p class="project-item-desc" style="margin-bottom: 8px;">
+                    • <strong>Production RAG:</strong> 4-pass document parsing running stably on 1.9GB EC2 memory.<br>
+                    • <strong>Deep Learning:</strong> 94% accuracy in acoustic COPD classification with DenseNet & 1D CNNs.<br>
+                    • <strong>Data Pipelines:</strong> Automated scrapers for 45+ funds with Playwright, GraphQL, & Redis.
+                  </p>
+                </div>
+
+                <div class="project-tech-pills" style="margin-top: 10px;">
+                  <span class="tech-pill">Multimodal RAG</span>
+                  <span class="tech-pill">FastAPI & Django</span>
+                  <span class="tech-pill">FAISS & ChromaDB</span>
+                  <span class="tech-pill">PostgreSQL & AWS</span>
+                </div>
+
+                <div class="page-number-flourish page-num-left" style="margin-top: auto;">
+                  <span>01</span>
+                </div>
+              </article>
+
+              <article class="book-page book-page-right">
+                <div class="institution-real-artwork" style="aspect-ratio: 1.5; margin-bottom: 18px;">
+                  <img src="assets/new-delhi-childhood-light.webp" alt="New Delhi watercolor landscape">
+                </div>
+
+                <div class="illuminated-info-card" style="text-align: center; margin-bottom: 16px;">
+                  <p style="font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 1.3rem; color: #5e1f2b; margin: 0 0 6px 0;">
+                    “Where mathematical rigor meets the poetry of code and culture.”
+                  </p>
+                  <p style="font-size: 0.92rem; color: #796873; margin: 0;">Sneha Jha · New Delhi, India</p>
+                </div>
+
+                <div class="illuminated-info-card">
+                  <h3 class="project-item-title" style="font-size: 1.2rem; margin-bottom: 6px;">Key Qualifications</h3>
+                  <p class="project-item-desc" style="margin-bottom: 0;">
+                    • B.Tech Honours in Data Science, CSVTU Bhilai (2021–2025)<br>
+                    • 2x Published IEEE Researcher in Pulmonary Acoustics (2024)<br>
+                    • Immediate Joiner for Software Engineering & AI/ML
+                  </p>
+                </div>
+
+                <div class="page-number-flourish page-num-right" style="margin-top: auto;">
+                  <span>02</span>
+                </div>
+              </article>
+            </section>
+
+            <!-- ==================================================================
+                 CHAPTER 02: JOURNEY SPREAD (ACTUAL NEW DELHI SCHOOL & BIHAR ROOTS)
+                 ================================================================== -->
+            <section class="chapter-content-spread" id="spread-journey" aria-labelledby="chapterJourneyHeading">
+              <article class="book-page book-page-left">
+                <span class="chapter-ribbon-tag">Chapter 2</span>
+                <h1 class="projects-main-title" id="chapterJourneyHeading">My Journey</h1>
+                <p class="projects-subtitle-text" style="margin-bottom: 22px;">Geographic milestones framing personal and intellectual development.</p>
+
+                <!-- Actual Schooling: New Delhi -->
+                <div class="actual-institution-card">
+                  <div class="institution-real-artwork">
+                    <img src="assets/new-delhi-childhood-light.webp" alt="Actual picture painting of New Delhi schooling avenues and India Gate">
+                  </div>
+                  <div>
+                    <h2 class="project-item-title">New Delhi — Upbringing & Schooling</h2>
+                    <p class="project-item-desc">
+                      Born, raised, and schooled in New Delhi. The iconic tree-lined avenues, India Gate, and the vibrant intellectual culture of the capital shaped early formative years, fostering deep curiosity in mathematical logic and computing.
+                    </p>
+                  </div>
+                </div>
+
+                <!-- Bihar Ancestral Roots -->
+                <div class="actual-institution-card">
+                  <div class="institution-real-artwork">
+                    <img src="assets/bihar-roots-light.webp" alt="Actual picture painting of Bihar ancestral roots with Madhubani folk art motifs">
+                  </div>
+                  <div>
+                    <h3 class="project-item-title">Bihar — Ancestral Heritage</h3>
+                    <p class="project-item-desc">
+                      Family roots trace to Bihar, marking ancestral heritage and Mithila cultural traditions. While not born or raised there, this heritage inspires the artistic visual identity of this portfolio.
+                    </p>
+                  </div>
+                </div>
+
+                <div class="page-number-flourish page-num-left" style="margin-top: auto;">
+                  <span>03</span>
+                </div>
+              </article>
+
+              <article class="book-page book-page-right">
+                <span class="chapter-ribbon-tag">Industry Growth</span>
+                <h2 class="projects-main-title" style="font-size: 2.8rem;">Evolution in AI</h2>
+                <p class="projects-subtitle-text" style="margin-bottom: 22px;">Bridging mathematical theory with production technology systems.</p>
+
+                <!-- Bhilai & Raipur Crucible -->
+                <div class="actual-institution-card">
+                  <div class="institution-real-artwork">
+                    <img src="assets/bhilai-campus-light.webp" alt="Actual picture painting of CSVTU Bhilai academic campus">
+                  </div>
+                  <div>
+                    <h3 class="project-item-title">Bhilai & Raipur — The Research Arc</h3>
+                    <p class="project-item-desc">
+                      Undergraduate study at CSVTU Bhilai honed algorithmic foundations, while the fellowship at IIIT Naya Raipur cultivated rigorous scientific experimentation in pulmonary deep learning.
+                    </p>
+                  </div>
+                </div>
+
+                <!-- Delhi Return -->
+                <div class="actual-institution-card">
+                  <div class="institution-real-artwork">
+                    <img src="assets/delhi-twilight-light.webp" alt="Actual picture painting of Delhi twilight skyline transitioning to digital data networks">
+                  </div>
+                  <div>
+                    <h3 class="project-item-title">Delhi Return — Production AI Systems</h3>
+                    <p class="project-item-desc">
+                      Returned to Delhi to build production-grade Python microservices, multimodal RAG pipelines at Survatra, and fintech intelligence at Blazetrail.
+                    </p>
+                  </div>
+                </div>
+
+                <div class="page-number-flourish page-num-right" style="margin-top: auto;">
+                  <span>04</span>
+                </div>
+              </article>
+            </section>
+
+            <!-- ==================================================================
+                 CHAPTER 03: EDUCATION SPREAD (ACTUAL COLLEGE & RESEARCH PICTURES)
+                 ================================================================== -->
+            <section class="chapter-content-spread" id="spread-education" aria-labelledby="chapterEducationHeading">
+              <article class="book-page book-page-left">
+                <span class="chapter-ribbon-tag">Chapter 3</span>
+                <h1 class="projects-main-title" id="chapterEducationHeading">Education</h1>
+                <p class="projects-subtitle-text" style="margin-bottom: 22px;">Honours degree study and foundational mathematical data science.</p>
+                
+                <!-- Actual College: CSVTU Bhilai -->
+                <div class="actual-institution-card">
+                  <div class="institution-real-artwork">
+                    <img src="assets/bhilai-campus-light.webp" alt="Actual picture painting of Chhattisgarh Swami Vivekanand Technical University (CSVTU) Bhilai campus">
+                  </div>
+                  <div>
+                    <h2 class="project-item-title">CSVTU, Bhilai</h2>
+                    <p class="card-kicker-meta">B.Tech Honours in Data Science · 2021–2025</p>
+                    <p class="project-item-desc">
+                      Rigorous 4-year undergraduate curriculum specializing in mathematical probability, data structures, algorithmic design, machine learning foundations, and database engineering.
+                    </p>
+                    <div class="project-tech-pills">
+                      <span class="tech-pill">Data Science</span>
+                      <span class="tech-pill">CSVTU Bhilai</span>
+                      <span class="tech-pill">Honours</span>
+                      <span class="tech-pill">Algorithms</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Core Academic Highlights -->
+                <div class="illuminated-info-card">
+                  <h3 class="project-item-title" style="font-size: 1.25rem; margin-bottom: 6px;">Curriculum & Methodological Mastery</h3>
+                  <p class="project-item-desc" style="margin-bottom: 8px;">
+                    Focused coursework across Discrete Mathematics, Linear Algebra, Statistical Hypothesis Testing, Distributed Systems, Relational & Vector Databases, and Deep Neural Networks.
+                  </p>
+                </div>
+
+                <div class="page-number-flourish page-num-left" style="margin-top: auto;">
+                  <span>05</span>
+                </div>
+              </article>
+
+              <article class="book-page book-page-right">
+                <span class="chapter-ribbon-tag">Research Institute</span>
+                <h2 class="projects-main-title" style="font-size: 2.8rem;">Research</h2>
+                <p class="projects-subtitle-text" style="margin-bottom: 22px;">Acoustic signal processing and deep convolutional neural networks.</p>
+
+                <!-- Actual Research Institute: IIIT Naya Raipur -->
+                <div class="actual-institution-card">
+                  <div class="institution-real-artwork">
+                    <img src="assets/raipur-research-light.webp" alt="Actual picture painting of IIIT Naya Raipur academic research laboratory and campus">
+                  </div>
+                  <div>
+                    <h3 class="project-item-title">IIIT Naya Raipur</h3>
+                    <p class="card-kicker-meta">Summer Research Intern, Data Science · Mar–Jun 2024</p>
+                    <p class="project-item-desc">
+                      Researched respiratory acoustic classification under institutional faculty mentorship. Architected a custom DenseNet combining 3 CNN models alongside 1D CNNs using Adam and RMSprop optimizers.
+                    </p>
+                    <div class="project-tech-pills">
+                      <span class="tech-pill">IIIT Naya Raipur</span>
+                      <span class="tech-pill">DenseNet</span>
+                      <span class="tech-pill">1D CNN</span>
+                      <span class="tech-pill">IEEE 2024</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Publication Highlights Card -->
+                <div class="illuminated-info-card">
+                  <h4 class="project-item-title" style="font-size: 1.25rem; margin-bottom: 6px;">94% Accuracy & 2 IEEE Publications</h4>
+                  <p class="project-item-desc" style="margin-bottom: 8px;">
+                    Achieved <strong>94% training accuracy</strong> with Adam optimizer in detecting COPD from pulmonary recordings. Conducted systematic analysis of 40 papers (2019–2024); published 2 peer-reviewed IEEE papers.
+                  </p>
+                </div>
+
+                <div class="page-number-flourish page-num-right" style="margin-top: auto;">
+                  <span>06</span>
+                </div>
+              </article>
+            </section>
+
+            <!-- ==================================================================
+                 CHAPTER 04: EXPERIENCE SPREAD (STRICT RESUME CHRONOLOGY)
+                 ================================================================== -->
+            <section class="chapter-content-spread" id="spread-experience" aria-labelledby="chapterExpHeading">
+              <article class="book-page book-page-left">
+                <span class="chapter-ribbon-tag">Chapter 4</span>
+                <h1 class="projects-main-title" id="chapterExpHeading">Experience</h1>
+                <p class="projects-subtitle-text" style="margin-bottom: 20px;">Production backend engineering, fintech development & AI systems.</p>
+                
+                <!-- Blazetrail Fintech Solutions -->
+                <div class="illuminated-info-card" style="margin-bottom: 16px;">
+                  <h2 class="project-item-title" style="font-size: 1.35rem; margin-bottom: 2px;">Blazetrail Fintech Solutions</h2>
+                  <p class="card-kicker-meta">Frontend & Backend Developer (Internship) · Jul–Oct 2026 · New Delhi, India (Remote)</p>
+                  <p class="project-item-desc" style="margin-bottom: 8px;">
+                    • Built frontend features for Kaalfi, a fintech mutual fund investment app, using Next.js (App Router), TypeScript, Tailwind CSS, and shadcn/ui.<br>
+                    • Developed mutual fund scanning and filtering pages, fund detail tabs, portfolio dashboard components, and OTP-based authentication flows.<br>
+                    • Contributed to Django REST Framework backend: auth APIs, Redis-backed token management, and database extensions on PostgreSQL.<br>
+                    • Built PDF factsheet scrapers for 45+ mutual fund companies using BeautifulSoup, Playwright, and GraphQL direct API calls.
+                  </p>
+                  <div class="project-tech-pills">
+                    <span class="tech-pill">Next.js</span>
+                    <span class="tech-pill">TypeScript</span>
+                    <span class="tech-pill">Tailwind CSS</span>
+                    <span class="tech-pill">Django REST</span>
+                    <span class="tech-pill">PostgreSQL</span>
+                    <span class="tech-pill">Redis</span>
+                    <span class="tech-pill">Playwright</span>
+                    <span class="tech-pill">BeautifulSoup</span>
+                  </div>
+                </div>
+
+                <!-- Survatra -->
+                <div class="illuminated-info-card">
+                  <h2 class="project-item-title" style="font-size: 1.35rem; margin-bottom: 2px;">Survatra · Python Developer</h2>
+                  <p class="card-kicker-meta">New Delhi, India · Sep 2025 – Jun 2026 · Sole Backend Developer</p>
+                  <p class="project-item-desc" style="margin-bottom: 8px;">
+                    • Architected and built a multimodal RAG platform using Python/FastAPI, PostgreSQL, and AWS S3, integrating LLM APIs with vector-based semantic retrieval using FAISS and ChromaDB.<br>
+                    • Built document ingestion pipelines for PDFs, CSVs, and scanned files, including a 4-pass extraction workflow that ran stably on a 1.9GB RAM CPU-only EC2 server.<br>
+                    • Implemented PHI/PII masking before LLM calls, replacing sequential multi-pass regex with a single combined alternation regex for faster processing.<br>
+                    • Implemented PHI data governance with a three-level admin approval system, immutable audit trails, and auto-revoking access windows.<br>
+                    • Built multi-project isolation with scoped API keys, per-project chat history, OTP brute-force protection, and HTTP 429 rate limiting.
+                  </p>
+                  <div class="project-tech-pills">
+                    <span class="tech-pill">FastAPI</span>
+                    <span class="tech-pill">PostgreSQL</span>
+                    <span class="tech-pill">AWS S3/EC2</span>
+                    <span class="tech-pill">FAISS</span>
+                    <span class="tech-pill">ChromaDB</span>
+                    <span class="tech-pill">LLM APIs</span>
+                  </div>
+                </div>
+
+                <div class="page-number-flourish page-num-left" style="margin-top: auto;">
+                  <span>07</span>
+                </div>
+              </article>
+
+              <article class="book-page book-page-right">
+                <!-- The Idea Company -->
+                <div class="illuminated-info-card" style="margin-top: 6px; margin-bottom: 16px;">
+                  <h2 class="project-item-title" style="font-size: 1.35rem; margin-bottom: 2px;">The Idea Company</h2>
+                  <p class="card-kicker-meta">AI Developer · Mar–Jun 2025 · Remote</p>
+                  <p class="project-item-desc" style="margin-bottom: 8px;">
+                    • Built an NLP-powered chatbot using LangChain, LLM APIs, and structured knowledge bases to guide startup founders through legal, financial, and operational workflows.
+                  </p>
+                  <div class="project-tech-pills">
+                    <span class="tech-pill">Python</span>
+                    <span class="tech-pill">LangChain</span>
+                    <span class="tech-pill">LLM APIs</span>
+                    <span class="tech-pill">NLP</span>
+                  </div>
+                </div>
+
+                <!-- IIIT Naya Raipur (Research Experience Cross-Ref) -->
+                <div class="illuminated-info-card" style="margin-bottom: 16px;">
+                  <h3 class="project-item-title" style="font-size: 1.3rem; margin-bottom: 2px;">IIIT Naya Raipur</h3>
+                  <p class="card-kicker-meta">Summer Research Intern, Data Science · Mar–Jun 2024 · Raipur, India</p>
+                  <p class="project-item-desc" style="margin-bottom: 8px;">
+                    • Developed a DenseNet architecture combining three CNN models, and 1D CNN models using Adam and RMSprop, for COPD detection from pulmonary audio (94% training accuracy with Adam).<br>
+                    • Conducted comparative analysis across 40 papers (2019–2024) and published two peer-reviewed IEEE papers: 15th ICCCNT and IEEE TENSYMP 2024.
+                  </p>
+                  <div class="project-tech-pills">
+                    <span class="tech-pill">DenseNet</span>
+                    <span class="tech-pill">1D CNN</span>
+                    <span class="tech-pill">Audio ML</span>
+                    <span class="tech-pill">IEEE Xplore</span>
+                  </div>
+                </div>
+
+                <!-- Early Career Foundations -->
+                <div class="illuminated-info-card">
+                  <h3 class="project-item-title" style="font-size: 1.2rem; margin-bottom: 2px;">Early-Career Industry Rotations</h3>
+                  <p class="project-item-desc" style="margin-bottom: 6px;">
+                    <strong>Hex N Bit</strong> (Aug–Sep 2023) · AI & ML Developer: Developed AI/ML prototypes during an early-career industry rotation.<br>
+                    <strong>Gauravgo Technologies</strong> (Sep 2023) · Web Developer Intern: Gained exposure to web hosting, deployment pipelines, and full-stack web fundamentals.
+                  </p>
+                  <div class="project-tech-pills">
+                    <span class="tech-pill">AI/ML Prototypes</span>
+                    <span class="tech-pill">Web Hosting</span>
+                    <span class="tech-pill">Deployment</span>
+                  </div>
+                </div>
+
+                <div class="page-number-flourish page-num-right" style="margin-top: auto;">
+                  <span>08</span>
+                </div>
+              </article>
+            </section>
+
+            <!-- ==================================================================
+                 CHAPTER 05: PROJECTS SPREAD (MATCHING USER REFERENCE DESIGN)
+                 ================================================================== -->
+            <section class="chapter-content-spread" id="spread-projects" aria-labelledby="chapterProjectsHeading">
+              
+              <!-- LEFT PAGE: Chapter Header, Lakeside Ghat Landscape, Multimodal RAG & Hotel RAG -->
+              <article class="book-page book-page-left">
+                
+                <!-- Chapter 5 Header & Top-Right Lakeside Ghat Landscape -->
+                <div class="projects-header-block">
+                  <div class="projects-header-text">
+                    <span class="chapter-ribbon-tag">Chapter 5</span>
+                    <h1 class="projects-main-title" id="chapterProjectsHeading">Projects</h1>
+                    <p class="projects-subtitle-text">Hands-on solutions in RAG, LLMs, multi-agent systems, and machine learning.</p>
+                  </div>
+                  <div class="lakeside-ghat-landscape">
+                    <img src="assets/storybook/landscape_ghat.jpg" alt="Watercolor landscape of Indian lakeside pavilion with reflection">
+                  </div>
+                </div>
+
+                <!-- Projects Entries on Left Page -->
+                <div class="projects-entries-list">
+                  
+                  <!-- Project 1: Multimodal RAG Platform -->
+                  <article class="project-item-row">
+                    <div class="project-item-thumb">
+                      <img src="assets/storybook/multimodal_rag.jpg" alt="Watercolor of desk with laptop showing AI graph and open books">
+                    </div>
+                    <div class="project-item-details">
+                      <h2 class="project-item-title">Multimodal RAG Platform</h2>
+                      <p class="project-item-desc">
+                        Survatra production platform: document ingestion, PHI/PII single-alternation masking, FAISS/ChromaDB retrieval, and LLM query routing on FastAPI, PostgreSQL, and AWS EC2.
+                      </p>
+                      <div class="project-tech-pills">
+                        <span class="tech-pill">Python</span>
+                        <span class="tech-pill">FastAPI</span>
+                        <span class="tech-pill">PostgreSQL</span>
+                        <span class="tech-pill">AWS S3</span>
+                        <span class="tech-pill">FAISS</span>
+                        <span class="tech-pill">ChromaDB</span>
+                      </div>
+                    </div>
+                  </article>
+
+                  <!-- Project 2: Hotel Booking RAG Q&A -->
+                  <article class="project-item-row">
+                    <div class="project-item-thumb">
+                      <img src="assets/storybook/hotel_rag.jpg" alt="Watercolor of heritage Indian hotel with bougainvillea, bell, and laptop">
+                    </div>
+                    <div class="project-item-details">
+                      <h2 class="project-item-title">Hotel Booking RAG Q&A</h2>
+                      <p class="project-item-desc">
+                        FAISS + Sentence Transformers semantic search engine with a Flask REST API for natural-language hospitality querying and booking retrieval.
+                      </p>
+                      <div class="project-tech-pills">
+                        <span class="tech-pill">Python</span>
+                        <span class="tech-pill">Flask</span>
+                        <span class="tech-pill">FAISS</span>
+                        <span class="tech-pill">Sentence Transformers</span>
+                      </div>
+                    </div>
+                  </article>
+
+                  <!-- Project 3: Mutual Fund Factsheet Explorer -->
+                  <article class="project-item-row">
+                    <div class="project-item-thumb">
+                      <img src="assets/storybook/factsheet_explorer.jpg" alt="Watercolor of laptop with financial chart, gold coins, and mutual fund books">
+                    </div>
+                    <div class="project-item-details">
+                      <h2 class="project-item-title">Mutual Fund Factsheet Explorer</h2>
+                      <p class="project-item-desc">
+                        Blazetrail production pipeline: Automated scraping and structured factsheet data extraction for 45+ mutual fund houses via Playwright, BeautifulSoup, and GraphQL.
+                      </p>
+                      <div class="project-tech-pills">
+                        <span class="tech-pill">Python</span>
+                        <span class="tech-pill">Django REST</span>
+                        <span class="tech-pill">PostgreSQL</span>
+                        <span class="tech-pill">Playwright</span>
+                        <span class="tech-pill">GraphQL</span>
+                      </div>
+                    </div>
+                  </article>
+
+                  <!-- Project 4: Stock Price Prediction -->
+                  <article class="project-item-row">
+                    <div class="project-item-thumb">
+                      <img src="assets/delhi-fintech-light.webp" alt="Watercolor of financial algorithmic charting and stock analytics">
+                    </div>
+                    <div class="project-item-details">
+                      <h2 class="project-item-title">Stock Price Prediction</h2>
+                      <p class="project-item-desc">
+                        Hybrid text sentiment + quantitative machine learning models (0.99 accuracy) featuring interactive Streamlit, Flask API, and Grafana monitoring dashboards.
+                      </p>
+                      <div class="project-tech-pills">
+                        <span class="tech-pill">Python</span>
+                        <span class="tech-pill">scikit-learn</span>
+                        <span class="tech-pill">Streamlit</span>
+                        <span class="tech-pill">Flask</span>
+                        <span class="tech-pill">Grafana</span>
+                      </div>
+                    </div>
+                  </article>
+
+                </div>
+
+                <!-- Bottom Left Page Number (Matches Reference Image: 07) -->
+                <div class="page-number-flourish page-num-left" style="margin-top: auto;">
+                  <span>07</span>
+                </div>
+              </article>
+
+              <!-- RIGHT PAGE: Multi-Agent System, Pulmonary Audio, AI Avatar Pipeline, Startup Chatbot -->
+              <article class="book-page book-page-right">
+                
+                <!-- Projects Entries on Right Page -->
+                <div class="projects-entries-list">
+                  
+                  <!-- Project 5: Multi-Agent System -->
+                  <article class="project-item-row">
+                    <div class="project-item-thumb">
+                      <img src="assets/storybook/multi_agent.jpg" alt="Watercolor of friendly robot at wooden desk with workflow diagrams">
+                    </div>
+                    <div class="project-item-details">
+                      <h2 class="project-item-title">Multi-Agent System</h2>
+                      <p class="project-item-desc">
+                        Coordinated Python multi-agent system with a Gradio interface routing user requests by content type and intent to specialized task execution agents.
+                      </p>
+                      <div class="project-tech-pills">
+                        <span class="tech-pill">Python</span>
+                        <span class="tech-pill">Gradio</span>
+                        <span class="tech-pill">LangChain</span>
+                        <span class="tech-pill">LLMs</span>
+                      </div>
+                    </div>
+                  </article>
+
+                  <!-- Project 6: Pulmonary Audio Classification -->
+                  <article class="project-item-row">
+                    <div class="project-item-thumb">
+                      <img src="assets/storybook/pulmonary_audio.jpg" alt="Watercolor of anatomical lungs with microphone and laptop audio spectrogram">
+                    </div>
+                    <div class="project-item-details">
+                      <h2 class="project-item-title">Pulmonary Audio Classification</h2>
+                      <p class="project-item-desc">
+                        IIIT Naya Raipur research: COPD detection from acoustic signals using DenseNet and 1D CNNs with Adam and RMSprop (94% training accuracy; 2 IEEE papers).
+                      </p>
+                      <div class="project-tech-pills">
+                        <span class="tech-pill">Python</span>
+                        <span class="tech-pill">TensorFlow/Keras</span>
+                        <span class="tech-pill">DenseNet</span>
+                        <span class="tech-pill">1D CNN</span>
+                        <span class="tech-pill">Librosa</span>
+                      </div>
+                    </div>
+                  </article>
+
+                  <!-- Project 7: AI Avatar Conversation Pipeline -->
+                  <article class="project-item-row">
+                    <div class="project-item-thumb">
+                      <img src="assets/multimodal-ai-light.webp" alt="Watercolor of AI conversational avatar and speech wave processing">
+                    </div>
+                    <div class="project-item-details">
+                      <h2 class="project-item-title">AI Avatar Conversation Pipeline</h2>
+                      <p class="project-item-desc">
+                        Real-time multimodal pipeline connecting Gemini 2.0 Flash reasoning, edge-tts neural voice generation, and Wav2Lip lip-synced video rendering.
+                      </p>
+                      <div class="project-tech-pills">
+                        <span class="tech-pill">Gemini 2.0 Flash</span>
+                        <span class="tech-pill">edge-tts</span>
+                        <span class="tech-pill">Wav2Lip</span>
+                        <span class="tech-pill">Python</span>
+                      </div>
+                    </div>
+                  </article>
+
+                  <!-- Project 8: Startup Founder Guidance Chatbot -->
+                  <article class="project-item-row">
+                    <div class="project-item-thumb">
+                      <img src="assets/delhi-twilight-light.webp" alt="Watercolor of architectural study representing startup guidance">
+                    </div>
+                    <div class="project-item-details">
+                      <h2 class="project-item-title">Startup Founder Guidance Chatbot</h2>
+                      <p class="project-item-desc">
+                        The Idea Company: Conversational advisor using LangChain, LLM APIs, and curated knowledge bases to navigate legal, financial, and operational startup workflows.
+                      </p>
+                      <div class="project-tech-pills">
+                        <span class="tech-pill">LangChain</span>
+                        <span class="tech-pill">LLM APIs</span>
+                        <span class="tech-pill">NLP</span>
+                        <span class="tech-pill">Python</span>
+                      </div>
+                    </div>
+                  </article>
+
+                </div>
+
+                <!-- Bottom Right Stone Bridge Watercolor Landscape -->
+                <div class="bridge-landscape-bottom">
+                  <img src="assets/storybook/landscape_bridge.jpg" alt="Watercolor of serene arched stone bridge over river">
+                </div>
+
+                <!-- Bottom Right Page Number (Matches Reference Image: 08) -->
+                <div class="page-number-flourish page-num-right">
+                  <span>08</span>
+                </div>
+              </article>
+
+            </section>
+
+            <!-- ==================================================================
+                 CHAPTER 06: SKILLS SPREAD (STRICT RESUME INVENTORY)
+                 ================================================================== -->
+            <section class="chapter-content-spread" id="spread-skills" aria-labelledby="chapterSkillsHeading">
+              <article class="book-page book-page-left">
+                <span class="chapter-ribbon-tag">Chapter 6</span>
+                <h1 class="projects-main-title" id="chapterSkillsHeading">Skills</h1>
+                <p class="projects-subtitle-text" style="margin-bottom: 20px;">Technical competencies, frameworks & verified toolchains.</p>
+
+                <!-- Languages -->
+                <div class="illuminated-info-card" style="margin-bottom: 14px;">
+                  <h2 class="project-item-title" style="font-size: 1.25rem;">Languages</h2>
+                  <div class="project-tech-pills" style="margin-top: 8px;">
+                    <span class="tech-pill">Python</span>
+                    <span class="tech-pill">TypeScript</span>
+                    <span class="tech-pill">JavaScript</span>
+                    <span class="tech-pill">SQL</span>
+                    <span class="tech-pill">HTML/CSS</span>
+                  </div>
+                </div>
+
+                <!-- AI / LLM -->
+                <div class="illuminated-info-card" style="margin-bottom: 14px;">
+                  <h2 class="project-item-title" style="font-size: 1.25rem;">AI / LLM & Generative Systems</h2>
+                  <div class="project-tech-pills" style="margin-top: 8px;">
+                    <span class="tech-pill">LangChain</span>
+                    <span class="tech-pill">RAG pipelines</span>
+                    <span class="tech-pill">FAISS</span>
+                    <span class="tech-pill">ChromaDB</span>
+                    <span class="tech-pill">LLM APIs (Anthropic, Gemini, OpenAI-compatible)</span>
+                    <span class="tech-pill">Qwen (Ollama)</span>
+                    <span class="tech-pill">Prompt Engineering</span>
+                    <span class="tech-pill">NLP</span>
+                  </div>
+                </div>
+
+                <!-- ML / DL -->
+                <div class="illuminated-info-card">
+                  <h2 class="project-item-title" style="font-size: 1.25rem;">Machine Learning & Deep Learning</h2>
+                  <div class="project-tech-pills" style="margin-top: 8px;">
+                    <span class="tech-pill">TensorFlow</span>
+                    <span class="tech-pill">Keras</span>
+                    <span class="tech-pill">1D CNN</span>
+                    <span class="tech-pill">DenseNet</span>
+                    <span class="tech-pill">Librosa</span>
+                    <span class="tech-pill">scikit-learn</span>
+                    <span class="tech-pill">Random Forest</span>
+                  </div>
+                </div>
+
+                <div class="page-number-flourish page-num-left" style="margin-top: auto;">
+                  <span>09</span>
+                </div>
+              </article>
+
+              <article class="book-page book-page-right">
+                <!-- Backend & APIs -->
+                <div class="illuminated-info-card" style="margin-top: 6px; margin-bottom: 14px;">
+                  <h2 class="project-item-title" style="font-size: 1.25rem;">Backend & APIs</h2>
+                  <div class="project-tech-pills" style="margin-top: 8px;">
+                    <span class="tech-pill">FastAPI</span>
+                    <span class="tech-pill">Django REST Framework</span>
+                    <span class="tech-pill">Flask</span>
+                    <span class="tech-pill">REST APIs</span>
+                    <span class="tech-pill">Pydantic</span>
+                    <span class="tech-pill">Redis</span>
+                  </div>
+                </div>
+
+                <!-- Frontend, Databases & Cloud -->
+                <div class="illuminated-info-card" style="margin-bottom: 14px;">
+                  <h2 class="project-item-title" style="font-size: 1.25rem;">Frontend, Databases & Cloud</h2>
+                  <div class="project-tech-pills" style="margin-top: 8px;">
+                    <span class="tech-pill">Next.js (App Router)</span>
+                    <span class="tech-pill">React (basics)</span>
+                    <span class="tech-pill">Tailwind CSS</span>
+                    <span class="tech-pill">shadcn/ui</span>
+                    <span class="tech-pill">PostgreSQL</span>
+                    <span class="tech-pill">AWS S3</span>
+                    <span class="tech-pill">AWS EC2</span>
+                    <span class="tech-pill">Docker (basic)</span>
+                  </div>
+                </div>
+
+                <!-- Tools & Certifications -->
+                <div class="illuminated-info-card">
+                  <h2 class="project-item-title" style="font-size: 1.25rem;">Tools & Certifications</h2>
+                  <div class="project-tech-pills" style="margin-top: 8px;">
+                    <span class="tech-pill">Git / GitHub</span>
+                    <span class="tech-pill">Postman</span>
+                    <span class="tech-pill">Jira</span>
+                    <span class="tech-pill">Streamlit</span>
+                    <span class="tech-pill">Gradio</span>
+                    <span class="tech-pill">Playwright</span>
+                    <span class="tech-pill">BeautifulSoup</span>
+                  </div>
+                  <p class="project-item-desc" style="font-size: 0.88rem; margin-top: 8px; color: var(--muted);">
+                    <strong>Certifications:</strong> Build Website With AI · Getting Started with ReactJS Components · Mobile App Development (Android) · High Performance Scientific Computing · Management Information System
+                  </p>
+                </div>
+
+                <div class="page-number-flourish page-num-right" style="margin-top: auto;">
+                  <span>10</span>
+                </div>
+              </article>
+            </section>
+
+            <!-- ==================================================================
+                 CHAPTER 07: PUBLICATIONS SPREAD
+                 ================================================================== -->
+            <section class="chapter-content-spread" id="spread-publications" aria-labelledby="chapterPubsHeading">
+              <article class="book-page book-page-left">
+                <span class="chapter-ribbon-tag">Chapter 7</span>
+                <h1 class="projects-main-title" id="chapterPubsHeading">Publications</h1>
+                <p class="projects-subtitle-text" style="margin-bottom: 22px;">Peer-reviewed scientific contributions in pulmonary deep learning.</p>
+                
+                <div class="illuminated-info-card">
+                  <span class="chapter-ribbon-tag" style="font-size: 0.85rem;">15th ICCCNT, IEEE Xplore, 2024</span>
+                  <h2 class="project-item-title" style="font-size: 1.35rem; margin-top: 8px; margin-bottom: 8px;">
+                    “Optimized 1D CNNs for Enhanced Early Detection and Accurate Prediction of COPD and Other Pulmonary Diseases”
+                  </h2>
+                  <p class="project-item-desc">
+                    Presents an optimized 1D convolutional neural network applied directly to digitized respiratory audio signals. Demonstrates that custom kernel sizes effectively capture acoustic crackles and wheezes, outperforming conventional baselines with 94% training accuracy.
+                  </p>
+                  <div class="project-tech-pills">
+                    <span class="tech-pill">IEEE Xplore</span>
+                    <span class="tech-pill">1D CNN</span>
+                    <span class="tech-pill">Acoustic Signal Processing</span>
+                  </div>
+                </div>
+
+                <div class="page-number-flourish page-num-left" style="margin-top: auto;">
+                  <span>11</span>
+                </div>
+              </article>
+
+              <article class="book-page book-page-right">
+                <div class="illuminated-info-card" style="margin-top: 10px;">
+                  <span class="chapter-ribbon-tag" style="font-size: 0.85rem;">IEEE TENSYMP, 2024</span>
+                  <h2 class="project-item-title" style="font-size: 1.35rem; margin-top: 8px; margin-bottom: 8px;">
+                    “Enhanced Predictive Modeling Techniques for Early Detection of COPD Utilizing 1D Convolutional Neural Networks”
+                  </h2>
+                  <p class="project-item-desc">
+                    Investigates comparative optimizer dynamics (Adam vs. RMSprop) combined with DenseNet feature concatenation across 40 contemporary benchmark studies (2019–2024). Establishes a lightweight diagnostic framework suitable for clinical edge devices.
+                  </p>
+                  <div class="project-tech-pills">
+                    <span class="tech-pill">IEEE TENSYMP</span>
+                    <span class="tech-pill">DenseNet</span>
+                    <span class="tech-pill">Adam & RMSprop</span>
+                  </div>
+                </div>
+
+                <div class="page-number-flourish page-num-right" style="margin-top: auto;">
+                  <span>12</span>
+                </div>
+              </article>
+            </section>
+
+            <!-- ==================================================================
+                 CHAPTER 08: CONTACT SPREAD
+                 ================================================================== -->
+            <section class="chapter-content-spread" id="spread-contact" aria-labelledby="chapterContactHeading">
+              <article class="book-page book-page-left">
+                <span class="chapter-ribbon-tag">Chapter 8</span>
+                <h1 class="projects-main-title" id="chapterContactHeading">Contact</h1>
+                <p class="projects-subtitle-text" style="margin-bottom: 24px;">Open to full-time engineering roles · Immediate joiner.</p>
+                
+                <div class="illuminated-info-card">
+                  <p style="font-size: 1.05rem; color: #40343a; margin-bottom: 12px;">
+                    ✉️ <strong>Email:</strong> <a href="mailto:jhasneha344@gmail.com" style="color: #681f30; font-weight: 600;">jhasneha344@gmail.com</a>
+                  </p>
+                  <p style="font-size: 1.05rem; color: #40343a; margin-bottom: 12px;">
+                    📞 <strong>Phone:</strong> <a href="tel:+919818391361" style="color: #681f30; font-weight: 600;">+91 9818391361</a>
+                  </p>
+                  <p style="font-size: 1.05rem; color: #40343a; margin-bottom: 12px;">
+                    🔗 <strong>LinkedIn:</strong> <a href="https://linkedin.com/in/sneha-jha-808796261" target="_blank" rel="noopener" style="color: #681f30; font-weight: 600;">linkedin.com/in/sneha-jha-808796261</a>
+                  </p>
+                  <p style="font-size: 1.05rem; color: #40343a; margin-bottom: 20px;">
+                    🐙 <strong>GitHub:</strong> <a href="https://github.com/Sneha100802" target="_blank" rel="noopener" style="color: #681f30; font-weight: 600;">github.com/Sneha100802</a>
+                  </p>
+                  
+                  <a class="tech-pill" style="display: inline-block; padding: 10px 22px; background: #681f30; color: #ffffff; font-size: 0.95rem; font-weight: 700;" href="Sneha_Jha_Resume.pdf" download>
+                    Download Official Résumé (PDF) ↓
+                  </a>
+                </div>
+
+                <div class="page-number-flourish page-num-left" style="margin-top: auto;">
+                  <span>13</span>
+                </div>
+              </article>
+
+              <article class="book-page book-page-right">
+                <div class="institution-real-artwork" style="aspect-ratio: 1.5; margin-bottom: 18px;">
+                  <img src="assets/delhi-twilight-light.webp" alt="Delhi twilight watercolor">
+                </div>
+                
+                <div class="illuminated-info-card" style="text-align: center;">
+                  <h2 class="project-item-title" style="font-size: 1.55rem; margin-bottom: 4px;">Sneha Jha</h2>
+                  <p style="font-size: 0.94rem; color: #796873; margin-bottom: 8px;">New Delhi, India</p>
+                  <p style="font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 1.15rem; color: #5e1f2b; margin: 0;">
+                    “Handcrafted with semantic HTML5, CSS3 3D transforms, and custom Web Audio synthesis.”
+                  </p>
+                </div>
+
+                <div class="page-number-flourish page-num-right" style="margin-top: auto;">
+                  <span>14</span>
+                </div>
+              </article>
+            </section>
+
+            <!-- ==================================================================
+                 FLOATING CENTRAL SPINE PAGINATION CONTROLS
+                 ================================================================== -->
+            <div class="floating-spine-pagination" aria-label="Book page navigation">
+              <button class="pagination-arrow-btn" id="prevSpreadBtn" type="button" aria-label="Previous page">‹</button>
+              <div class="pagination-dots">
+                <span class="pag-dot active" data-chapter="index" title="Table of Contents"></span>
+                <span class="pag-dot" data-chapter="home" title="01 About Me"></span>
+                <span class="pag-dot" data-chapter="journey" title="02 My Journey"></span>
+                <span class="pag-dot" data-chapter="education" title="03 Education"></span>
+                <span class="pag-dot" data-chapter="experience" title="04 Experience"></span>
+                <span class="pag-dot" data-chapter="projects" title="05 Projects"></span>
+                <span class="pag-dot" data-chapter="skills" title="06 Skills"></span>
+                <span class="pag-dot" data-chapter="publications" title="07 Publications"></span>
+                <span class="pag-dot" data-chapter="contact" title="08 Contact"></span>
+              </div>
+              <button class="pagination-arrow-btn" id="nextSpreadBtn" type="button" aria-label="Next page">›</button>
+            </div>
+
+          </div>
         </div>
       </div>
+    </main>
 
-      <div class="exp-item">
-        <div class="exp-date">Mar 2024<br>Jun 2024</div>
-        <div>
-          <div class="exp-role">Research Intern — Data Science</div>
-          <div class="exp-org">IIIT Naya Raipur · Raipur, India</div>
-          <ul class="exp-bul">
-            <li>Developed DenseNet + 1D CNN models for COPD detection achieving 94% training accuracy with Adam optimizer.</li>
-            <li>Published two peer-reviewed papers at IEEE ICCCNT & TENSYMP 2024 conferences.</li>
-          </ul>
-        </div>
-      </div>
-
-      <div class="exp-item">
-        <div class="exp-date">Aug–Sep 2023</div>
-        <div>
-          <div class="exp-role">AI & ML Developer</div>
-          <div class="exp-org">Hex N Bit</div>
-          <ul class="exp-bul">
-            <li>Developed AI/ML prototypes and contributed to applied machine learning projects during early-career rotation.</li>
-          </ul>
-        </div>
-      </div>
-
-    </div>
   </div>
-</div>
-
-<!-- PUBLICATIONS -->
-<section id="publications">
-  <div class="pub-wrap">
-    <div class="section-eyebrow">Research</div>
-    <h2 class="section-heading">IEEE <em>Publications</em></h2>
-    <div class="pub-cards">
-      <div class="pub-card">
-        <div class="pub-year">2024</div>
-        <div>
-          <div class="pub-title">"Optimized 1D CNNs for Enhanced Early Detection and Accurate Prediction of COPD and Other Pulmonary Diseases"</div>
-          <div class="pub-venue">15th International Conference on Computing, Communication and Networking Technologies (ICCCNT) — IEEE Xplore</div>
-          <span class="pub-badge">IEEE Xplore · Peer Reviewed</span>
-        </div>
-      </div>
-      <div class="pub-card">
-        <div class="pub-year">2024</div>
-        <div>
-          <div class="pub-title">"Enhanced Predictive Modeling Techniques for Early Detection of COPD Utilizing 1D Convolutional Neural Networks"</div>
-          <div class="pub-venue">IEEE Region 10 Symposium (TENSYMP) — IEEE Xplore</div>
-          <span class="pub-badge">IEEE Xplore · Peer Reviewed</span>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- CONTACT -->
-<div class="contact-wrap" id="contact">
-  <div class="contact-bg-art">
-    <svg width="100%" height="100%" viewBox="0 0 800 500" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
-      <g fill="none" stroke="white" stroke-width="1">
-        <circle cx="400" cy="250" r="200"/><circle cx="400" cy="250" r="160"/><circle cx="400" cy="250" r="120"/>
-        <line x1="400" y1="50" x2="400" y2="450"/><line x1="200" y1="250" x2="600" y2="250"/>
-        <line x1="259" y1="109" x2="541" y2="391"/><line x1="541" y1="109" x2="259" y2="391"/>
-      </g>
-    </svg>
-  </div>
-  <div class="contact-inner">
-    <div class="contact-tag">Let's Connect</div>
-    <div class="contact-heading">Let's build<br><em>together</em></div>
-    <p class="contact-sub">Actively looking for backend, AI/ML, and Generative AI roles. Immediate joiner. Open to remote and hybrid opportunities across India.</p>
-    <div class="contact-btns">
-      <a href="mailto:jhasneha344@gmail.com" class="btn-contact btn-email">✉ jhasneha344@gmail.com</a>
-      <a href="https://www.linkedin.com/in/sneha-jha-808796261/" class="btn-contact btn-ln" target="_blank">in LinkedIn</a>
-      <a href="https://github.com/Sneha100802" class="btn-contact btn-gh" target="_blank">⌥ GitHub</a>
-    </div>
-  </div>
-</div>
-
-<!-- FOOTER -->
-<footer>
-  <span class="footer-text">New Delhi, India · Inspired by Madhubani folk art of Bihar · 2025</span>
-  <span class="footer-brand">Sneha Jha</span>
-</footer>
-
-<script>
-// Smooth scroll
-document.querySelectorAll('a[href^="#"]').forEach(a=>{
-  a.addEventListener('click',e=>{
-    const t=document.querySelector(a.getAttribute('href'));
-    if(t){e.preventDefault();t.scrollIntoView({behavior:'smooth',block:'start'})}
-  })
-});
-
-// Subtle scroll reveal
-const obs=new IntersectionObserver(entries=>{
-  entries.forEach(e=>{if(e.isIntersecting){e.target.style.opacity='1';e.target.style.transform='translateY(0)'}})
-},{threshold:0.1});
-document.querySelectorAll('.proj,.stat,.skill-card,.pub-card,.exp-item').forEach(el=>{
-  el.style.opacity='0';el.style.transform='translateY(20px)';
-  el.style.transition='opacity 0.5s ease,transform 0.5s ease';
-  obs.observe(el);
-});
-</script>
 </body>
 </html>

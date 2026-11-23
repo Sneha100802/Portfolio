@@ -1,0 +1,97 @@
+:root {
+  --sky-top: #cfe8f5;
+  --sky-bottom: #fde7d6;
+  --ink: #1d2b3a;
+  --muted: #4d6073;
+  --accent: #d9774f;
+  --card: rgba(255, 255, 255, 0.72);
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --sky-top: #151a33;
+    --sky-bottom: #3a2c4a;
+    --ink: #f3ece4;
+    --muted: #b9b2c6;
+    --accent: #f2a98b;
+    --card: rgba(30, 28, 52, 0.7);
+    color-scheme: dark;
+  }
+}
+
+* { box-sizing: border-box; }
+
+html, body, #root { height: 100%; }
+
+body {
+  margin: 0;
+  font-family: 'Inter', system-ui, sans-serif;
+  color: var(--ink);
+  background: linear-gradient(180deg, var(--sky-top), var(--sky-bottom)) fixed;
+}
+
+/* 3D canvas sits behind everything */
+.scene-wrap { position: fixed; inset: 0; z-index: 0; }
+
+/* Text overlay on top of the scene; clicks pass through except on links */
+.overlay { position: relative; z-index: 1; pointer-events: none; }
+.overlay a { pointer-events: auto; }
+
+.hero {
+  min-height: 100vh;
+  max-width: 34rem;
+  padding: 0 6vw;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.eyebrow {
+  margin: 0 0 0.5rem;
+  font-size: 0.85rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.hero h1 {
+  margin: 0;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: clamp(2.6rem, 6vw, 4.5rem);
+  line-height: 1.05;
+}
+
+.hero h2 {
+  margin: 0.5rem 0 1rem;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.summary { margin: 0 0 1.5rem; line-height: 1.6; color: var(--muted); }
+
+.links { display: flex; gap: 1rem; flex-wrap: wrap; }
+.links a {
+  padding: 0.5rem 1rem;
+  border-radius: 999px;
+  background: var(--card);
+  color: var(--ink);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+.links a:hover { color: var(--accent); }
+
+/* Non-3D fallback */
+.fallback { max-width: 44rem; margin: 0 auto; padding: 0 1rem 4rem; }
+.fallback .hero { min-height: auto; padding: 4rem 0 2rem; }
+.job {
+  margin-bottom: 1rem;
+  padding: 1rem 1.25rem;
+  border-radius: 1rem;
+  background: var(--card);
+}
+.job h3 { margin: 0; font-size: 1.05rem; }
+.job .meta { margin: 0.25rem 0 0.75rem; color: var(--muted); font-size: 0.9rem; }
+.job ul { margin: 0; padding-left: 1.1rem; line-height: 1.55; }

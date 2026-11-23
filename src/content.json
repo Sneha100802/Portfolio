@@ -1,0 +1,177 @@
+{
+  "meta": {
+    "name": "Sneha Jha",
+    "title": "Python Developer · AI/ML Engineer · Generative AI",
+    "location": "New Delhi, India",
+    "siteTitle": "Sneha Jha | AI/ML Engineer & Python Developer",
+    "photo": "TODO"
+  },
+  "summary": "Python developer and AI/ML engineer with IEEE-published research and hands-on experience building production-grade RAG pipelines, LLM integrations, and FastAPI backends across FastAPI, LangChain, FAISS, ChromaDB, PostgreSQL, and AWS.",
+  "links": [
+    { "label": "Email", "url": "mailto:jhasneha344@gmail.com" },
+    { "label": "LinkedIn", "url": "https://linkedin.com/in/sneha-jha-808796261" },
+    { "label": "GitHub", "url": "https://github.com/Sneha100802" }
+  ],
+  "experience": [
+    {
+      "id": "blazetrail",
+      "role": "Frontend & Backend Developer (Internship)",
+      "company": "Blazetrail Fintech Solutions",
+      "location": "New Delhi, India (Remote)",
+      "start": "Jul 2026",
+      "end": "Oct 2026",
+      "stack": ["Next.js", "TypeScript", "Tailwind CSS", "shadcn/ui", "Django REST Framework", "Redis", "PostgreSQL", "BeautifulSoup", "Playwright", "GraphQL"],
+      "bullets": [
+        "Built frontend features for Kaalfi, a fintech mutual fund investment app, using Next.js (App Router), TypeScript, Tailwind CSS, and shadcn/ui.",
+        "Developed mutual fund scanning and filtering pages, fund detail tabs, portfolio dashboard components, and OTP-based authentication flows.",
+        "Contributed to Django REST Framework backend: auth APIs, Redis-backed token management, and database extensions on PostgreSQL.",
+        "Built PDF factsheet scrapers for 45+ mutual fund companies using BeautifulSoup, Playwright, and GraphQL direct API calls."
+      ]
+    },
+    {
+      "id": "survatra",
+      "role": "Python Developer",
+      "company": "Survatra",
+      "location": "New Delhi, India",
+      "start": "Sep 2025",
+      "end": "Jun 2026",
+      "stack": ["Python", "FastAPI", "PostgreSQL", "AWS S3", "AWS EC2", "FAISS", "ChromaDB", "LLM APIs"],
+      "bullets": [
+        "Sole backend developer. Architected and built a multimodal RAG platform using Python/FastAPI, PostgreSQL, and AWS S3, integrating LLM APIs with vector-based semantic retrieval using FAISS and ChromaDB.",
+        "Built document ingestion pipelines for PDFs, CSVs, and scanned files, including a 4-pass extraction workflow that ran stably on a 1.9GB RAM CPU-only EC2 server.",
+        "Implemented PHI/PII masking before LLM calls, replacing sequential multi-pass regex with a single combined alternation regex for faster processing.",
+        "Implemented PHI data governance with a three-level admin approval system, immutable audit trails, and auto-revoking access windows.",
+        "Built multi-project isolation with scoped API keys, per-project chat history, OTP brute-force protection, and HTTP 429 rate limiting."
+      ]
+    },
+    {
+      "id": "idea-company",
+      "role": "AI Developer",
+      "company": "The Idea Company",
+      "location": "Remote",
+      "start": "Mar 2025",
+      "end": "Jun 2025",
+      "stack": ["LangChain", "LLM APIs", "NLP"],
+      "bullets": [
+        "Built an NLP-powered chatbot using LangChain, LLM APIs, and structured knowledge bases to guide startup founders through legal, financial, and operational workflows."
+      ]
+    },
+    {
+      "id": "iiit-nr",
+      "role": "Summer Research Intern, Data Science",
+      "company": "IIIT Naya Raipur",
+      "location": "Raipur, India",
+      "start": "Mar 2024",
+      "end": "Jun 2024",
+      "stack": ["TensorFlow", "Keras", "DenseNet", "1D CNN", "Librosa"],
+      "bullets": [
+        "Developed a DenseNet architecture combining three CNN models, and 1D CNN models using Adam and RMSprop, for COPD detection from pulmonary audio (94% training accuracy with Adam).",
+        "Conducted comparative analysis across 40 papers (2019–2024) and published two peer-reviewed IEEE papers: 15th ICCCNT and IEEE TENSYMP 2024."
+      ]
+    },
+    {
+      "id": "hexnbit",
+      "role": "AI & ML Developer",
+      "company": "Hex N Bit",
+      "location": "TODO",
+      "start": "Aug 2023",
+      "end": "Sep 2023",
+      "stack": [],
+      "bullets": [
+        "Developed AI/ML prototypes during an early-career industry rotation."
+      ]
+    },
+    {
+      "id": "gauravgo",
+      "role": "Web Developer Intern",
+      "company": "Gauravgo Technologies",
+      "location": "TODO",
+      "start": "Sep 2023",
+      "end": "Sep 2023",
+      "stack": [],
+      "bullets": [
+        "Gained exposure to web hosting, deployment pipelines, and full-stack web fundamentals."
+      ]
+    }
+  ],
+  "projects": [
+    {
+      "id": "survatra-rag",
+      "name": "Multimodal RAG Platform (Survatra)",
+      "tag": "Production",
+      "description": "Document ingestion, PHI/PII masking, FAISS/ChromaDB retrieval, and LLM query routing on FastAPI, PostgreSQL, and AWS.",
+      "stack": ["FastAPI", "PostgreSQL", "AWS", "FAISS", "ChromaDB"],
+      "url": "TODO"
+    },
+    {
+      "id": "hotel-rag",
+      "name": "Hotel Booking RAG Q&A",
+      "tag": "",
+      "description": "FAISS + Sentence Transformers semantic search with a Flask API for natural-language querying.",
+      "stack": ["FAISS", "Sentence Transformers", "Flask"],
+      "url": "TODO"
+    },
+    {
+      "id": "multi-agent",
+      "name": "Multi-Agent System",
+      "tag": "",
+      "description": "Python agents with a Gradio interface routing inputs by content type and intent.",
+      "stack": ["Python", "Gradio"],
+      "url": "TODO"
+    },
+    {
+      "id": "stock-prediction",
+      "name": "Stock Price Prediction",
+      "tag": "",
+      "description": "Hybrid text + ML models (0.99 accuracy) with Streamlit, Flask, and Grafana dashboards.",
+      "stack": ["Streamlit", "Flask", "Grafana"],
+      "url": "TODO"
+    },
+    {
+      "id": "ai-avatar",
+      "name": "AI Avatar Conversation Pipeline",
+      "tag": "",
+      "description": "Gemini 2.0 Flash, edge-tts, and Wav2Lip for text-to-speech-to-video output.",
+      "stack": ["Gemini 2.0 Flash", "edge-tts", "Wav2Lip"],
+      "url": "TODO"
+    }
+  ],
+  "skills": [
+    { "group": "Languages", "items": ["Python", "TypeScript", "JavaScript", "SQL", "HTML/CSS"] },
+    { "group": "AI / LLM", "items": ["LangChain", "RAG pipelines", "FAISS", "ChromaDB", "LLM APIs (Anthropic, Gemini, OpenAI-compatible)", "Qwen (Ollama)", "Prompt Engineering", "NLP"] },
+    { "group": "ML / DL", "items": ["TensorFlow", "Keras", "1D CNN", "DenseNet", "Librosa", "scikit-learn", "Random Forest"] },
+    { "group": "Backend & APIs", "items": ["FastAPI", "Django REST Framework", "Flask", "REST APIs", "Pydantic", "Redis"] },
+    { "group": "Frontend", "items": ["Next.js (App Router)", "React (basics)", "Tailwind CSS", "shadcn/ui"] },
+    { "group": "Databases & Cloud", "items": ["PostgreSQL", "AWS S3", "AWS EC2", "Docker (basic)"] },
+    { "group": "Tools", "items": ["Git", "GitHub", "Postman", "Jira", "Streamlit", "Gradio", "Playwright", "BeautifulSoup"] }
+  ],
+  "education": [
+    {
+      "degree": "B.Tech Honours in Data Science",
+      "school": "Chhattisgarh Swami Vivekanand Technical University",
+      "start": "2021",
+      "end": "2025"
+    }
+  ],
+  "publications": [
+    {
+      "title": "Optimized 1D CNNs for Enhanced Early Detection and Accurate Prediction of COPD and Other Pulmonary Diseases",
+      "venue": "15th ICCCNT, IEEE Xplore",
+      "year": "2024",
+      "url": "TODO"
+    },
+    {
+      "title": "Enhanced Predictive Modeling Techniques for Early Detection of COPD Utilizing 1D Convolutional Neural Networks",
+      "venue": "IEEE TENSYMP",
+      "year": "2024",
+      "url": "TODO"
+    }
+  ],
+  "certifications": [
+    "Build Website With AI",
+    "Getting Started with ReactJS Components",
+    "Mobile App Development (Android)",
+    "High Performance Scientific Computing",
+    "Management Information System"
+  ]
+}

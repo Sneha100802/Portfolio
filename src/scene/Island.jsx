@@ -1,18 +1,38 @@
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
+import { Html } from '@react-three/drei';
 
-export default function Island({ position, seed, palette }) {
+export default function Island({ position, seed, palette, label, sub, selected, onSelect }) {
   const floater = useRef();
+  const [hovered, setHovered] = useState(false);
 
-  // Gentle bobbing; each island has its own phase so they never move in sync
+  // Bobbing + smooth scale-up when hovered or selected
   useFrame((state) => {
-    floater.current.position.y = Math.sin(state.clock.elapsedTime * 0.8 + seed * 1.7) * 0.18;
+    const f = floater.current;
+    f.position.y = Math.sin(state.clock.elapsedTime * 0.8 + seed * 1.7) * 0.18;
+    const target = selected ? 1.1 : hovered ? 1.06 : 1;
+    f.scale.setScalar(f.scale.x + (target - f.scale.x) * 0.1);
   });
 
-  const side = seed % 2 === 0 ? 1 : -1; // alternates house/tree sides
+  const side = seed % 2 === 0 ? 1 : -1;
 
   return (
-    <group position={position}>
+    <group
+      position={position}
+      onPointerOver={(e) => {
+        e.stopPropagation();
+        setHovered(true);
+        document.body.style.cursor = 'pointer';
+      }}
+      onPointerOut={() => {
+        setHovered(false);
+        document.body.style.cursor = 'auto';
+      }}
+      onClick={(e) => {
+        e.stopPropagation();
+        onSelect();
+      }}
+    >
       <group ref={floater}>
         {/* grass top */}
         <mesh>
@@ -20,7 +40,7 @@ export default function Island({ position, seed, palette }) {
           <meshStandardMaterial color={palette.grass} flatShading />
         </mesh>
 
-        {/* rock underside (cone flipped to point down) */}
+        {/* rock underside */}
         <mesh position={[0, -0.93, 0]} rotation={[Math.PI, 0, 0]}>
           <coneGeometry args={[1.1, 1.6, 7]} />
           <meshStandardMaterial color={palette.rock} flatShading />
@@ -45,6 +65,20 @@ export default function Island({ position, seed, palette }) {
           <coneGeometry args={[0.28, 0.7, 6]} />
           <meshStandardMaterial color={palette.leaf} flatShading />
         </mesh>
+
+        {/* floating label (real HTML, so it stays crisp and readable) */}
+        <Html center position={[0, 1.7, 0]} zIndexRange={[10, 0]}>
+          <button
+            className={'island-label' + (selected ? ' selected' : '')}
+            onClick={(e) => {
+              e.stopPropagation();
+              onSelect();
+            }}
+          >
+            <strong>{label}</strong>
+            <span>{sub}</span>
+          </button>
+        </Html>
       </group>
     </group>
   );

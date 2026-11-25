@@ -20,6 +20,22 @@
     "replayOpening": "Replay opening",
     "skipOpening": "Skip opening",
     "sound": "Sound",
+    "guidedTour": "Guided tour",
+    "startTour": "Start guided tour",
+    "endTour": "End tour",
+    "finishTour": "Finish tour",
+    "tourPrevious": "Back",
+    "tourNext": "Continue",
+    "quickView": "Quick view",
+    "results": "Selected results",
+    "demoDocument": "Fictional document",
+    "demoPlay": "Play demo",
+    "demoPause": "Pause demo",
+    "demoResume": "Resume demo",
+    "demoReplay": "Replay demo",
+    "demoMatches": "Retrieved passages",
+    "demoCitation": "View cited passage",
+    "demoIntro": "Runs locally with fictional documents and policy excerpts.",
     "letterHotspot": "Read letter",
     "lanternHotspot": "Light the guide",
     "filmProps": {
@@ -47,6 +63,23 @@
     "paper": "Read publication",
     "certificates": "Certifications",
     "back": "Back to the entrance"
+  },
+  "quickResults": [
+    "Built the Survatra backend as the sole backend developer. Four-pass document extraction ran on a CPU-only EC2 instance with 1.9 GB of RAM.",
+    "Built PDF factsheet scrapers for 45+ mutual fund companies at Blazetrail.",
+    "Co-authored two IEEE papers on pulmonary audio and COPD at IIIT Naya Raipur."
+  ],
+  "ragDemo": {
+    "documents": [
+      { "label": "Record access request", "name": "Maya Example", "reference": "DEMO-014", "question": "How do I request a copy of a record?", "paper": "Copy of a record" },
+      { "label": "Temporary access request", "name": "Aarav Example", "reference": "DEMO-026", "question": "When does temporary reviewer access expire?", "paper": "Temporary access" },
+      { "label": "Correction request", "name": "Isha Example", "reference": "DEMO-038", "question": "How do I correct an archived entry?", "paper": "Archived correction" }
+    ],
+    "sources": [
+      { "id": "ACCESS-01", "title": "Record access guide", "keywords": ["record", "copy", "request"], "excerpt": "Use the records request form and select Copy of record. A reviewer confirms access before release.", "answer": "Open the records request form, select Copy of record, and wait for reviewer approval." },
+      { "id": "REVIEW-02", "title": "Reviewer access policy", "keywords": ["temporary", "reviewer", "expire", "access"], "excerpt": "Temporary reviewer access ends when the approved review window closes. Extensions require a new approval.", "answer": "Temporary access expires when the approved review window closes. Request a new approval if more time is needed." },
+      { "id": "ARCHIVE-03", "title": "Archive correction guide", "keywords": ["correct", "archived", "entry", "correction"], "excerpt": "Submit a correction request for the archived entry with a reason for the change. Preserve the original entry in the audit trail.", "answer": "Submit a correction request with the reason for the change. The original entry stays in the audit trail." }
+    ]
   },
   "meta": {
     "name": "Sneha Jha",

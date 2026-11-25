@@ -496,6 +496,65 @@ h1,h2,h3 { font-family: var(--display); font-weight: 400; }
 .room-index-grid ul { margin: 0; padding: 0; list-style: none; }
 .gallery-header .room-index-grid a { display: block; padding-block: 8px; font-size: .86rem; line-height: 1.4; }
 .gallery-header .room-index-grid a[aria-current] { color: var(--brass); }
+.room-index-actions { display: flex; flex-wrap: wrap; gap: 8px; padding-top: 15px; }
+.room-index-actions .theme-toggle { text-decoration: none; }
+.quick-view { padding-top: 21px; }
+.quick-view-role { font: 1.35rem/1.3 var(--display); margin-bottom: 13px; }
+.quick-results, .quick-view-grid { border-top: 1px solid var(--line); padding-top: 12px; }
+.quick-view h3 { color: var(--brass); font: 600 .75rem/1.35 Inter, system-ui, sans-serif; margin-block: 0 8px; }
+.quick-view ul { margin: 0; padding: 0; list-style: none; }
+.quick-results ul { display: grid; gap: 7px; color: var(--dim); font-size: .83rem; line-height: 1.45; padding-bottom: 15px; }
+.quick-view-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px; }
+.quick-view-grid li { padding: 5px 0 8px; }
+.quick-view-grid a { font-size: .85rem; font-weight: 600; text-underline-offset: 3px; }
+.quick-view-grid p { margin-top: 4px; color: var(--dim); font-size: .76rem; line-height: 1.45; }
+.gallery-header .quick-view-links { justify-content: start; gap: 9px 16px; flex-wrap: wrap; margin-top: 12px; padding-top: 14px; border-top: 1px solid var(--line); }
+.gallery-header .quick-view-links a { font-size: .77rem; text-decoration: underline; text-underline-offset: 3px; }
+.guided-tour {
+  position: fixed;
+  left: 50%;
+  bottom: 79px;
+  translate: -50% 0;
+  z-index: 5;
+  display: flex;
+  width: max-content;
+  max-width: calc(100% - 32px);
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px 20px;
+  padding: 9px 11px 9px 14px;
+  background: var(--night);
+  border: 1px solid var(--line);
+  border-radius: 5px;
+}
+.guided-tour-stop { display: grid; gap: 4px; min-width: 0; }
+.guided-tour-stop strong { color: var(--brass); font-size: .68rem; font-weight: 600; }
+.guided-tour-stop > span { font-size: .77rem; line-height: 1.3; }
+.guided-tour-actions { display: flex; flex-wrap: wrap; gap: 5px; }
+.guided-tour-actions a { text-decoration: none; }
+.guided-tour .tour-continue { background: var(--ivory); color: var(--night); border-color: var(--ivory); }
+.gallery[data-guided] .opening-skip { bottom: 146px; }
+.gallery--desktop[data-guided] .exhibit { padding-bottom: 155px; }
+.gallery:not(.gallery--desktop)[data-guided] .room-navigation { margin-bottom: 140px; }
+.room-transit--folio::before { animation: ember-shade var(--room-transition) both; background: #171015; }
+.room-transit--folio::after {
+  width: min(36vw, 220px);
+  aspect-ratio: .72;
+  border-radius: 2px;
+  border: 2px solid #c09867;
+  background:
+    repeating-linear-gradient(0deg, transparent 0 15px, #87644388 16px 17px, transparent 18px 26px) center / 64% 61% no-repeat,
+    linear-gradient(125deg, #e6d7ad, #b9976c);
+  box-shadow: 0 10px 50px #0c080c, 0 0 38px #b1915c62;
+  animation: folio-crossing var(--room-transition) cubic-bezier(.43, 0, .29, 1) both;
+}
+@keyframes folio-crossing {
+  0% { opacity: 0; transform: translate(35vw, 4vh) rotate(24deg) scale(.33); }
+  20% { opacity: 1; }
+  53% { transform: translate(-50%, -50%) rotate(-12deg) scale(1.14); }
+  72% { opacity: .97; }
+  100% { opacity: 0; transform: translate(-56%, 22vh) rotate(7deg) scale(.66); }
+}
 .work-story { margin-top: 17px; }
 .caption .walkthrough h3 {
   font: 600 .72rem/1.4 Inter, system-ui, sans-serif;
@@ -522,6 +581,36 @@ h1,h2,h3 { font-family: var(--display); font-weight: 400; }
 .walkthrough-step { margin-block: 9px 13px; color: var(--dim); font-size: .85rem; line-height: 1.53; }
 .walkthrough-example { border-left: 1px solid var(--brass); margin-top: 8px; padding-left: 10px; }
 .walkthrough-example-label { color: var(--brass); font-size: .72rem; margin-right: 5px; }
+.rag-demo { margin: 11px 0 14px; padding: 10px 0 0; border-top: 1px solid var(--line); }
+.rag-demo-intro { color: var(--dim); font-size: .73rem; line-height: 1.35; margin-bottom: 7px; }
+.rag-demo-toolbar { display: flex; flex-wrap: wrap; align-items: end; gap: 7px 10px; }
+.rag-demo-toolbar label { display: grid; gap: 4px; color: var(--brass); font: 600 .72rem/1.3 Inter, system-ui, sans-serif; }
+.rag-demo-toolbar select {
+  min-height: 32px;
+  max-width: 100%;
+  padding: 5px 7px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  color: var(--ivory);
+  background: var(--night);
+  font: 600 .75rem/1.35 Inter, system-ui, sans-serif;
+}
+.rag-demo-toolbar select:focus-visible { outline: 2px solid var(--brass); outline-offset: 2px; }
+.rag-demo-output {
+  min-height: 2.5em;
+  margin-top: 9px;
+  padding-left: 10px;
+  border-left: 1px solid var(--brass);
+  color: var(--dim);
+  font-size: .82rem;
+  line-height: 1.47;
+}
+.rag-demo-eyebrow, .rag-citation summary { color: var(--brass); font-size: .74rem; }
+.rag-demo-output ol { margin: 3px 0 0; padding-left: 1rem; }
+.rag-demo-output li + li { margin-top: 4px; }
+.rag-demo-output strong { color: var(--ivory); }
+.rag-citation summary { width: fit-content; margin-top: 5px; cursor: pointer; }
+.rag-citation p { margin-top: 5px; }
 .case-study { border-block: 1px solid var(--line); }
 .case-study summary { width: fit-content; padding-block: 10px; color: var(--ivory); cursor: pointer; font-size: .84rem; font-weight: 600; }
 .case-study dl { margin: 1px 0 11px; color: var(--dim); font-size: .84rem; line-height: 1.55; }
@@ -573,4 +662,8 @@ h1,h2,h3 { font-family: var(--display); font-weight: 400; }
   .film-sound { min-width: 34px; }
   .gallery-header .room-index-grid { gap: 18px 15px; }
   .walkthrough-controls button { min-height: 40px; }
+  .quick-view-grid { grid-template-columns: 1fr; gap: 12px; }
+  .guided-tour { max-width: calc(100% - 20px); gap: 6px; bottom: max(10px, env(safe-area-inset-bottom)); }
+  .guided-tour .theme-toggle { min-height: 36px; padding-inline: 6px; }
+  .gallery:not(.gallery--desktop)[data-guided] .room-navigation { margin-bottom: 72px; }
 }

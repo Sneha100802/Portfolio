@@ -1,6 +1,6 @@
 import { useEffect, useMemo } from 'react';
 import { useTexture } from '@react-three/drei';
-import { AdditiveBlending, CanvasTexture, Color, Shape, SRGBColorSpace } from 'three';
+import { AdditiveBlending, CanvasTexture, Color, Path, Shape, SRGBColorSpace } from 'three';
 import { rng } from '../Parts';
 
 function archProfile(width, rise, trim) {
@@ -23,6 +23,25 @@ const archStone = archProfile(2.61, 1.95, 0.32);
 const archBrass = archProfile(2.383, 1.72, 0.019);
 const stoneDepth = { depth: 0.38, bevelEnabled: true, bevelSegments: 2, bevelThickness: 0.043, bevelSize: 0.043, curveSegments: 18 };
 const trimDepth = { depth: 0.018, bevelEnabled: false, curveSegments: 18 };
+const lattice = new Shape();
+lattice.moveTo(-0.43, -1.68);
+lattice.lineTo(0.43, -1.68);
+lattice.lineTo(0.43, 1.68);
+lattice.lineTo(-0.43, 1.68);
+lattice.closePath();
+for (let row = 0; row < 8; row++) {
+  for (const x of [-0.19, 0.19]) {
+    const y = -1.42 + row * 0.407;
+    const hole = new Path();
+    hole.moveTo(x, y - 0.14);
+    hole.quadraticCurveTo(x + 0.04, y - 0.065, x + 0.143, y);
+    hole.quadraticCurveTo(x + 0.04, y + 0.065, x, y + 0.14);
+    hole.quadraticCurveTo(x - 0.04, y + 0.065, x - 0.143, y);
+    hole.quadraticCurveTo(x - 0.04, y - 0.065, x, y - 0.14);
+    lattice.holes.push(hole);
+  }
+}
+const latticeDepth = { depth: 0.1, bevelEnabled: true, bevelSize: 0.014, bevelThickness: 0.014, bevelSegments: 1, curveSegments: 6 };
 
 const wallVertex = /* glsl */ `
   varying vec2 surface;
@@ -131,7 +150,7 @@ function paintedPanel([indigo, gold, motif], light) {
   return texture;
 }
 
-export function GalleryBackdrop({ stage, motes, compact, dim, light, roomColor, set }) {
+export function GalleryBackdrop({ stage, screen, motes, compact, dim, light, roomColor, set }) {
   const vault = useTexture(`${import.meta.env.BASE_URL}gallery-vault.webp`);
   const painted = useMemo(() => paintedPanel(set, light), [set, light]);
   useEffect(() => () => painted.dispose(), [painted]);
@@ -150,8 +169,12 @@ export function GalleryBackdrop({ stage, motes, compact, dim, light, roomColor, 
 
   return <group ref={stage}>
     <mesh position={[0, 2.36, -3.4]}>
-      <planeGeometry args={[11.3, 6.25]} />
+      <planeGeometry args={[14.3, 7.1]} />
       <shaderMaterial uniforms={wallUniforms} vertexShader={wallVertex} fragmentShader={wallFragment} toneMapped={false} />
+    </mesh>
+    <mesh position={[0.68, 0.02, -3.09]} scale={[1.22, 1.08, 0.3]}>
+      <extrudeGeometry args={[archStone, stoneDepth]} />
+      <meshStandardMaterial color={light ? '#947f6a' : '#3e3537'} roughness={0.91} />
     </mesh>
     <group position={[0, compact ? -0.1 : 0, -2.35]} scale={compact ? 0.79 : 1}>
       <mesh position={[0, 1.76, -0.38]}>
@@ -176,6 +199,16 @@ export function GalleryBackdrop({ stage, motes, compact, dim, light, roomColor, 
         <extrudeGeometry args={[archBrass, trimDepth]} />
         <meshStandardMaterial color={light ? '#846143' : '#8b6b3e'} metalness={0.79} roughness={0.39} emissive="#604425" emissiveIntensity={light ? 0.04 : 0.16} />
       </mesh>
+    </group>
+    <group ref={screen} position={[-2.85, 1.36, 1.78]} rotation-y={0.27}>
+      <mesh>
+        <extrudeGeometry args={[lattice, latticeDepth]} />
+        <meshStandardMaterial color={light ? '#ac815d' : '#523939'} roughness={0.8} />
+      </mesh>
+      {[-0.42, 0.42].map(x => <mesh key={x} position={[x, 0, 0.12]}>
+        <boxGeometry args={[0.028, 3.38, 0.055]} />
+        <meshStandardMaterial color={set[1]} metalness={0.42} roughness={0.52} />
+      </mesh>)}
     </group>
     {!compact && <points ref={motes} frustumCulled={false}>
       <bufferGeometry><bufferAttribute attach="attributes-position" args={[positions, 3]} /></bufferGeometry>

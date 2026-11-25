@@ -15,6 +15,8 @@ export const stops = [
   { id: 'contact', chapter: 'contact', kind: 'contact' },
 ];
 
+export const guidedStops = ['projects', 'job-idea-company', 'job-iiit-nr'].map(id => stops.find(stop => stop.id === id));
+
 export function roomSlug(stop) {
   if (stop.id === 'home') return '';
   if (stop.id.startsWith('job-')) return `experience/${stop.data.id}/`;

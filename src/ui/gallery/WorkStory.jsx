@@ -1,9 +1,10 @@
 import { content } from '../../lib/content';
 import { RevealWords } from './RevealWords';
+import { RagDemo } from './RagDemo';
 
 const { gallery } = content;
 
-export function WorkStory({ stop, onStep, active = 0 }) {
+export function WorkStory({ stop, onStep, active = 0, demo }) {
   const { story, bullets } = stop.data;
   if (!story) return null;
   const step = story.steps[active];
@@ -21,10 +22,11 @@ export function WorkStory({ stop, onStep, active = 0 }) {
       </ol>
       <div id={panel} className="walkthrough-step" aria-live="polite" aria-atomic="true">
         <p key={active} data-text-reveal="played"><RevealWords text={step.detail} /></p>
-        {step.sample && <p className="walkthrough-example" key={`sample-${active}`} data-text-reveal="played">
+        {!demo && step.sample && <p className="walkthrough-example" key={`sample-${active}`} data-text-reveal="played">
           <span className="walkthrough-example-label"><RevealWords text={gallery.illustrativeSample} /></span> <RevealWords text={step.sample} />
         </p>}
       </div>
+      {demo && <RagDemo active={active} onStep={onStep} {...demo} />}
     </section>
     <details className="case-study">
       <summary data-text-reveal><RevealWords text={gallery.caseStudy} /></summary>

@@ -52,12 +52,12 @@ function ExhibitSteps({ steps }) {
   </ol>;
 }
 
-function Project({ stop, onStep, activeStep }) {
+function Project({ stop, onStep, activeStep, demo }) {
   const { name, description, tag, stack, url, exhibit } = stop.data;
   return <>
     <Heading id={`${stop.id}-title`} chapter={stop.chapter} title={name} eyebrow={tag} />
     <p className="caption-description" data-text-reveal><RevealWords text={description} /></p>
-    {stop.data.story ? <WorkStory stop={stop} onStep={onStep} active={activeStep} /> : <ExhibitSteps steps={exhibit} />}
+    {stop.data.story ? <WorkStory stop={stop} onStep={onStep} active={activeStep} demo={demo} /> : <ExhibitSteps steps={exhibit} />}
     <Tech items={stack} />
     {url && <a className="text-link" href={url} data-text-reveal><RevealWords text={gallery.website} /><ExternalMark /></a>}
   </>;
@@ -118,7 +118,7 @@ function Replay({ run }) {
   </button> : null;
 }
 
-export function GalleryChapter({ stop, onSkill, onStep, activeStep, onReplay }) {
+export function GalleryChapter({ stop, onSkill, onStep, activeStep, onReplay, demo }) {
   const { kind, id } = stop;
   if (kind === 'hero') return (
     <section className="exhibit gallery-hero" id={id} data-stop={id} tabIndex={-1} aria-labelledby="gallery-title">
@@ -157,7 +157,7 @@ export function GalleryChapter({ stop, onSkill, onStep, activeStep, onReplay }) 
       <div className="gallery-shell">
         <div className="caption">
           {kind === 'job' && <Job stop={stop} onStep={onStep} activeStep={activeStep} />}
-          {stop.chapter === 'projects' && <Project stop={stop} onStep={onStep} activeStep={activeStep} />}
+          {stop.chapter === 'projects' && <Project stop={stop} onStep={onStep} activeStep={activeStep} demo={demo} />}
           {kind === 'skills' && <Skills groups={stop.data} onSkill={onSkill} />}
           {kind === 'research' && <Research papers={stop.data} />}
           {kind === 'education' && <Education schools={stop.data} />}

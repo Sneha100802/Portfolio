@@ -109,7 +109,7 @@ function JobExhibit({ stop, light, tour, opening }) {
   const accent = (light ? grade?.daylightAccent : grade?.accent) ?? brass;
   const icons = iconsFor(data.stack, Infinity);
   return <group>
-    {hasFilmExhibit(stop) ? <FilmExhibit stop={stop} tour={tour} opening={opening} /> : <CompanyExhibit company={data.id} accent={accent} />}
+    {hasFilmExhibit(stop) ? <FilmExhibit stop={stop} tour={tour} opening={opening} light={light} /> : <CompanyExhibit company={data.id} accent={accent} />}
     {icons.map((icon, index) => (
       <group key={icon.title} position={[(index - (icons.length - 1) / 2) * 0.36, 0.23, 0.85]}>
         <Glyph icon={icon} size={0.24} tone={accent} />
@@ -240,12 +240,12 @@ const projectExhibits = {
   'ai-avatar': AvatarVoice,
 };
 
-export function GalleryExhibit({ stop, opticalGlass, tour, light, opening }) {
+export function GalleryExhibit({ stop, opticalGlass, tour, light, opening, documentIndex }) {
   const { kind, data } = stop;
   if (kind === 'hero') return <OpticalInstrument opticalGlass={opticalGlass} />;
   if (kind === 'contact') return <ContactPaths />;
   if (kind === 'job') return <JobExhibit stop={stop} light={light} tour={tour} opening={opening} />;
-  if (hasFilmExhibit(stop)) return <FilmExhibit stop={stop} tour={tour} opening={opening} />;
+  if (hasFilmExhibit(stop)) return <FilmExhibit stop={stop} tour={tour} opening={opening} light={light} documentIndex={documentIndex} />;
   if (kind === 'skills') return <SkillsExhibit groups={data} tour={tour} />;
   if (kind === 'education') return <Folios count={data.length + 3} />;
   if (kind === 'research') return <group>

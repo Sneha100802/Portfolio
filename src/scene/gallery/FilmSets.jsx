@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { Line, RoundedBox } from '@react-three/drei';
-import { CanvasTexture, DoubleSide, MathUtils, SRGBColorSpace } from 'three';
+import { CanvasTexture, DataTexture, DoubleSide, LinearFilter, MathUtils, SRGBColorSpace } from 'three';
 import { content } from '../../lib/content';
+import { documents } from '../../lib/ragDemo';
 
 const brass = '#b88a4f';
 const ink = '#312740';
@@ -78,12 +79,14 @@ function Desk({ wide = false }) {
 
 const { archive, extracted, request: question, guide: playbook } = content.gallery.filmProps;
 const blankLines = [];
+const documentPages = documents.map(({ label, name, reference, paper }) => [label, name, reference, paper]);
+const documentSlips = documents.map(({ paper }) => [paper]);
 function scenePhase(phase, opening, selected, stages, delta) {
   phase.current = opening < 1 ? opening : MathUtils.damp(phase.current, stages[selected ?? 0] ?? 1, 6, delta);
   return phase.current;
 }
 
-function Archive({ tour, opening, project }) {
+function Archive({ tour, opening, project, documentIndex }) {
   const phase = useRef(0);
   const leaf = useRef();
   const bars = useRef();
@@ -106,7 +109,7 @@ function Archive({ tour, opening, project }) {
   return <group>
     <Desk wide />
     <group ref={leaf} position={[x, 1.13, 0.28]} rotation-y={-1.22}>
-      <Paper lines={archive} width={width} />
+      <Paper lines={project ? documentPages[documentIndex] : archive} width={width} />
       <group ref={bars} position={[-width * 0.384, 0, 0.012]} scale-x={0.001}>
         {[0.169, 0.034].map(y => <mesh key={y} position={[width * 0.28, y, 0]}>
           <planeGeometry args={[width * 0.56, 0.075]} />
@@ -116,7 +119,7 @@ function Archive({ tour, opening, project }) {
     </group>
     <Line points={[[x + 0.28, 1.1, 0.38], [-0.21, 1.1, 0.38], [0.54, 1.1, 0.38], [1.51, 1.1, 0.38]]} color={brass} transparent opacity={0.5} lineWidth={1} />
     <group ref={signal} visible={false}>
-      <Paper lines={extracted} width={0.34} height={0.2} />
+      <Paper lines={project ? documentSlips[documentIndex] : extracted} width={0.34} height={0.2} />
     </group>
     {project && <group position={[-0.52, 1.1, 0.18]}>
       <Board size={[0.54, 0.65, 0.085]} at={[0, 0, -0.02]} color={ink} />
@@ -138,13 +141,31 @@ function Archive({ tour, opening, project }) {
   </group>;
 }
 
-function WritingDesk({ tour, opening }) {
+function WritingDesk({ tour, opening, light }) {
   const phase = useRef(0);
   const request = useRef();
   const requestInk = useRef();
   const guide = useRef();
   const lamp = useRef();
   const shade = useRef();
+  const fade = useMemo(() => {
+    const size = 32;
+    const pixels = new Uint8Array(size * size * 4);
+    for (let y = 0; y < size; y++) {
+      for (let x = 0; x < size; x++) {
+        const edge = Math.sin(Math.PI * x / (size - 1));
+        const end = Math.sin(Math.PI * y / (size - 1));
+        const value = Math.round(255 * edge ** 0.6 * end ** 0.45);
+        pixels.fill(value, (y * size + x) * 4, (y * size + x + 1) * 4);
+      }
+    }
+    const map = new DataTexture(pixels, size, size);
+    map.magFilter = LinearFilter;
+    map.minFilter = LinearFilter;
+    map.needsUpdate = true;
+    return map;
+  }, []);
+  useEffect(() => () => fade.dispose(), [fade]);
   useFrame(({ clock }, delta) => {
     const t = scenePhase(phase, opening.current, tour.current.step?.index, [0.49, 0.76, 1], delta);
     request.current.position.y = MathUtils.damp(request.current.position.y, 1.7 - step(0.18, 0.51, t) * 0.47, 7, delta);
@@ -155,17 +176,24 @@ function WritingDesk({ tour, opening }) {
     requestInk.current.opacity = step(0.24, 0.48, t) * inkReveal;
     guide.current.rotation.y = MathUtils.damp(guide.current.rotation.y, -1.42 * (1 - step(0.48, 0.84, t)), 8, delta);
     const flicker = Math.sin(clock.elapsedTime * 4.6) * 0.18 + Math.sin(clock.elapsedTime * 13.2) * 0.12;
-    lamp.current.intensity = MathUtils.damp(lamp.current.intensity, 1.2 + 10 * step(0.38, 0.80, t) + flicker, 7, delta);
-    shade.current.rotation.z = -0.33 + Math.sin(clock.elapsedTime * 1.6) * 0.022;
+    lamp.current.intensity = MathUtils.damp(lamp.current.intensity, (light ? 0.35 : 1.2) + (light ? 2.4 : 10) * step(0.38, 0.80, t) + flicker, 7, delta);
+    shade.current.rotation.z = (light ? 0.32 : -0.33) + Math.sin(clock.elapsedTime * 1.6) * 0.022;
     shade.current.position.x = 0.52 + Math.sin(clock.elapsedTime * 1.3) * 0.055;
   });
   return <group>
     <Desk />
     <Lantern at={[1.24, 1.24, 0.01]} glow={lamp} />
+    {light && <group>
+      <pointLight position={[-2.05, 2.65, 1.8]} color="#ffc78b" intensity={17} distance={8} decay={2} />
+      {[-0.45, 0, 0.45].map((x, index) => <mesh key={x} position={[x - 0.63, 1.83, -0.68 - index * 0.18]} rotation-z={0.66}>
+        <planeGeometry args={[0.28, 3.18]} />
+        <meshBasicMaterial color="#fff1c5" alphaMap={fade} transparent opacity={0.24} depthWrite={false} side={DoubleSide} />
+      </mesh>)}
+    </group>}
     <group ref={shade} position={[0.52, 1.65, -2.38]} rotation-z={-0.33}>
       {[-0.31, 0, 0.31].map(x => <mesh key={x} position-x={x}>
         <planeGeometry args={[0.09, 2.15]} />
-        <meshBasicMaterial color="#1a0e16" transparent opacity={0.22} depthWrite={false} />
+        <meshBasicMaterial color={light ? '#5b4431' : '#1a0e16'} alphaMap={fade} transparent opacity={light ? 0.40 : 0.30} depthWrite={false} />
       </mesh>)}
     </group>
     <group ref={request} position={[-0.72, 1.7, 0.47]} rotation-z={0.11}>
@@ -198,7 +226,7 @@ function AcousticLab({ tour, opening }) {
     diaphragm.current.scale.y = 1 + Math.sin(clock.elapsedTime * 55) * strike * 0.42;
     const travel = step(0.31, 0.96, t);
     pulse.current.position.set(-1.1 + travel * 2.4, 1.14 + Math.sin(travel * 28) * (1 - travel) * 0.15, 0.36 - travel * 0.83);
-    if (tour.current.match && opening.current < 0.29) {
+    if (tour.current.match === 'ember' && opening.current < 0.29) {
       const impact = step(0, 0.29, opening.current);
       pulse.current.position.set(0.64 - 1.75 * impact, 1.86 - 0.72 * impact, 1.25 - 0.89 * impact);
     }
@@ -232,8 +260,8 @@ function AcousticLab({ tour, opening }) {
   </group>;
 }
 
-export function FilmExhibit({ stop, tour, opening }) {
-  if (stop.id === 'job-idea-company') return <WritingDesk tour={tour} opening={opening} />;
+export function FilmExhibit({ stop, tour, opening, light, documentIndex }) {
+  if (stop.id === 'job-idea-company') return <WritingDesk tour={tour} opening={opening} light={light} />;
   if (stop.id === 'job-iiit-nr') return <AcousticLab tour={tour} opening={opening} />;
-  return <Archive tour={tour} opening={opening} project={stop.kind === 'survatra-rag'} />;
+  return <Archive tour={tour} opening={opening} project={stop.kind === 'survatra-rag'} documentIndex={documentIndex} />;
 }

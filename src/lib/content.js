@@ -1,4 +1,4 @@
-import raw from '../content.json';
+import raw from '../content.json' with { type: 'json' };
 
 // Recursively removes any value that is exactly "TODO"
 function clean(value) {

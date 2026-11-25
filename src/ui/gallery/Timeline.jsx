@@ -1,9 +1,10 @@
 import { useRef } from 'react';
 import { content } from '../../lib/content';
+import { roomPath, stops } from '../../lib/gallery';
 
 const { chapters, navigation } = content.gallery;
 
-export function Timeline({ active }) {
+export function Timeline({ active, room }) {
   const links = useRef([]);
 
   function navigate(event, index) {
@@ -13,7 +14,7 @@ export function Timeline({ active }) {
       Home: 0, End: chapters.length - 1,
     };
     if (event.key === 'Escape') {
-      const target = document.getElementById(active);
+      const target = document.getElementById(room);
       target?.focus({ preventScroll: true });
       return;
     }
@@ -21,10 +22,8 @@ export function Timeline({ active }) {
     event.preventDefault();
     const targetIndex = Math.min(chapters.length - 1, Math.max(0, actions[event.key]));
     const link = links.current[targetIndex];
-    const id = chapters[targetIndex].id;
     link?.focus({ preventScroll: true });
-    if (location.hash !== `#${id}`) history.pushState(null, '', `#${id}`);
-    document.getElementById(id)?.scrollIntoView();
+    link?.click();
   }
 
   return (
@@ -33,7 +32,8 @@ export function Timeline({ active }) {
         <li key={id}>
           <a
             ref={(element) => { links.current[index] = element; }}
-            href={`#${id}`}
+            href={roomPath(stops.find(stop => stop.id === id))}
+            data-room={id}
             aria-current={id === active ? 'location' : undefined}
             aria-label={label}
             onKeyDown={(event) => navigate(event, index)}

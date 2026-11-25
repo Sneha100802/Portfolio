@@ -11,6 +11,9 @@
     ],
     "skip": "Skip to content",
     "start": "Enter the gallery",
+    "previousRoom": "Previous room",
+    "nextRoom": "Next room",
+    "roomNavigation": "Room navigation",
     "navigation": "Gallery chapters",
     "primaryNavigation": "Main navigation",
     "profileLinks": "Profile links",
@@ -18,7 +21,7 @@
     "website": "View project",
     "paper": "Read publication",
     "certificates": "Certifications",
-    "back": "Back to top"
+    "back": "Back to the entrance"
   },
   "meta": {
     "name": "Sneha Jha",

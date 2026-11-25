@@ -31,7 +31,7 @@ try {
       return gl.getParameter(debug?.UNMASKED_RENDERER_WEBGL ?? gl.RENDERER);
     });
     for (const id of ['home', 'experience', 'projects', 'skills', 'research', 'education', 'contact']) {
-      await page.evaluate(name => document.getElementById(name).scrollIntoView({ behavior: 'instant' }), id);
+      await page.goto(new URL(id === 'home' ? '' : `${id}/`, url).href);
       await page.locator(`[data-station="${id}"]`).waitFor();
       await page.waitForTimeout(700);
       const sample = await page.evaluate(() => new Promise(resolve => {

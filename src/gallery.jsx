@@ -6,7 +6,7 @@ import '@fontsource/cormorant-garamond/latin-500.css';
 import '@fontsource/cormorant-garamond/latin-500-italic.css';
 import { GalleryChapter } from './chapters/GalleryChapters';
 import { content } from './lib/content';
-import { chapterLabel, stops } from './lib/gallery';
+import { chapterLabel, roomIndex, roomLabel, roomPath, stops } from './lib/gallery';
 import { Timeline } from './ui/gallery/Timeline';
 import './styles/gallery.css';
 
@@ -25,8 +25,11 @@ class SceneBoundary extends Component {
 }
 
 export function App() {
-  const tour = useRef({ position: 0, pointerX: 0, pointerY: 0, skill: null });
-  const [activeIndex, setActiveIndex] = useState(0);
+  const [activeIndex, setActiveIndex] = useState(() => roomIndex(window.location));
+  const tour = useRef({ position: activeIndex, pointerX: 0, pointerY: 0, skill: null, jump: 0, departure: 0 });
+  const timers = useRef([]);
+  const moveFocus = useRef(false);
+  const [transit, setTransit] = useState(false);
   const [mode, setMode] = useState('plain');
   const [graphics, setGraphics] = useState('checking');
   const [ready, setReady] = useState(false);
@@ -34,7 +37,45 @@ export function App() {
   const sceneReady = useCallback(() => { setReady(true); }, []);
   const sceneFailed = useCallback(() => { setFailed(true); }, []);
   const visual = !failed && mode !== 'plain';
-  const active = stops[activeIndex].chapter;
+  const stop = stops[activeIndex];
+  const previous = stops[activeIndex - 1];
+  const next = stops[activeIndex + 1];
+  const entrance = stop.kind === 'hero';
+  const compact = mode === 'compact';
+  const fullScene = visual && (!compact || entrance);
+
+  const showRoom = useCallback((index) => {
+    tour.current.position = index;
+    tour.current.jump += 1;
+    tour.current.departure = 0;
+    tour.current.skill = null;
+    moveFocus.current = true;
+    window.scrollTo({ top: 0, behavior: 'instant' });
+    setActiveIndex(index);
+  }, []);
+
+  function navigate(event) {
+    const link = event.target.closest('a[data-room]');
+    if (!link || event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+    const index = stops.findIndex(item => item.id === link.dataset.room);
+    if (index < 0) return;
+    event.preventDefault();
+    if (index === activeIndex || timers.current.length) return;
+    const arrive = () => {
+      history.pushState(null, '', link.href);
+      showRoom(index);
+    };
+    if (!visual || matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      arrive();
+      return;
+    }
+    tour.current.departure = performance.now();
+    setTransit(true);
+    timers.current = [window.setTimeout(arrive, 590), window.setTimeout(() => {
+      timers.current = [];
+      setTransit(false);
+    }, 1080)];
+  }
 
   useEffect(() => {
     const reduce = matchMedia('(prefers-reduced-motion: reduce)');
@@ -70,56 +111,41 @@ export function App() {
   }, []);
 
   useEffect(() => {
-    const elements = stops.map(({ id }) => document.getElementById(id));
-    let frame = 0;
-    let centers = [];
-    function sample() {
-      frame = 0;
-      const anchor = scrollY + innerHeight * 0.5;
-      let index = 0;
-      while (index < centers.length - 1 && anchor >= centers[index + 1]) index++;
-      const next = centers[index + 1];
-      const between = next === undefined ? 0 : Math.max(0, Math.min(1, (anchor - centers[index]) / (next - centers[index])));
-      tour.current.position = index + between;
-      const nearest = Math.round(tour.current.position);
-      setActiveIndex(nearest);
-    }
-    function resize() {
-      centers = elements.map(element => {
-        const box = element.getBoundingClientRect();
-        return box.top + scrollY + Math.min(box.height, innerHeight) / 2;
-      });
-      sample();
-    }
-    function scroll() {
-      if (!frame) frame = requestAnimationFrame(sample);
-    }
     function pointer(event) {
       if (event.pointerType !== 'mouse') return;
       tour.current.pointerX = event.clientX / innerWidth * 2 - 1;
       tour.current.pointerY = event.clientY / innerHeight * 2 - 1;
     }
-    resize();
-    const observer = new ResizeObserver(resize);
-    elements.forEach(element => observer.observe(element));
-    window.addEventListener('resize', resize);
-    window.addEventListener('scroll', scroll, { passive: true });
     window.addEventListener('pointermove', pointer, { passive: true });
-    return () => {
-      cancelAnimationFrame(frame);
-      observer.disconnect();
-      window.removeEventListener('resize', resize);
-      window.removeEventListener('scroll', scroll);
-      window.removeEventListener('pointermove', pointer);
-    };
+    return () => window.removeEventListener('pointermove', pointer);
   }, []);
 
   useEffect(() => {
-    const id = location.hash.slice(1);
-    if (!stops.some(stop => stop.id === id)) return;
-    const frame = requestAnimationFrame(() => document.getElementById(id)?.scrollIntoView({ behavior: 'instant' }));
-    return () => cancelAnimationFrame(frame);
-  }, [mode, visual]);
+    if (stops.some(item => location.hash === `#${item.id}`)) {
+      history.replaceState(null, '', roomPath(stops[roomIndex(location)]) + location.search);
+    }
+    function clearTransition() {
+      timers.current.forEach(window.clearTimeout);
+      timers.current = [];
+    }
+    function restore() {
+      clearTransition();
+      setTransit(false);
+      showRoom(roomIndex(location));
+    }
+    window.addEventListener('popstate', restore);
+    return () => {
+      clearTransition();
+      window.removeEventListener('popstate', restore);
+    };
+  }, [showRoom]);
+
+  useEffect(() => {
+    document.title = entrance ? meta.siteTitle : `${roomLabel(stop)} | ${meta.name}`;
+    if (!moveFocus.current) return;
+    moveFocus.current = false;
+    document.getElementById(stop.id)?.focus({ preventScroll: true });
+  }, [stop, entrance]);
 
   useEffect(() => {
     if (!('IntersectionObserver' in window)) return;
@@ -132,35 +158,38 @@ export function App() {
     }, { rootMargin: '0px 0px -8% 0px', threshold: 0.28 });
     document.querySelectorAll('[data-text-reveal]').forEach(element => observer.observe(element));
     return () => observer.disconnect();
-  }, []);
+  }, [activeIndex]);
 
   return (
-    <div className={`gallery gallery--${visual ? mode : 'plain'}`} data-scene={visual && ready ? 'ready' : 'fallback'} data-graphics={failed ? 'unavailable' : graphics}>
+    <div className={`gallery gallery--${visual ? mode : 'plain'} ${entrance ? 'gallery--entrance' : 'gallery--room'}`}
+      onClick={navigate} data-transit={transit || undefined} data-scene={fullScene && ready ? 'ready' : 'fallback'} data-graphics={failed ? 'unavailable' : graphics}>
       <a href="#main" className="gallery-skip">{gallery.skip}</a>
       <header className="gallery-header">
         <div className="gallery-shell gallery-masthead">
-          <a href="#home" className="gallery-brand" data-text-reveal>{meta.name}<i aria-hidden="true" /></a>
+          <a href={roomPath(stops[0])} data-room="home" className="gallery-brand" data-text-reveal>{meta.name}<i aria-hidden="true" /></a>
           <nav aria-label={gallery.primaryNavigation}>
-            {['experience', 'projects', 'contact'].map((id, index) => <a href={`#${id}`} key={id} data-text-reveal style={{ '--reveal-order': index }}>{chapterLabel[id]}</a>)}
+            {['experience', 'projects', 'contact'].map((id, index) => <a href={roomPath(stops.find(item => item.id === id))} data-room={id} key={id} data-text-reveal style={{ '--reveal-order': index }}>{chapterLabel[id]}</a>)}
           </nav>
         </div>
       </header>
-      {visual && <div className="gallery-scene" aria-hidden="true">
+      {fullScene && <div className="gallery-scene" aria-hidden="true">
         <SceneBoundary onError={sceneFailed}>
-          <Suspense fallback={null}><Scene tour={tour} compact={mode === 'compact'} onReady={sceneReady} onFailure={sceneFailed} /></Suspense>
+          <Suspense fallback={null}><Scene tour={tour} compact={compact} entrance={entrance} onReady={sceneReady} onFailure={sceneFailed} /></Suspense>
         </SceneBoundary>
       </div>}
-      <Timeline active={active} />
-      <p className="gallery-announcement" aria-live="polite" aria-atomic="true">{chapterLabel[active]}</p>
+      {!entrance && <Timeline active={stop.chapter} room={stop.id} />}
       <main id="main" tabIndex={-1}>
-        {stops.slice(0, -1).map((stop, index) => <GalleryChapter key={stop.id} stop={stop}
-          current={index === activeIndex}
+        <GalleryChapter key={stop.id} stop={stop}
           onSkill={(skill) => { tour.current.skill = skill; }}
-          projectScene={visual && mode === 'compact' && index === activeIndex && stop.chapter === 'projects' ? (
-            <SceneBoundary><Suspense fallback={null}><CompactProjectScene stop={stop} /></Suspense></SceneBoundary>
-          ) : null} />)}
+          roomScene={visual && compact && !entrance ? (
+            <SceneBoundary><Suspense fallback={null}><CompactProjectScene stop={stop} tour={tour} /></Suspense></SceneBoundary>
+          ) : null} />
       </main>
-      <GalleryChapter stop={stops.at(-1)} current={activeIndex === stops.length - 1} />
+      {!entrance && <nav className="gallery-shell room-navigation" aria-label={gallery.roomNavigation}>
+        <a href={roomPath(previous)} data-room={previous.id} aria-label={`${gallery.previousRoom} ${roomLabel(previous)}`} data-text-reveal><span aria-hidden="true">←</span> {roomLabel(previous)}</a>
+        {next && <a href={roomPath(next)} data-room={next.id} aria-label={`${gallery.nextRoom} ${roomLabel(next)}`} data-text-reveal>{roomLabel(next)} <span aria-hidden="true">→</span></a>}
+      </nav>}
+      {transit && <div className="room-transit" aria-hidden="true" />}
     </div>
   );
 }

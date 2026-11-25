@@ -1,5 +1,5 @@
 import { content } from '../lib/content';
-import { chapterLabel, dateSpan } from '../lib/gallery';
+import { chapterLabel, dateSpan, roomPath, stops } from '../lib/gallery';
 import { iconFor } from '../lib/icons';
 
 const { gallery, meta, links, summary } = content;
@@ -47,12 +47,12 @@ function Job({ stop }) {
   </>;
 }
 
-function Project({ stop, projectScene }) {
+function Project({ stop, roomScene }) {
   const { name, description, tag, stack, url, exhibit } = stop.data;
   return <>
     <Heading id={`${stop.id}-title`} chapter={stop.chapter} title={name} eyebrow={tag} />
     <p className="caption-description" data-text-reveal>{description}</p>
-    <div className="project-model" aria-hidden="true" data-project-model={stop.kind}>{projectScene}</div>
+    <div className="project-model" aria-hidden="true" data-project-model={stop.kind}>{roomScene}</div>
     <ol className="project-exhibit-steps">
       {exhibit.map((step, index) => <li key={step} data-text-reveal style={{ '--reveal-order': index }}>{step}</li>)}
     </ol>
@@ -110,7 +110,7 @@ function Education({ schools }) {
   </>;
 }
 
-export function GalleryChapter({ stop, onSkill, projectScene, current }) {
+export function GalleryChapter({ stop, onSkill, roomScene }) {
   const { kind, id } = stop;
   if (kind === 'hero') return (
     <section className="exhibit gallery-hero" id={id} data-stop={id} tabIndex={-1} aria-labelledby="gallery-title">
@@ -120,33 +120,35 @@ export function GalleryChapter({ stop, onSkill, projectScene, current }) {
           <p className="hero-role" data-text-reveal><RevealWords text={meta.title} /></p>
           <p className="hero-summary" data-text-reveal>{summary}</p>
           <ProfileLinks />
-          <a className="entry-link" href="#experience" data-text-reveal>{gallery.start}<span aria-hidden="true">↓</span></a>
+          <a className="entry-link" href={roomPath(stops[1])} data-room="experience" data-text-reveal>{gallery.start}<span aria-hidden="true">↗</span></a>
         </div>
       </div>
     </section>
   );
 
   if (kind === 'contact') return (
-    <footer className="exhibit gallery-contact" id={id} data-stop={id} data-current={current || undefined} tabIndex={-1} aria-labelledby="contact-title">
+    <footer className="exhibit gallery-contact" id={id} data-stop={id} tabIndex={-1} aria-labelledby="contact-title">
       <div className="gallery-shell">
         <div className="caption">
           <Heading id="contact-title" chapter={stop.chapter} title={meta.name} subtitle={meta.location} />
           <ProfileLinks />
-          <a className="entry-link" href="#home" data-text-reveal>{gallery.back}<span aria-hidden="true">↑</span></a>
+          <a className="entry-link" href={roomPath(stops[0])} data-room="home" data-text-reveal>{gallery.back}<span aria-hidden="true">↑</span></a>
+          {roomScene && <div className="room-model" aria-hidden="true">{roomScene}</div>}
         </div>
       </div>
     </footer>
   );
 
   return (
-    <section className={`exhibit exhibit--${stop.chapter}`} id={id} data-stop={id} data-current={current || undefined} tabIndex={-1} aria-labelledby={`${id}-title`}>
+    <section className={`exhibit exhibit--${stop.chapter}`} id={id} data-stop={id} tabIndex={-1} aria-labelledby={`${id}-title`}>
       <div className="gallery-shell">
         <div className="caption">
           {kind === 'job' && <Job stop={stop} />}
-          {stop.chapter === 'projects' && <Project stop={stop} projectScene={projectScene} />}
+          {stop.chapter === 'projects' && <Project stop={stop} roomScene={roomScene} />}
           {kind === 'skills' && <Skills groups={stop.data} onSkill={onSkill} />}
           {kind === 'research' && <Research papers={stop.data} />}
           {kind === 'education' && <Education schools={stop.data} />}
+          {roomScene && stop.chapter !== 'projects' && <div className="room-model" aria-hidden="true">{roomScene}</div>}
         </div>
       </div>
     </section>

@@ -2,7 +2,7 @@
 
 ## Visual checks
 
-Playwright runs on Vite preview at `/Portfolio/`. It captures the opening and chapter midpoints at 1920×1080, 1440×900, 1280×720 and 390×844 with Chromium and SwiftShader. The original 1440×900 exhibit sweep also covers all six jobs and all five projects. Captures, contact sheets, the accessibility tree and console logs stay under the ignored `docs/screens/` directory.
+Playwright runs on Vite preview at `/Portfolio/`. It captures the entrance and chapter rooms at 1920×1080, 1440×900, 1280×720 and 390×844 with Chromium and SwiftShader. Use the exhibit sweep to open every job and project URL directly. Captures, contact sheets, the accessibility tree and console logs stay under the ignored `docs/screens/` directory.
 
 | Review | What needed attention | Change |
 | --- | --- | --- |

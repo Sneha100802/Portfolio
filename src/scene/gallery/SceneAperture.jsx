@@ -36,28 +36,29 @@ const fragmentShader = /* glsl */ `
   }
 `;
 
-export function SceneAperture({ position = [0, 1.5, 1.15], ready, tour, index }) {
+export function SceneAperture({ position = [0, 1.5, 1.15], ready, tour, index, gateway = false }) {
   const aperture = useRef();
   const shader = useRef();
   const orbit = useRef();
   const elapsed = useRef(0);
   const uniforms = useMemo(() => ({ visibility: { value: 0 }, turn: { value: 0 } }), []);
 
-  useFrame(({ camera }, delta) => {
-    if (elapsed.current >= 1.08 || (ready && !ready.current)) return;
+  useFrame(({ camera, clock }, delta) => {
+    if ((!gateway && elapsed.current >= 1.08) || (ready && !ready.current)) return;
     if (!elapsed.current && tour && Math.abs(tour.current.position - index) > 0.68) return;
     elapsed.current = Math.min(1.08, elapsed.current + Math.min(delta, 0.05));
     const time = elapsed.current / 1.08;
     const emerge = MathUtils.smoothstep(time, 0, 0.23);
-    const collapse = MathUtils.smoothstep(time, 0.30, 1);
+    const collapse = gateway ? 0 : MathUtils.smoothstep(time, 0.30, 1);
     const alpha = emerge * (1 - collapse);
     const object = aperture.current;
-    object.visible = time < 1;
+    object.visible = gateway || time < 1;
     object.quaternion.copy(camera.quaternion);
-    object.scale.setScalar(MathUtils.lerp(0.48, 1.23, emerge) - collapse * 0.87);
+    const size = gateway ? 1.78 + Math.sin(clock.elapsedTime * 0.8) * 0.07 : 1.23;
+    object.scale.setScalar(MathUtils.lerp(0.48, size, emerge) - collapse * 0.87);
     shader.current.uniforms.visibility.value = alpha;
-    shader.current.uniforms.turn.value = time;
-    orbit.current.rotation.set(1.24 - collapse * 0.27, 0.12 + time * 0.25, -0.25);
+    shader.current.uniforms.turn.value = gateway ? clock.elapsedTime * 0.22 : time;
+    orbit.current.rotation.set(1.24 - collapse * 0.27, 0.12 + Math.sin(clock.elapsedTime * 0.7) * 0.15, -0.25);
     orbit.current.material.opacity = alpha * 0.39;
   });
 

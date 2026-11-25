@@ -81,7 +81,7 @@ function Fixture({ stop, index, opticalGlass, shadow, tour, keyLight }) {
   );
 }
 
-function World({ tour, compact, quality, paintStage, onReady }) {
+function World({ tour, compact, entrance, quality, paintStage, onReady }) {
   const journey = useRef(null);
   const look = useRef(new Vector3());
   const destination = useRef(new Vector3());
@@ -89,6 +89,7 @@ function World({ tour, compact, quality, paintStage, onReady }) {
   const [center, setCenter] = useState(0);
   const view = useRef('');
   const intro = useRef(0);
+  const jump = useRef(0);
   const lightingReady = useRef(false);
   const stage = useRef();
   const motes = useRef();
@@ -100,7 +101,12 @@ function World({ tour, compact, quality, paintStage, onReady }) {
 
   useFrame(({ camera, size, clock }, delta) => {
     const step = Math.min(delta, 1.5);
-    const goal = compact ? 0 : tour.current.position;
+    const goal = tour.current.position;
+    if (jump.current !== tour.current.jump) {
+      jump.current = tour.current.jump;
+      journey.current = goal;
+      intro.current = 0;
+    }
     if (lightingReady.current) intro.current = Math.min(intro.current + step / 1.18, 1);
     const starting = journey.current === null;
     journey.current = starting ? goal : MathUtils.damp(journey.current, goal, 4.6, step);
@@ -115,7 +121,8 @@ function World({ tour, compact, quality, paintStage, onReady }) {
     drift.current.x = MathUtils.damp(drift.current.x, compact ? 0 : tour.current.pointerX, 3, step);
     drift.current.y = MathUtils.damp(drift.current.y, compact ? 0 : tour.current.pointerY, 3, step);
     const arc = Math.sin(fraction * Math.PI);
-    const entry = goal >= 0.5 ? 0 : (1 - intro.current) ** 3 * (compact ? 0.35 : 1);
+    const entry = (1 - intro.current) ** 3 * (compact ? 0.35 : entrance ? 1 : 0.48);
+    const depart = tour.current.departure ? MathUtils.smoothstep(performance.now() - tour.current.departure, 0, 600) : 0;
     const originShot = shots[stops[index].kind] ?? defaultShot;
     const nextShot = shots[stops[following].kind] ?? defaultShot;
     const distance = compact ? 10.8 : MathUtils.lerp(originShot.distance, nextShot.distance, move);
@@ -123,9 +130,9 @@ function World({ tour, compact, quality, paintStage, onReady }) {
     const focus = MathUtils.lerp(originShot.focus, nextShot.focus, move);
     const side = compact ? 0.92 : MathUtils.lerp(originShot.side, nextShot.side, move);
 
-    camera.position.set(destination.current.x + side + arc * 1.18 + entry * 1.68 + drift.current.x * 0.23,
-      height + entry * 0.69 + drift.current.y * 0.15 + arc * 0.31,
-      destination.current.z + distance + entry * 1.84 + arc * 0.82);
+    camera.position.set(destination.current.x + side * (1 - depart * 0.55) + arc * 1.18 + entry * 1.68 + drift.current.x * 0.23,
+      height + entry * 0.69 + drift.current.y * 0.15 + arc * 0.31 - depart * 0.35,
+      destination.current.z + distance + entry * 1.84 + arc * 0.82 - depart * 3.8);
     look.current.set(destination.current.x + arc * 0.13, focus + arc * 0.14, destination.current.z - 0.12);
     camera.lookAt(look.current);
     if (stage.current) stage.current.position.copy(destination.current);
@@ -135,11 +142,11 @@ function World({ tour, compact, quality, paintStage, onReady }) {
       keyLight.current.position.y = 5.8 - entry * 0.55;
       keyLight.current.intensity = (stops[center].kind === 'contact' ? 21 : 34) * (1 - 0.50 * arc ** 9 - entry * 0.54);
     }
-    const viewKey = `${size.width}:${size.height}:${compact}`;
+    const viewKey = `${size.width}:${size.height}:${compact}:${entrance}`;
     if (view.current !== viewKey) {
       view.current = viewKey;
-      camera.setViewOffset(size.width, size.height, compact ? 0 : -size.width * 0.224,
-        compact ? -size.height * 0.37 : 0, size.width, size.height);
+      camera.setViewOffset(size.width, size.height, entrance ? 0 : -size.width * 0.224,
+        entrance ? size.height * 0.14 : 0, size.width, size.height);
     }
     const atExhibit = nearest === center && Math.abs(journey.current - goal) < 0.045 && intro.current > 0.90;
     const station = atExhibit ? stops[nearest].id : '';
@@ -172,7 +179,7 @@ function World({ tour, compact, quality, paintStage, onReady }) {
       </>}
       <Fixture key={activeStop.id} stop={activeStop} index={activeIndex} opticalGlass={quality === 2} shadow={quality > 0} tour={tour} keyLight={keyLight} />
       <group key={`opening-${activeStop.id}`} position={coordinates[activeIndex]}>
-        <SceneAperture ready={lightingReady} tour={compact ? undefined : tour} index={activeIndex} />
+        <SceneAperture ready={lightingReady} tour={tour} index={activeIndex} gateway={entrance} />
       </group>
       {quality > 0 && !compact && !new URLSearchParams(window.location.search).has('fx', '0') &&
         <Suspense fallback={null}><Effects quality={quality} hero={center === 0} /></Suspense>}
@@ -180,7 +187,7 @@ function World({ tour, compact, quality, paintStage, onReady }) {
   );
 }
 
-export default function GalleryScene({ tour, compact, onReady, onFailure }) {
+export default function GalleryScene({ tour, compact, entrance, onReady, onFailure }) {
   const [quality, setQuality] = useState(() => compact || window.innerWidth < 1220 ? 0 : 2);
   const [visible, setVisible] = useState(true);
   const wrapper = useRef();
@@ -223,7 +230,7 @@ export default function GalleryScene({ tour, compact, onReady, onFailure }) {
       <PerformanceMonitor flipflops={2} bounds={refresh => [Math.min(57, refresh * 0.93), Math.max(60, refresh * 0.78)]}
         onDecline={() => setQuality(current => Math.max(0, current - 1))}
         onFallback={() => setQuality(0)}>
-        <World tour={tour} compact={compact} quality={quality} paintStage={paintStage} onReady={onReady} />
+        <World tour={tour} compact={compact} entrance={entrance} quality={quality} paintStage={paintStage} onReady={onReady} />
       </PerformanceMonitor>
     </Canvas>
   </div>;

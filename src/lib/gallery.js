@@ -1,4 +1,4 @@
-import { content } from './content';
+import { content } from './content.js';
 
 export const chapterIds = content.gallery.chapters.map(({ id }) => id);
 export const chapterLabel = Object.fromEntries(content.gallery.chapters.map(({ id, label }) => [id, label]));
@@ -12,6 +12,28 @@ export const stops = [
   { id: 'education', chapter: 'education', kind: 'education', data: content.education },
   { id: 'contact', chapter: 'contact', kind: 'contact' },
 ];
+
+export function roomSlug(stop) {
+  if (stop.id === 'home') return '';
+  if (stop.id.startsWith('job-')) return `experience/${stop.data.id}/`;
+  if (stop.id.startsWith('project-')) return `projects/${stop.data.id}/`;
+  return `${stop.id}/`;
+}
+
+export function roomLabel(stop) {
+  return stop.data?.name ?? stop.data?.company ?? chapterLabel[stop.chapter];
+}
+
+export function roomPath(stop) {
+  return `${import.meta.env.BASE_URL}${roomSlug(stop)}`;
+}
+
+export function roomIndex(location) {
+  const legacy = stops.findIndex(stop => location.hash === `#${stop.id}`);
+  if (legacy >= 0) return legacy;
+  const slug = location.pathname.slice(import.meta.env.BASE_URL.length).replace(/\/$/, '');
+  return Math.max(0, stops.findIndex(stop => roomSlug(stop).replace(/\/$/, '') === slug));
+}
 
 export function dateSpan(start, end) {
   return [start, start !== end ? end : null].filter(Boolean).join(' – ');

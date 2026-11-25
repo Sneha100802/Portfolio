@@ -2,7 +2,7 @@ import { Canvas } from '@react-three/fiber';
 import { GalleryExhibit } from './GalleryExhibits';
 import { SceneAperture } from './SceneAperture';
 
-export default function CompactProjectScene({ stop }) {
+export default function CompactProjectScene({ stop, tour }) {
   const stock = stop.kind === 'stock-prediction';
   const focus = stock ? 1.52 : stop.kind === 'survatra-rag' ? 0.85 : 1.10;
   return <Canvas dpr={1} camera={{ position: [0.52, 2.28, stock ? 7.65 : 6.55], fov: 36 }}
@@ -15,7 +15,7 @@ export default function CompactProjectScene({ stop }) {
       <cylinderGeometry args={[2.32, 2.32, 0.2, 40]} />
       <meshStandardMaterial color="#191a1f" roughness={0.72} metalness={0.28} />
     </mesh>
-    <GalleryExhibit stop={stop} />
+    <GalleryExhibit stop={stop} tour={tour} />
     <SceneAperture position={[0, focus, 1.1]} />
   </Canvas>;
 }

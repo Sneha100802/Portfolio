@@ -1,4 +1,4 @@
-import { mkdir, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import assert from 'node:assert/strict';
@@ -15,6 +15,14 @@ const viewports = [[1920,1080], [1440,900], [1280,720], [390,844]]
   .filter(([width]) => !process.env.GALLERY_WIDTH || String(width) === process.env.GALLERY_WIDTH);
 if (!viewports.length) throw new Error('GALLERY_WIDTH must be one of the four configured viewport widths.');
 const chapters = ['start', 'home', 'experience', 'projects', 'skills', 'research', 'education', 'contact'];
+const content = JSON.parse(await readFile(new URL('../src/content.json', import.meta.url), 'utf8'));
+const exhibits = ['start', 'home', 'experience', ...content.experience.slice(1).map(job => `job-${job.id}`), 'projects',
+  ...content.projects.slice(1).map(project => `project-${project.id}`), ...chapters.slice(4)];
+function roomURL(id) {
+  const path = ['home', 'start'].includes(id) ? '' : id.startsWith('job-') ? `experience/${id.slice(4)}/`
+    : id.startsWith('project-') ? `projects/${id.slice(8)}/` : `${id}/`;
+  return new URL(path, galleryURL).href;
+}
 const errors = [];
 const browser = await chromium.launch({ args });
 
@@ -45,28 +53,22 @@ try {
     page.on('pageerror', error => errors.push(error.message));
     page.on('console', message => { if (message.type() === 'error') errors.push(message.text()); });
     page.on('response', response => { if (response.status() >= 400) errors.push(response.status() + ' ' + response.url()); });
-    await page.goto(galleryURL, { waitUntil: 'networkidle' });
-    await page.locator('[data-scene="ready"]').waitFor();
-    await page.evaluate(async () => {
-      document.documentElement.style.scrollBehavior = 'auto';
-      await document.fonts.ready;
-    });
-    assert.equal(await page.evaluate(() => document.documentElement.scrollWidth), width);
-    const scenes = selection === 'exhibits' ? ['start', ...await page.locator('[data-stop]').evaluateAll(items => items.map(item => item.id))]
-      : selection === 'all' ? chapters : ['start', selection];
+    const scenes = selection === 'exhibits' ? exhibits : selection === 'all' ? chapters : ['start', selection];
     for (const scene of scenes) {
-      await page.evaluate(id => {
-        const element = document.getElementById(id);
-        const top = element ? element.getBoundingClientRect().top + scrollY : 0;
-        const midpoint = element ? top + Math.min(element.offsetHeight, innerHeight) / 2 - innerHeight / 2 : 0;
-        scrollTo(0, Math.max(0, midpoint));
-      }, scene);
+      const response = await page.goto(roomURL(scene));
+      assert.equal(response.status(), 200);
+      const station = scene === 'start' ? 'home' : scene;
+      await page.locator(`[data-stop="${station}"]`).waitFor();
+      assert.equal(await page.locator('[data-stop]').count(), 1);
+      await page.evaluate(() => document.fonts.ready.then(() => undefined));
+      assert.equal(await page.evaluate(() => document.documentElement.scrollWidth), width);
       if (width > 880 || scene === 'start' || scene === 'home') {
-        const station = width <= 880 || scene === 'start' ? 'home' : scene;
         await page.locator(`[data-station="${station}"]`).waitFor({ timeout: 35000 });
         await page.evaluate(() => new Promise(resolveFrame => requestAnimationFrame(() => requestAnimationFrame(resolveFrame))));
+      } else {
+        await page.locator('canvas').waitFor({ timeout: 35000 });
       }
-      await page.waitForTimeout(240);
+      await page.waitForTimeout(scene === 'start' ? 100 : 1100);
       const file = resolve(output, `${width}x${height}-${scene}.png`);
       await page.evaluate(() => window.galleryHoldFrame(true));
       try {
@@ -81,14 +83,24 @@ try {
       const timeline = page.getByRole('navigation', { name: 'Gallery chapters' }).last();
       await timeline.getByRole('link', { name: 'Home', exact: true }).focus();
       await page.keyboard.press('ArrowDown');
-      await page.waitForURL('**/#experience');
+      await page.locator('[data-transit]').waitFor();
+      await page.waitForURL(roomURL('experience'));
+      await page.locator('[data-transit]').waitFor({ state: 'detached' });
+      await timeline.getByRole('link', { name: 'Experience', exact: true }).focus();
       await page.keyboard.press('End');
-      await page.waitForURL('**/#contact');
-      await page.keyboard.press('Home');
-      await page.waitForURL('**/#home');
-      await timeline.locator('a[aria-current="location"][href="#home"]').waitFor();
+      await page.waitForURL(roomURL('contact'));
+      await timeline.getByRole('link', { name: 'Contact', exact: true }).focus();
       await page.keyboard.press('Escape');
-      assert.equal(await page.evaluate(() => document.activeElement.id), 'home');
+      assert.equal(await page.evaluate(() => document.activeElement.id), 'contact');
+      await page.goto(roomURL('home'));
+      await page.locator('[data-scene="ready"]').waitFor();
+      await page.locator('.gallery-hero .entry-link').click();
+      await page.locator('[data-transit]').waitFor();
+      await page.waitForURL(roomURL('experience'));
+      assert.equal(await page.locator('[data-stop]').count(), 1);
+      await page.goBack();
+      await page.waitForURL(roomURL('home'));
+      await page.locator('#home[data-stop]').waitFor();
     }
     await page.close();
   }
@@ -97,12 +109,13 @@ try {
     await reduced.goto(new URL('#research', galleryURL).href);
     await reduced.locator('.gallery--plain[data-graphics="reduced"]').waitFor();
     assert.equal(await reduced.locator('canvas').count(), 0);
-    assert.equal(await reduced.locator('[data-stop]').count(), 16);
+    assert.equal(await reduced.locator('[data-stop]').count(), 1);
     assert.equal(await reduced.getByText('TODO', { exact: true }).count(), 0);
-    await reduced.waitForFunction(() => Math.abs(document.getElementById('research').getBoundingClientRect().top) < 3);
+    await reduced.waitForURL(roomURL('research'));
     const accessibility = await reduced.locator('main').ariaSnapshot();
     assert.match(accessibility, /Research & publications/);
-    assert.match(accessibility, /Multimodal RAG Platform/);
+    await reduced.goto(roomURL('projects'));
+    assert.match(await reduced.locator('main').ariaSnapshot(), /Multimodal RAG Platform/);
     await writeFile(resolve(output, 'accessibility.yml'), accessibility);
     await reduced.close();
 
@@ -115,7 +128,7 @@ try {
     });
     await noWebGL.goto(new URL('?fx=0', galleryURL).href);
     await noWebGL.locator('.gallery--plain[data-graphics="unavailable"]').waitFor();
-    assert.equal(await noWebGL.locator('[data-stop]').count(), 16);
+    assert.equal(await noWebGL.locator('[data-stop]').count(), 1);
     await noWebGL.close();
   }
   assert.deepEqual([...new Set(errors)], []);

@@ -1,4 +1,5 @@
-import { Bloom, DepthOfField, EffectComposer, N8AO, Noise, Vignette } from '@react-three/postprocessing';
+import { Bloom, DepthOfField, EffectComposer, N8AO, Noise, ToneMapping, Vignette } from '@react-three/postprocessing';
+import { ToneMappingMode } from 'postprocessing';
 
 export default function GalleryEffects({ quality, hero }) {
   return (
@@ -8,6 +9,7 @@ export default function GalleryEffects({ quality, hero }) {
       <Bloom mipmapBlur luminanceThreshold={1.1} intensity={0.24} luminanceSmoothing={0.07} />
       <Vignette eskil={false} offset={0.14} darkness={0.38} />
       <Noise opacity={0.026} premultiply />
+      <ToneMapping mode={ToneMappingMode.ACES_FILMIC} />
     </EffectComposer>
   );
 }

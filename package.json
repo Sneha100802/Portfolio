@@ -6,12 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "lint": "oxlint src/gallery.jsx src/chapters src/ui/gallery src/scene/gallery src/lib/gallery.js",
-    "preview": "vite preview",
-    "dev:legacy": "vite",
-    "build:legacy": "vite build",
-    "lint:legacy": "oxlint src --ignore-pattern \"**/*.ts\" --ignore-pattern \"**/*.tsx\"",
-    "preview:legacy": "vite preview"
+    "lint": "oxlint src/gallery.jsx src/chapters src/ui/gallery src/scene/gallery src/scene/Glyph.jsx src/scene/Parts.jsx src/scene/visuals.jsx src/lib/gallery.js src/lib/content.js src/lib/icons.js",
+    "preview": "vite preview"
   },
   "dependencies": {
     "@fontsource/cormorant-garamond": "^5.3.0",
@@ -19,10 +15,7 @@
     "@react-three/drei": "^10.7.9",
     "@react-three/fiber": "^9.8.2",
     "@react-three/postprocessing": "^3.2.2",
-    "framer-motion": "^14.14.0",
     "gsap": "^3.15.1",
-    "lucide-react": "^1.79.0",
-    "next": "^16.4.6",
     "postprocessing": "^6.39.6",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
@@ -30,17 +23,10 @@
     "three": "^0.187.0"
   },
   "devDependencies": {
-    "@tailwindcss/postcss": "^4.3.5",
-    "@types/node": "^26.6.6",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
-    "@types/three": "^0.187.0",
     "@vitejs/plugin-react": "^6.1.2",
-    "eslint": "^9.39.5",
-    "eslint-config-next": "^16.4.6",
     "oxlint": "^1.90.0",
-    "tailwindcss": "^4.3.5",
-    "typescript": "^6.0.3",
     "vite": "^8.3.6"
   }
 }

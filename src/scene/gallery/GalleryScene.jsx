@@ -9,7 +9,7 @@ const brass = '#c9a45e';
 const night = '#0b0b0e';
 const base = import.meta.env.BASE_URL;
 const coordinates = stops.map((_, index) => new Vector3(Math.sin(index * 0.64) * 1.6, 0, -index * 8.5));
-const rail = coordinates.map(({ x, z }) => [x - 3.1, -0.54, z]);
+const rail = coordinates.map(({ x, z }) => [x - 3.1, -0.47, z]);
 const Effects = lazy(() => import('./GalleryEffects'));
 const defaultShot = { distance: 7.45, height: 2.5, focus: 1.45 };
 const shots = {
@@ -64,12 +64,12 @@ function Pedestal({ hero }) {
   );
 }
 
-function Fixture({ stop, index, compact, shadow, tour }) {
+function Fixture({ stop, index, opticalGlass, shadow, tour }) {
   const aim = useMemo(() => new Object3D(), []);
   return (
     <group position={coordinates[index]}>
       <Pedestal hero={stop.kind === 'hero'} />
-      <GalleryExhibit stop={stop} compact={compact} tour={tour} />
+      <GalleryExhibit stop={stop} opticalGlass={opticalGlass} tour={tour} />
       <primitive object={aim} position={[0, 1.35, 0]} />
       <spotLight target={aim} position={[-3.1, 5.8, 3.9]} color="#ffe2ac" intensity={stop.kind === 'contact' ? 16 : 25} angle={0.45} penumbra={0.89} distance={11} />
       <pointLight position={[1.4, 2.6, -1.62]} color="#8eb5b5" intensity={7} distance={5} decay={2} />
@@ -127,8 +127,8 @@ function World({ tour, compact, quality, paintStage, onReady }) {
     paintStage(station, 1 - tilt ** 1.6 * 0.77);
   });
 
-  const first = compact ? 0 : Math.max(0, center - 1);
-  const last = compact ? 1 : Math.min(center + 2, stops.length);
+  const activeIndex = compact ? 0 : center;
+  const activeStop = stops[activeIndex];
   return (
     <>
       <color attach="background" args={[night]} />
@@ -150,9 +150,7 @@ function World({ tour, compact, quality, paintStage, onReady }) {
         <Line points={rail} color="#695239" lineWidth={0.65} />
         <Line points={rail.map(([x, y, z]) => [x + 6.2, y, z])} color="#4d402f" lineWidth={0.55} />
       </>}
-      {stops.slice(first, last).map((stop, offset) => <group key={stop.id} visible={center === first + offset}>
-        <Fixture stop={stop} index={first + offset} compact={compact} shadow={quality > 0 && center === first + offset} tour={tour} />
-      </group>)}
+      <Fixture key={activeStop.id} stop={activeStop} index={activeIndex} opticalGlass={quality === 2} shadow={quality > 0} tour={tour} />
       {quality > 0 && !compact && !new URLSearchParams(window.location.search).has('fx', '0') &&
         <Suspense fallback={null}><Effects quality={quality} hero={center === 0} /></Suspense>}
     </>
@@ -184,13 +182,14 @@ export default function GalleryScene({ tour, compact, onReady, onFailure }) {
     const details = context.getExtension('WEBGL_debug_renderer_info');
     const renderer = context.getParameter(details?.UNMASKED_RENDERER_WEBGL ?? context.RENDERER);
     if (/swiftshader|llvmpipe|software raster|basic render driver/i.test(renderer)) setQuality(0);
+    else if (/intel.*(?:iris|uhd|hd graphics)/i.test(renderer)) setQuality(0);
   }
 
   function paintStage(station, opacity) {
     const element = wrapper.current;
     if (!element) return;
     if (element.dataset.station !== station) element.dataset.station = station;
-    const alpha = String(opacity);
+    const alpha = String(Math.round(opacity * 100) / 100);
     if (element.style.opacity !== alpha) element.style.opacity = alpha;
   }
 
@@ -198,7 +197,8 @@ export default function GalleryScene({ tour, compact, onReady, onFailure }) {
     <Canvas dpr={[1, 1.5]} gl={{ antialias: quality === 0, powerPreference: 'high-performance' }}
       frameloop={visible ? 'always' : 'never'}
       camera={{ position: [0.9, 2.1, 7], fov: 38, near: 0.12, far: 86 }} onCreated={start}>
-      <PerformanceMonitor flipflops={2} onDecline={() => setQuality(current => Math.max(0, current - 1))}
+      <PerformanceMonitor flipflops={2} bounds={refresh => [Math.min(57, refresh * 0.93), Math.max(60, refresh * 0.78)]}
+        onDecline={() => setQuality(current => Math.max(0, current - 1))}
         onFallback={() => setQuality(0)}>
         <World tour={tour} compact={compact} quality={quality} paintStage={paintStage} onReady={onReady} />
       </PerformanceMonitor>

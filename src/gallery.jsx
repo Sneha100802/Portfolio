@@ -27,6 +27,7 @@ export function App() {
   const tour = useRef({ position: 0, pointerX: 0, pointerY: 0, skill: null });
   const [active, setActive] = useState('home');
   const [mode, setMode] = useState('plain');
+  const [graphics, setGraphics] = useState('checking');
   const [ready, setReady] = useState(false);
   const [failed, setFailed] = useState(false);
   const sceneReady = useCallback(() => { setReady(true); }, []);
@@ -36,7 +37,26 @@ export function App() {
   useEffect(() => {
     const reduce = matchMedia('(prefers-reduced-motion: reduce)');
     const compact = matchMedia('(max-width: 880px)');
-    const update = () => setMode(reduce.matches ? 'plain' : compact.matches ? 'compact' : 'desktop');
+    let supported;
+    const update = () => {
+      if (reduce.matches) {
+        setGraphics('reduced');
+        setMode('plain');
+        return;
+      }
+      if (supported === undefined) {
+        try {
+          const probe = document.createElement('canvas').getContext('webgl2');
+          supported = Boolean(probe);
+          probe?.getExtension('WEBGL_lose_context')?.loseContext();
+        } catch {
+          supported = false;
+        }
+        if (!supported) console.error('WebGL 2 is unavailable. Showing the HTML gallery.');
+      }
+      setGraphics(supported ? 'available' : 'unavailable');
+      setMode(supported ? (compact.matches ? 'compact' : 'desktop') : 'plain');
+    };
     const timer = window.setTimeout(update, 100);
     reduce.addEventListener('change', update);
     compact.addEventListener('change', update);
@@ -100,7 +120,7 @@ export function App() {
   }, [mode, visual]);
 
   return (
-    <div className={`gallery gallery--${visual ? mode : 'plain'}`} data-scene={visual && ready ? 'ready' : 'fallback'}>
+    <div className={`gallery gallery--${visual ? mode : 'plain'}`} data-scene={visual && ready ? 'ready' : 'fallback'} data-graphics={failed ? 'unavailable' : graphics}>
       <a href="#main" className="gallery-skip">{gallery.skip}</a>
       <header className="gallery-header">
         <div className="gallery-shell gallery-masthead">

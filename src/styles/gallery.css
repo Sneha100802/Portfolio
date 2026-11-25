@@ -65,7 +65,7 @@ h1,h2,h3 { font-family: var(--serif); font-weight: 500; }
   text-decoration: none;
 }
 .timeline-notch { width: 7px; height: 7px; flex: 0 0 auto; border: 1px solid #a49784; background: #151418; rotate: 45deg; }
-.timeline-label { display: block; opacity: 0; padding: 5px 7px; background: #0b0b0ef2; color: #dfd5c4; font-size: .62rem; font-weight: 600; white-space: nowrap; transition: opacity .24s; }
+.timeline-label { position: absolute; right: 22px; opacity: 0; padding: 5px 7px; background: #0b0b0ef2; color: #dfd5c4; font-size: .62rem; font-weight: 600; white-space: nowrap; pointer-events: none; transition: opacity .24s; }
 .gallery-timeline a[aria-current] .timeline-notch { background: var(--brass); border-color: var(--brass); }
 .gallery-timeline a:hover .timeline-label,
 .gallery-timeline a:focus-visible .timeline-label { opacity: 1; }
@@ -145,7 +145,7 @@ h1,h2,h3 { font-family: var(--serif); font-weight: 500; }
   content: "";
   position: absolute;
   inset: 8% 4% 4% 45%;
-  background: url("/Portfolio/gallery-instrument.webp") center / contain no-repeat;
+  background: url("/gallery-instrument.webp") center / contain no-repeat;
   mask-image: radial-gradient(ellipse at center, #000 48%, transparent 78%);
   pointer-events: none;
 }
@@ -162,7 +162,7 @@ h1,h2,h3 { font-family: var(--serif); font-weight: 500; }
   .gallery[data-scene="fallback"] .gallery-hero::before { inset: auto 3% 2%; height: min(42%, 82vw); }
   .gallery-shell { width: min(100% - 56px, 660px); }
   .gallery-timeline { right: 6px; }
-  .gallery-timeline a { min-height: 27px; min-width: 18px; }
+  .gallery-timeline a { min-height: 27px; min-width: 24px; }
   .timeline-notch { width: 6px; height: 6px; }
   .gallery-timeline ol::after { right: 5px; }
   .gallery-masthead { min-height: 62px; }

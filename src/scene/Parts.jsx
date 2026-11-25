@@ -1,3 +1,4 @@
+/* oxlint-disable react/only-export-components -- Existing scenes share these material components and their palette. */
 import { useMemo, useRef } from 'react';
 import * as THREE from 'three';
 import { useFrame } from '@react-three/fiber';

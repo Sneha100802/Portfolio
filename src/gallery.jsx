@@ -11,7 +11,6 @@ import { Timeline } from './ui/gallery/Timeline';
 import './styles/gallery.css';
 
 const Scene = lazy(() => import('./scene/gallery/GalleryScene'));
-const CompactProjectScene = lazy(() => import('./scene/gallery/CompactProjectScene'));
 const { gallery, meta } = content;
 
 class SceneBoundary extends Component {
@@ -42,7 +41,6 @@ export function App() {
   const next = stops[activeIndex + 1];
   const entrance = stop.kind === 'hero';
   const compact = mode === 'compact';
-  const fullScene = visual && (!compact || entrance);
 
   const showRoom = useCallback((index) => {
     tour.current.position = index;
@@ -163,7 +161,7 @@ export function App() {
   return (
     <div className={`gallery gallery--${visual ? mode : 'plain'} ${entrance ? 'gallery--entrance' : 'gallery--room'}`}
       onClick={navigate} data-company={stop.kind === 'job' ? stop.data.id : undefined} data-transit={transit || undefined}
-      data-scene={fullScene && ready ? 'ready' : 'fallback'} data-graphics={failed ? 'unavailable' : graphics}>
+      data-scene={visual && ready ? 'ready' : 'fallback'} data-graphics={failed ? 'unavailable' : graphics}>
       <a href="#main" className="gallery-skip">{gallery.skip}</a>
       <header className="gallery-header">
         <div className="gallery-shell gallery-masthead">
@@ -173,18 +171,15 @@ export function App() {
           </nav>
         </div>
       </header>
-      {fullScene && <div className="gallery-scene" aria-hidden="true">
+      {visual && <div className="gallery-scene" aria-hidden="true">
         <SceneBoundary onError={sceneFailed}>
           <Suspense fallback={null}><Scene tour={tour} compact={compact} entrance={entrance} onReady={sceneReady} onFailure={sceneFailed} /></Suspense>
         </SceneBoundary>
       </div>}
+      {(!visual || !ready) && stop.chapter === 'projects' && <div className="gallery-scene-still" aria-hidden="true" data-project-still={stop.kind} />}
       {!entrance && <Timeline active={stop.chapter} room={stop.id} />}
       <main id="main" tabIndex={-1}>
-        <GalleryChapter key={stop.id} stop={stop}
-          onSkill={(skill) => { tour.current.skill = skill; }}
-          roomScene={visual && compact && !entrance ? (
-            <SceneBoundary><Suspense fallback={null}><CompactProjectScene stop={stop} tour={tour} /></Suspense></SceneBoundary>
-          ) : null} />
+        <GalleryChapter key={stop.id} stop={stop} onSkill={(skill) => { tour.current.skill = skill; }} />
       </main>
       {!entrance && <nav className="gallery-shell room-navigation" aria-label={gallery.roomNavigation}>
         <a href={roomPath(previous)} data-room={previous.id} aria-label={`${gallery.previousRoom} ${roomLabel(previous)}`} data-text-reveal><span aria-hidden="true">←</span> {roomLabel(previous)}</a>

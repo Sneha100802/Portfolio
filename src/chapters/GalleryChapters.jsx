@@ -38,25 +38,29 @@ function Tech({ items }) {
 }
 
 function Job({ stop }) {
-  const { company, role, location, start, end, bullets, stack, exhibit } = stop.data;
+  const { company, role, location, start, end, bullets, stack, exhibit, exhibitSteps } = stop.data;
   return <>
     <Heading id={`${stop.id}-title`} chapter={stop.chapter} title={company} eyebrow={dateSpan(start, end)} subtitle={role} />
     {location && <p className="caption-location" data-text-reveal>{location}</p>}
     {exhibit && <p className="company-exhibit-label" data-text-reveal>{exhibit}</p>}
+    {exhibitSteps?.length > 0 && <ExhibitSteps steps={exhibitSteps} />}
     <ul className="caption-highlights">{bullets.map((item, index) => <li key={item} data-text-reveal style={{ '--reveal-order': index }}>{item}</li>)}</ul>
     <Tech items={stack} />
   </>;
 }
 
-function Project({ stop, roomScene }) {
+function ExhibitSteps({ steps }) {
+  return <ol className="project-exhibit-steps" role="list">
+    {steps.map((step, index) => <li key={step} data-text-reveal style={{ '--reveal-order': index }}>{step}</li>)}
+  </ol>;
+}
+
+function Project({ stop }) {
   const { name, description, tag, stack, url, exhibit } = stop.data;
   return <>
     <Heading id={`${stop.id}-title`} chapter={stop.chapter} title={name} eyebrow={tag} />
     <p className="caption-description" data-text-reveal>{description}</p>
-    <div className="project-model" aria-hidden="true" data-project-model={stop.kind}>{roomScene}</div>
-    <ol className="project-exhibit-steps">
-      {exhibit.map((step, index) => <li key={step} data-text-reveal style={{ '--reveal-order': index }}>{step}</li>)}
-    </ol>
+    <ExhibitSteps steps={exhibit} />
     <Tech items={stack} />
     {url && <a className="text-link" href={url} data-text-reveal>{gallery.website}<ExternalMark /></a>}
   </>;
@@ -111,7 +115,7 @@ function Education({ schools }) {
   </>;
 }
 
-export function GalleryChapter({ stop, onSkill, roomScene }) {
+export function GalleryChapter({ stop, onSkill }) {
   const { kind, id } = stop;
   if (kind === 'hero') return (
     <section className="exhibit gallery-hero" id={id} data-stop={id} tabIndex={-1} aria-labelledby="gallery-title">
@@ -134,7 +138,6 @@ export function GalleryChapter({ stop, onSkill, roomScene }) {
           <Heading id="contact-title" chapter={stop.chapter} title={meta.name} subtitle={meta.location} />
           <ProfileLinks />
           <a className="entry-link" href={roomPath(stops[0])} data-room="home" data-text-reveal>{gallery.back}<span aria-hidden="true">↑</span></a>
-          {roomScene && <div className="room-model" aria-hidden="true">{roomScene}</div>}
         </div>
       </div>
     </footer>
@@ -145,11 +148,10 @@ export function GalleryChapter({ stop, onSkill, roomScene }) {
       <div className="gallery-shell">
         <div className="caption">
           {kind === 'job' && <Job stop={stop} />}
-          {stop.chapter === 'projects' && <Project stop={stop} roomScene={roomScene} />}
+          {stop.chapter === 'projects' && <Project stop={stop} />}
           {kind === 'skills' && <Skills groups={stop.data} onSkill={onSkill} />}
           {kind === 'research' && <Research papers={stop.data} />}
           {kind === 'education' && <Education schools={stop.data} />}
-          {roomScene && stop.chapter !== 'projects' && <div className="room-model" aria-hidden="true">{roomScene}</div>}
         </div>
       </div>
     </section>

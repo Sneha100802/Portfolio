@@ -19,7 +19,7 @@ npm run build
 npx vite preview --host 127.0.0.1 --port 4174
 ```
 
-Open [the static preview](http://127.0.0.1:4174/Portfolio/). The build writes `dist/`. Add `?fx=0` to disable post-processing while checking shaders and composition. On phones, interior rooms have smaller inline 3D exhibits. Reduced-motion and WebGL-failure modes keep every room accessible with its own HTML and navigation.
+Open [the static preview](http://127.0.0.1:4174/Portfolio/). The build writes `dist/`. Add `?fx=0` to disable post-processing while checking shaders and composition. Room scenes play behind the captions on desktop and phones. Reduced-motion and WebGL-failure modes keep every room accessible with its own HTML and navigation.
 
 ## Edit the portfolio
 

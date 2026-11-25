@@ -32,7 +32,7 @@ function InvestmentDashboard({ accent }) {
     cursor.current.position.set(MathUtils.lerp(x, nextX, offset - segment), MathUtils.lerp(y, nextY, offset - segment), z + 0.015);
   });
   return <group rotation-y={0.11}>
-    <Case size={[3.15, 1.66, 0.24]} position={[0, 1.25, 0]} />
+    <Line points={[[-1.42, 1.86, 0.13], [-1.42, 0.55, 0.13], [1.43, 0.55, 0.13]]} color={trace} lineWidth={1} />
     {[0.72, 1.03, 1.34, 1.65].map(y => <Line key={y} points={[[-1.34, y, 0.135], [1.34, y, 0.135]]} color="#303947" lineWidth={0.75} />)}
     {trend.map(([x, y], i) => <Part key={x} position={[x, (y + 0.56) / 2, 0.14]} geo={<boxGeometry args={[0.22, y - 0.56, 0.04]} />}
       mat={<meshStandardMaterial color={accent} emissive={accent} emissiveIntensity={0.26 + i * 0.022} roughness={0.48} />} />)}
@@ -68,10 +68,13 @@ function Conversation({ accent }) {
     });
   });
   return <group rotation-y={0.12}>
-    <Case size={[1.68, 0.67, 0.18]} position={[-0.66, 1.77, -0.08]} color="#191828" />
+    <Line points={[[-1.53, 2.04, -0.1], [0.16, 2.04, -0.1], [0.16, 1.53, -0.1], [-0.56, 1.53, -0.1], [-0.78, 1.39, -0.1], [-0.78, 1.53, -0.1], [-1.53, 1.53, -0.1], [-1.53, 2.04, -0.1]]} color="#77668e" lineWidth={1.1} />
     <Line points={[[-1.30, 1.78, 0.025], [-0.72, 1.78, 0.025], [-0.25, 1.78, 0.025]]} color="#9c91bd" lineWidth={1.6} />
-    <Signal from={[-0.58, 1.40, 0]} to={[0.12, 1.08, 0.24]} color={accent} />
-    <Case size={[1.92, 0.83, 0.21]} position={[0.51, 0.99, 0.3]} color="#1b1827" />
+    <Signal from={[-0.78, 1.39, -0.10]} to={[-0.18, 1.39, -0.46]} color={accent} />
+    <Signal from={[-0.18, 1.39, -0.46]} to={[0.12, 1.08, 0.32]} color={accent} offset={0.46} />
+    {[0, 1, 2].map(i => <Part key={i} position={[-0.18 + 0.08 * i, 1.39 + 0.12 * i, -0.46 - 0.09 * i]}
+      rotation-y={-0.16} geo={<boxGeometry args={[0.21, 0.047, 0.16]} />} mat={<meshBasicMaterial color={i === 0 ? accent : '#5b4d71'} />} />)}
+    <Line points={[[-0.45, 1.43, 0.40], [1.47, 1.43, 0.40], [1.47, 0.60, 0.40], [1.16, 0.60, 0.40], [1.16, 0.42, 0.40], [0.94, 0.60, 0.40], [-0.45, 0.60, 0.40], [-0.45, 1.43, 0.40]]} color="#807097" lineWidth={1.25} />
     {[0.24, 0, -0.24].map((y, index) => <group key={y} position={[-0.25, y + 0.99, 0.416]} ref={el => { typing.current[index] = el; }}>
       <Part position-x={0.63 - index * 0.09} geo={<boxGeometry args={[1.26 - index * 0.18, 0.021, 0.01]} />}
         mat={<meshBasicMaterial color={index === 0 ? accent : '#726586'} />} />
@@ -80,16 +83,37 @@ function Conversation({ accent }) {
 }
 
 function RespiratorySignal({ accent }) {
+  const cursor = useRef();
+  const features = useRef([]);
   const wave = Array.from({ length: 65 }, (_, i) => {
     const x = i / 64;
     return [-1.35 + x * 1.20, 1.15 + Math.sin(x * 42) * Math.sin(x * Math.PI) ** 2 * 0.34, 0.34];
   });
+  useFrame(({ clock }) => {
+    const phase = (clock.elapsedTime * 0.48) % 1;
+    if (phase < 0.55) {
+      const sample = wave[Math.floor(phase / 0.55 * (wave.length - 1))];
+      cursor.current.position.set(sample[0], sample[1], sample[2] + 0.04);
+    } else {
+      const depth = (phase - 0.55) / 0.45;
+      cursor.current.position.set(MathUtils.lerp(-0.15, 1.07, depth), 1.15, MathUtils.lerp(0.38, -0.48, depth));
+    }
+    features.current.forEach((feature, index) => {
+      const offset = (phase - (0.66 + index * 0.078)) * 24;
+      if (feature) feature.material.opacity = 0.2 + 0.8 * Math.exp(-offset * offset);
+    });
+  });
   return <group rotation-y={-0.15}>
-    <Case size={[1.48, 0.89, 0.12]} position={[-0.75, 1.15, 0.25]} />
+    <Line points={[[-1.37, 1.15, 0.32], [-0.04, 1.15, 0.32]]} color="#446362" lineWidth={0.75} />
     <Line points={wave} color={accent} lineWidth={1.9} />
-    <Signal from={[-0.04, 1.15, 0.34]} to={[0.53, 1.15, 0.10]} color={accent} />
+    <Line points={[[-0.15, 1.15, 0.34], [1.07, 1.15, -0.48]]} color={trace} lineWidth={1.1} />
+    <mesh ref={cursor}><sphereGeometry args={[0.035, 10, 8]} /><meshBasicMaterial color={accent} /></mesh>
     {[0, 1, 2, 3].map(index => <group key={index} position={[0.39 + index * 0.23, 1.15, -0.03 - index * 0.16]} rotation-y={-0.48}>
       <Case size={[0.06, 1.14 - index * 0.15, 1.11 - index * 0.15]} position={[0, 0, 0]} color="#213033" accent={index % 2 ? trace : accent} />
+      <mesh ref={el => { features.current[index] = el; }} position={[0.016, 0.53 - index * 0.075, 0.052]}>
+        <boxGeometry args={[0.082, 0.031, 0.69 - index * 0.1]} />
+        <meshBasicMaterial color={accent} transparent opacity={0.2} />
+      </mesh>
     </group>)}
   </group>;
 }

@@ -52,18 +52,17 @@ function StudioLight({ ready }) {
   return <Environment map={map} environmentIntensity={0.48} />;
 }
 
-function Pedestal({ hero, dim }) {
+function Pedestal() {
   return (
     <group>
-      <RoundedBox args={hero ? [3.76, 0.36, 2.61] : [4.0, 0.36, 2.45]} position-y={-0.29} radius={0.035} smoothness={2}>
+      <RoundedBox args={[3.76, 0.36, 2.61]} position-y={-0.29} radius={0.035} smoothness={2}>
         <meshStandardMaterial color="#242529" metalness={0.52} roughness={0.34} />
       </RoundedBox>
-      <RoundedBox args={hero ? [3.68, 0.068, 2.55] : [3.92, 0.068, 2.38]} position-y={-0.11} radius={0.025} smoothness={2}>
+      <RoundedBox args={[3.68, 0.068, 2.55]} position-y={-0.11} radius={0.025} smoothness={2}>
         <meshStandardMaterial color={brass} metalness={0.91} roughness={0.37} />
       </RoundedBox>
-      <RoundedBox args={hero ? [3.59, 0.065, 2.49] : [3.84, 0.065, 2.34]} position-y={-0.057} radius={0.025} smoothness={2}>
-        <meshStandardMaterial color={dim ? '#07080c' : '#101115'} metalness={dim ? 0.14 : 0.25}
-          roughness={dim ? 0.91 : 0.74} envMapIntensity={dim ? 0.045 : 0.18} />
+      <RoundedBox args={[3.59, 0.065, 2.49]} position-y={-0.057} radius={0.025} smoothness={2}>
+        <meshStandardMaterial color="#101115" metalness={0.25} roughness={0.74} envMapIntensity={0.18} />
       </RoundedBox>
     </group>
   );
@@ -74,7 +73,7 @@ function Fixture({ stop, index, opticalGlass, shadow, tour, keyLight, rimLight }
   const grade = companyLook(stop);
   return (
     <group position={coordinates[index]}>
-      <Pedestal hero={stop.kind === 'hero'} dim={Boolean(grade)} />
+      {stop.kind === 'hero' && <Pedestal />}
       <GalleryExhibit stop={stop} opticalGlass={opticalGlass} tour={tour} />
       <primitive object={aim} position={[0, 1.35, 0]} />
       <spotLight ref={keyLight} target={aim} position={[-3.1, 5.8, 3.9]} color={grade?.accent ?? '#ffd497'} intensity={31} angle={0.44} penumbra={0.91} distance={11} />
@@ -131,15 +130,16 @@ function World({ tour, compact, entrance, quality, paintStage, onReady }) {
     const depart = tour.current.departure ? MathUtils.smoothstep(performance.now() - tour.current.departure, 0, 600) : 0;
     const originShot = shots[stops[index].kind] ?? defaultShot;
     const nextShot = shots[stops[following].kind] ?? defaultShot;
-    const distance = compact ? 10.8 : MathUtils.lerp(originShot.distance, nextShot.distance, move);
+    const distance = compact ? (entrance ? 10.8 : Math.max(8.8, 5.85 * size.height / size.width)) : MathUtils.lerp(originShot.distance, nextShot.distance, move);
     const height = MathUtils.lerp(originShot.height, nextShot.height, move);
     const focus = MathUtils.lerp(originShot.focus, nextShot.focus, move);
-    const side = compact ? 0.92 : MathUtils.lerp(originShot.side, nextShot.side, move);
+    const side = compact ? 0.65 : MathUtils.lerp(originShot.side, nextShot.side, move);
+    const framing = compact && !entrance ? 0.5 : 1;
 
-    camera.position.set(destination.current.x + side * (1 - depart * 0.55 - close * 0.4) + (arrival?.side ?? 0) + arc * 1.18 + entry * 1.68 + drift.current.x * 0.23,
-      height + (arrival?.height ?? 0) + entry * 0.69 + drift.current.y * 0.15 + arc * 0.31 - depart * 0.35,
-      destination.current.z + distance - close * 2.65 + entry * 1.84 + arc * 0.82 - depart * 3.8);
-    look.current.set(destination.current.x + (arrival?.target ?? 0) + arc * 0.13,
+    camera.position.set(destination.current.x + side * (1 - depart * 0.55 - close * 0.4) + (arrival?.side ?? 0) * framing + arc * 1.18 + entry * 1.68 + drift.current.x * 0.23,
+      height + (arrival?.height ?? 0) * framing + entry * 0.69 + drift.current.y * 0.15 + arc * 0.31 - depart * 0.35,
+      destination.current.z + distance - close * 2.65 * framing + entry * 1.84 + arc * 0.82 - depart * 3.8);
+    look.current.set(destination.current.x + (arrival?.target ?? 0) * framing + arc * 0.13,
       MathUtils.lerp(focus, arrival?.focus ?? focus, close) + arc * 0.14, destination.current.z - 0.12);
     camera.lookAt(look.current);
     if (arrival) camera.rotateZ(Math.sign(arrival.side) * close * 0.075);
@@ -155,15 +155,15 @@ function World({ tour, compact, entrance, quality, paintStage, onReady }) {
     const viewKey = `${size.width}:${size.height}:${compact}:${entrance}`;
     if (view.current !== viewKey) {
       view.current = viewKey;
-      camera.setViewOffset(size.width, size.height, entrance ? 0 : -size.width * 0.224,
-        entrance ? size.height * 0.14 : 0, size.width, size.height);
+      camera.setViewOffset(size.width, size.height, entrance || compact ? 0 : -size.width * 0.224,
+        size.height * (entrance ? 0.14 : compact ? 0.20 : 0), size.width, size.height);
     }
     const atExhibit = nearest === center && Math.abs(journey.current - goal) < 0.045 && intro.current > 0.90;
     const station = atExhibit ? stops[nearest].id : '';
     paintStage(station, 1 - arc ** 7 * 0.34);
   });
 
-  const activeIndex = compact ? 0 : center;
+  const activeIndex = center;
   const activeStop = stops[activeIndex];
   const openingShot = roomArrival(activeStop, 0);
   const grade = companyLook(activeStop);

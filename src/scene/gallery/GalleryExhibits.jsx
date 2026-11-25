@@ -3,6 +3,7 @@ import { useFrame } from '@react-three/fiber';
 import { Edges, Line, RoundedBox } from '@react-three/drei';
 import { MathUtils, Matrix4, Object3D, SphereGeometry } from 'three';
 import { Glyph } from '../Glyph';
+import { Pulse } from '../Parts';
 import { CompanyExhibit } from './CompanyExhibits';
 import { companyLook } from './RoomArrival';
 import { iconsFor } from '../../lib/icons';
@@ -118,10 +119,11 @@ function JobExhibit({ stop }) {
 function SkillsExhibit({ groups, tour }) {
   const glyphs = useRef(new Map());
   const rows = groups.map(({ items }) => iconsFor(items, Infinity));
-  useFrame((_, delta) => {
+  useFrame(({ clock }, delta) => {
     for (const [id, glyph] of glyphs.current) {
       const selected = id === tour.current.skill;
       glyph.scale.setScalar(MathUtils.damp(glyph.scale.x, selected ? 1.4 : 1, 8, delta));
+      glyph.position.z = 0.09 + 0.065 * Math.sin(clock.elapsedTime * 1.2 + glyph.position.x * 1.35 + id.charCodeAt(0));
     }
   });
   return (
@@ -148,10 +150,16 @@ function SkillsExhibit({ groups, tour }) {
 }
 
 function Folios({ count }) {
+  const pages = useRef([]);
+  useFrame(({ clock }) => {
+    pages.current.forEach((page, index) => {
+      if (page) page.rotation.y = -index * 0.11 + Math.sin(clock.elapsedTime * 0.85 - index * 0.35) * 0.075;
+    });
+  });
   return (
     <group position={[0, 0.12, 0]} rotation-y={-0.18}>
       {Array.from({ length: Math.max(2, count) }, (_, index) => (
-        <group key={index} position={[(index - 1) * 0.22, 0.22 + index * 0.22, 0]} rotation-y={index * -0.11}>
+        <group key={index} position={[(index - 1) * 0.22, 0.22 + index * 0.22, 0]} rotation-y={index * -0.11} ref={page => { pages.current[index] = page; }}>
           <RoundedBox args={[2.25 - index * 0.14, 0.18, 1.48]} radius={0.035} smoothness={2}>
             <meshStandardMaterial color={index % 2 ? '#29282c' : '#3a3027'} metalness={0.65} roughness={0.44} />
             <Edges color={brass} />
@@ -168,6 +176,26 @@ function Folios({ count }) {
       </mesh>
     </group>
   );
+}
+
+const contactCenter = [0, 1.3, 0];
+const contactPoints = [[-1.38, 0.75, 0.35], [1.30, 0.88, 0.20], [0.24, 2.05, -0.33]];
+
+function ContactPaths() {
+  return <group>
+    <mesh position={contactCenter}>
+      <icosahedronGeometry args={[0.23, 0]} />
+      <meshStandardMaterial color={brass} metalness={0.7} roughness={0.33} />
+    </mesh>
+    {contactPoints.map((point, index) => <group key={index}>
+      <Line points={[contactCenter, point]} color="#8b6b43" lineWidth={1.05} />
+      <Pulse from={contactCenter} to={point} size={0.04} offset={index * 0.32} />
+      <mesh position={point}>
+        <torusGeometry args={[0.13, 0.01, 7, 28]} />
+        <meshBasicMaterial color={index === 1 ? teal : brass} />
+      </mesh>
+    </group>)}
+  </group>;
 }
 
 function AvatarHead() {
@@ -213,7 +241,8 @@ const projectExhibits = {
 
 export function GalleryExhibit({ stop, opticalGlass, tour }) {
   const { kind, data } = stop;
-  if (kind === 'hero' || kind === 'contact') return <OpticalInstrument simple={kind === 'contact'} opticalGlass={opticalGlass} />;
+  if (kind === 'hero') return <OpticalInstrument opticalGlass={opticalGlass} />;
+  if (kind === 'contact') return <ContactPaths />;
   if (kind === 'job') return <JobExhibit stop={stop} />;
   if (kind === 'skills') return <SkillsExhibit groups={data} tour={tour} />;
   if (kind === 'education') return <Folios count={data.length + 3} />;

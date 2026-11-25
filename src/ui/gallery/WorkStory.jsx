@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { content } from '../../lib/content';
-import { roomPath, stops } from '../../lib/gallery';
 import { RevealWords } from './RevealWords';
 
 const { gallery } = content;
@@ -49,12 +48,9 @@ export function WorkStory({ stop, onStep }) {
       {bullets?.length > 0 && <ul className="caption-highlights">{bullets.map(item => <li key={item} data-text-reveal><RevealWords text={item} /></li>)}</ul>}
     </details>
     {story.links?.length > 0 && <nav className="work-evidence" aria-label={gallery.evidenceLabel}>
-      {story.links.map(({ label, url, room }) => {
-        const related = room && stops.find(item => item.id === room);
-        return <a key={label} href={related ? roomPath(related) : url} data-room={related?.id} data-text-reveal>
-          <RevealWords text={label} /><span aria-hidden="true">{related ? ' →' : ' ↗'}</span>
-        </a>;
-      })}
+      {story.links.map(({ label, url }) => <a key={label} href={url} data-text-reveal>
+        <RevealWords text={label} /><span aria-hidden="true"> ↗</span>
+      </a>)}
     </nav>}
   </div>;
 }

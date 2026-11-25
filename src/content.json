@@ -87,12 +87,6 @@
               0.2
             ]
           }
-        ],
-        "links": [
-          {
-            "label": "Open Kaalfi",
-            "url": "https://app.kaalfi.money/"
-          }
         ]
       },
       "role": "Frontend & Backend Developer (Internship)",
@@ -143,12 +137,6 @@
               1.3,
               0.34
             ]
-          }
-        ],
-        "links": [
-          {
-            "label": "See the RAG pipeline",
-            "room": "projects"
           }
         ]
       },
@@ -205,12 +193,6 @@
             ],
             "sample": "Start with a vendor contact, scope and approval checklist."
           }
-        ],
-        "links": [
-          {
-            "label": "Explore agent routing",
-            "room": "project-multi-agent"
-          }
         ]
       },
       "role": "AI Developer",
@@ -258,12 +240,6 @@
               1.2,
               -0.4
             ]
-          }
-        ],
-        "links": [
-          {
-            "label": "View both IEEE publications",
-            "room": "research"
           }
         ]
       },
@@ -352,12 +328,6 @@
               -0.1
             ]
           }
-        ],
-        "links": [
-          {
-            "label": "See later full-stack work",
-            "room": "experience"
-          }
         ]
       },
       "role": "Web Developer Intern",
@@ -421,12 +391,6 @@
             ],
             "sample": "For record access, follow the steps in access-guide-01."
           }
-        ],
-        "links": [
-          {
-            "label": "See the Survatra role",
-            "room": "job-survatra"
-          }
         ]
       },
       "name": "Multimodal RAG Platform (Survatra)",
@@ -475,10 +439,6 @@
           }
         ],
         "links": [
-          {
-            "label": "Explore production retrieval",
-            "room": "projects"
-          },
           {
             "label": "Hotel Q&A source code",
             "url": "https://github.com/Sneha100802/Hotel-Booking-Analytics-Retrieval-Augmented-Question-Answering-RAG-"
@@ -531,10 +491,6 @@
           }
         ],
         "links": [
-          {
-            "label": "See the founder chatbot",
-            "room": "job-idea-company"
-          },
           {
             "label": "Multi-agent source code",
             "url": "https://github.com/Sneha100802/Multi-Agent-AI-System"

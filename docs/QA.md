@@ -31,4 +31,4 @@ The chapter views share a renderer and content flow and were committed together 
 
 ## Remaining content
 
-Experience rooms use descriptive labels. The document retrieval demo runs on fictional records and reference passages. The loader hides any placeholder values.
+Experience rooms display organization names and summarize the work at a general level. The document retrieval demo runs on fictional records and reference passages. The loader hides any placeholder values.

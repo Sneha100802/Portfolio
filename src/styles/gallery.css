@@ -265,25 +265,26 @@ h1,h2,h3 { font-family: var(--serif); font-weight: 500; }
 }
 @keyframes room-blackout {
   0%, 100% { opacity: 0; }
-  47%, 64% { opacity: 1; }
+  48%, 57% { opacity: 1; }
+  78% { opacity: .30; }
 }
 @keyframes room-crossing {
-  0% { opacity: 0; transform: translate(-50%, -50%) scale(.54); }
-  26% { opacity: .88; }
-  54%, 100% { opacity: 0; transform: translate(-50%, -50%) scale(9); }
+  0% { opacity: 0; transform: translate(-50%, -50%) rotate(-24deg) scale(.54); }
+  28% { opacity: .93; }
+  43% { opacity: .82; }
+  58%, 100% { opacity: 0; transform: translate(-50%, -50%) rotate(21deg) scale(9); }
 }
-@supports (animation-timeline: view()) {
-  @media (prefers-reduced-motion: no-preference) {
-    .gallery--desktop .exhibit:not(.gallery-hero):not(:focus-within) .caption {
-      animation: caption-reveal linear both;
-      animation-timeline: view();
-      animation-range: entry 18% cover 41%;
-    }
-  }
+@media (prefers-reduced-motion: no-preference) {
+  .gallery--desktop.gallery--room .caption { animation: room-caption-arrival 1.42s cubic-bezier(.25, .75, .24, 1) both; }
+  .gallery--compact .room-model, .gallery--compact .project-model { animation: room-frame-arrival 1.5s ease-out both; }
 }
-@keyframes caption-reveal {
-  from { opacity: .84; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
+@keyframes room-caption-arrival {
+  0%, 22% { opacity: .35; transform: translateY(16px); }
+  100% { opacity: 1; transform: none; }
+}
+@keyframes room-frame-arrival {
+  from { border-color: #e7b477b0; }
+  to { border-color: var(--line); }
 }
 @media (max-width: 880px) {
   .gallery--plain .gallery-hero { align-items: start; min-height: 809px; padding: 113px 0 24px; }

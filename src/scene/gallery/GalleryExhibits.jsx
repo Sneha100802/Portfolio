@@ -35,7 +35,7 @@ function GaugeFace() {
   </instancedMesh>;
 }
 
-export function OpticalInstrument({ simple = false, compact = false }) {
+export function OpticalInstrument({ simple = false, opticalGlass = false }) {
   const lens = useRef();
   const sweep = useRef();
 
@@ -72,7 +72,7 @@ export function OpticalInstrument({ simple = false, compact = false }) {
         {!simple && <mesh scale={[1, 1, 0.53]}>
           <sphereGeometry args={[0.875, 48, 32]} />
           <meshPhysicalMaterial color="#313335" roughness={0.17} metalness={0.36} clearcoat={1} clearcoatRoughness={0.18}
-            transmission={compact ? 0 : 0.13} thickness={0.5} />
+            transmission={opticalGlass ? 0.13 : 0} thickness={0.5} />
         </mesh>}
         <mesh rotation={[0.45, -0.27, 0.35]}>
           <torusGeometry args={[0.65, 0.025, 12, 90]} />
@@ -99,6 +99,17 @@ export function OpticalInstrument({ simple = false, compact = false }) {
 
 function JobExhibit({ data }) {
   const icons = iconsFor(data.stack, Infinity);
+  if (!icons.length) return (
+    <group position={[0, 0.9, 0]} rotation-y={-0.24}>
+      <RoundedBox args={[1.12, 1.72, 1.05]} radius={0.075} smoothness={3}>
+        <meshStandardMaterial color="#21232a" metalness={0.77} roughness={0.38} />
+      </RoundedBox>
+      {[-0.19, 0, 0.19].map(x => <mesh key={x} position={[x, 0.1, 0.534]}>
+        <boxGeometry args={[0.012, 0.96 - Math.abs(x) * 1.3, 0.013]} />
+        <meshStandardMaterial color="#91774c" metalness={0.86} roughness={0.44} />
+      </mesh>)}
+    </group>
+  );
   const rows = Math.max(1, Math.ceil(icons.length / 4));
 
   return (
@@ -122,10 +133,6 @@ function JobExhibit({ data }) {
           </group>
         ));
       })}
-      {icons.length === 0 && <mesh position={[0, 1.16, 0.055]}>
-        <torusGeometry args={[0.52, 0.034, 10, 12]} />
-        <meshStandardMaterial color={brass} metalness={0.9} roughness={0.33} />
-      </mesh>}
     </group>
   );
 }
@@ -201,10 +208,14 @@ function AvatarHead() {
     head.computeVertexNormals();
     return head;
   }, []);
-  return <group position={[0, 1.5, 0.13]} rotation-y={0.22}>
-    <mesh geometry={geometry} scale={0.85}>
+  return <group position={[0, 1.5, 0.13]} rotation-y={0.22} scale={0.85}>
+    <mesh geometry={geometry}>
       <meshStandardMaterial color="#ba995e" metalness={0.66} roughness={0.41} wireframe transparent opacity={0.58} />
     </mesh>
+    {[-1, 1].map(side => <Line key={side} color="#cfad74" lineWidth={1.15}
+      points={[[side * 0.13, 0.21, 0.553], [side * 0.26, 0.248, 0.545], [side * 0.405, 0.211, 0.47]]} />)}
+    <Line color="#cfad74" lineWidth={1.05} points={[[-0.05, 0.03, 0.714], [0, -0.08, 0.79], [0.065, -0.09, 0.69]]} />
+    <Line color="#cfad74" lineWidth={1.1} points={[[-0.157, -0.25, 0.54], [0, -0.226, 0.634], [0.157, -0.25, 0.54]]} />
   </group>;
 }
 
@@ -216,9 +227,9 @@ const projectExhibits = {
   'ai-avatar': AvatarVoice,
 };
 
-export function GalleryExhibit({ stop, compact, tour }) {
+export function GalleryExhibit({ stop, opticalGlass, tour }) {
   const { kind, data } = stop;
-  if (kind === 'hero' || kind === 'contact') return <OpticalInstrument simple={kind === 'contact'} compact={compact} />;
+  if (kind === 'hero' || kind === 'contact') return <OpticalInstrument simple={kind === 'contact'} opticalGlass={opticalGlass} />;
   if (kind === 'job') return <JobExhibit data={data} />;
   if (kind === 'skills') return <SkillsExhibit groups={data} tour={tour} />;
   if (kind === 'education') return <Folios count={data.length + 3} />;

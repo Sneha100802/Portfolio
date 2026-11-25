@@ -168,7 +168,7 @@ export function RagPipeline({ cinematic = false }) {
 }
 
 /* ---------- PROJECT: semantic search (query vector finds its nearest neighbours) ---------- */
-export function SemanticSearch() {
+export function SemanticSearch({ cinematic = false }) {
   const group = useRef();
 
   const { rest, near, query } = useMemo(() => {
@@ -192,7 +192,10 @@ export function SemanticSearch() {
         <Dots points={rest} size={0.02} mat={<meshStandardMaterial color="#8b8576" roughness={0.6} />} />
         <Dots points={near} size={0.038} mat={<Glow color={GLOW_TEAL} />} />
         {near.map((p, i) => (
-          <Line key={i} points={[query, p]} color={COLORS.brass} lineWidth={1} />
+          <group key={i}>
+            <Line points={[query, p]} color={cinematic ? COLORS.brassDim : COLORS.brass} lineWidth={1} />
+            {cinematic && <Pulse from={query} to={p} offset={i * 0.19} speed={0.47} color={GLOW_TEAL} size={0.023} />}
+          </group>
         ))}
         <mesh position={query}>
           <sphereGeometry args={[0.055, 16, 16]} />
@@ -252,14 +255,15 @@ export function StockChart() {
   const { candles, forecast } = useMemo(() => {
     const rand = rng(7);
     let p = 0.35;
-    const cs = Array.from({ length: 9 }, (_, i) => {
+    const cs = [];
+    for (let i = 0; i < 9; i++) {
       const open = p;
       p += (rand() - 0.42) * 0.2;
       const close = p;
       const hi = Math.max(open, close) + rand() * 0.06;
       const lo = Math.min(open, close) - rand() * 0.06;
-      return { x: -0.75 + i * 0.17, open, close, hi, lo };
-    });
+      cs.push({ x: -0.75 + i * 0.17, open, close, hi, lo });
+    }
     const last = cs[cs.length - 1];
     const fc = [[last.x, 0.1 + last.close, 0]];
     let q = last.close;

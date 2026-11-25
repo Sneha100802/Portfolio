@@ -65,10 +65,10 @@ h1,h2,h3 { font-family: var(--serif); font-weight: 500; }
   text-decoration: none;
 }
 .timeline-notch { width: 7px; height: 7px; flex: 0 0 auto; border: 1px solid #a49784; background: #151418; rotate: 45deg; }
-.timeline-label { position: absolute; right: 22px; opacity: 0; padding: 5px 7px; background: #0b0b0ef2; color: #dfd5c4; font-size: .62rem; font-weight: 600; white-space: nowrap; pointer-events: none; transition: opacity .24s; }
+.timeline-label { position: absolute; right: 22px; opacity: 0; transform: translateX(4px); padding: 5px 7px; background: #0b0b0ef2; color: #dfd5c4; font-size: .62rem; font-weight: 600; white-space: nowrap; pointer-events: none; transition: opacity .24s, transform .24s ease-out; }
 .gallery-timeline a[aria-current] .timeline-notch { background: var(--brass); border-color: var(--brass); }
 .gallery-timeline a:hover .timeline-label,
-.gallery-timeline a:focus-visible .timeline-label { opacity: 1; }
+.gallery-timeline a:focus-visible .timeline-label { opacity: 1; transform: none; }
 .gallery-announcement { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 
 .exhibit { position: relative; z-index: 1; display: grid; align-items: center; min-height: 100svh; padding-block: 108px 72px; outline: none; }
@@ -104,14 +104,21 @@ h1,h2,h3 { font-family: var(--serif); font-weight: 500; }
 .hero-summary { color: var(--dim); max-width: 48ch; margin: 20px 0 22px; font-size: .87rem; line-height: 1.72; }
 .reveal-word { display: inline-block; }
 @media (prefers-reduced-motion: no-preference) {
-  [data-text-reveal="played"] .reveal-word {
+  [data-text-reveal="played"] > .reveal-word {
     animation: word-exposure .48s cubic-bezier(.22, .75, .28, 1) backwards;
-    animation-delay: calc(var(--word-delay) + var(--line-delay, 0ms));
+    animation-delay: calc(var(--word-delay) + var(--line-delay, 70ms));
   }
-  [data-text-reveal="played"] .hero-role { --line-delay: 160ms; }
-  [data-text-reveal="played"] > :is(.hero-summary, .caption-description, .caption-subtitle, .caption-highlights) {
-    animation: text-exposure .55s ease-out .21s backwards;
+  .hero-role { --line-delay: 160ms; }
+  h3[data-text-reveal] { --line-delay: 135ms; }
+  [data-text-reveal="played"]:is(p, li, a):not(.hero-role) {
+    animation: text-exposure .52s cubic-bezier(.22, .75, .28, 1) backwards;
+    animation-delay: calc(var(--text-delay, 200ms) + min(var(--reveal-order, 0), 6) * 36ms);
   }
+  :is(.gallery-brand, .chapter-kicker, .gallery-header nav a) { --text-delay: 0ms; }
+  .caption-eyebrow { --text-delay: 50ms; }
+  :is(.caption-tech li, .skill-groups li, .profile-links a) { --text-delay: 270ms; }
+  :is(.entry-link, .text-link) { --text-delay: 350ms; }
+  .gallery-skip:focus { animation: text-exposure .24s ease-out; }
 }
 @keyframes word-exposure {
   0% { opacity: .16; clip-path: inset(-.18em 100% -.3em -.08em); transform: translateY(.18em); }

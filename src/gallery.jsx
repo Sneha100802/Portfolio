@@ -128,7 +128,7 @@ export function App() {
         observer.unobserve(entry.target);
       }
     }, { rootMargin: '0px 0px -8% 0px', threshold: 0.28 });
-    document.querySelectorAll('[data-text-reveal]').forEach(caption => observer.observe(caption));
+    document.querySelectorAll('[data-text-reveal]').forEach(element => observer.observe(element));
     return () => observer.disconnect();
   }, []);
 
@@ -137,9 +137,9 @@ export function App() {
       <a href="#main" className="gallery-skip">{gallery.skip}</a>
       <header className="gallery-header">
         <div className="gallery-shell gallery-masthead">
-          <a href="#home" className="gallery-brand">{meta.name}<i aria-hidden="true" /></a>
+          <a href="#home" className="gallery-brand" data-text-reveal>{meta.name}<i aria-hidden="true" /></a>
           <nav aria-label={gallery.primaryNavigation}>
-            {['experience', 'projects', 'contact'].map(id => <a href={`#${id}`} key={id}>{chapterLabel[id]}</a>)}
+            {['experience', 'projects', 'contact'].map((id, index) => <a href={`#${id}`} key={id} data-text-reveal style={{ '--reveal-order': index }}>{chapterLabel[id]}</a>)}
           </nav>
         </div>
       </header>

@@ -115,11 +115,15 @@ export function GalleryChapter({ stop, onSkill }) {
     <section className="exhibit gallery-hero" id={id} data-stop={id} tabIndex={-1} aria-labelledby="gallery-title">
       <div className="gallery-shell">
         <div className="caption hero-caption">
-          <h1 id="gallery-title" data-text-reveal><RevealWords text={meta.name} headline /></h1>
-          <p className="hero-role" data-text-reveal><RevealWords text={meta.title} /></p>
-          <p className="hero-summary" data-text-reveal><RevealWords text={summary} /></p>
-          <ProfileLinks />
-          <a className="entry-link" href={roomPath(stops[1])} data-room="experience" data-text-reveal><RevealWords text={gallery.start} /><span aria-hidden="true">↗</span></a>
+          <div className="hero-identity">
+            <h1 id="gallery-title" data-text-reveal><RevealWords text={meta.name} headline /></h1>
+            <p className="hero-role" data-text-reveal><RevealWords text={meta.title} /></p>
+          </div>
+          <div className="hero-context">
+            <p className="hero-summary" data-text-reveal><RevealWords text={summary} /></p>
+            <ProfileLinks />
+            <a className="entry-link" href={roomPath(stops[1])} data-room="experience" data-text-reveal><RevealWords text={gallery.start} /><span aria-hidden="true">↗</span></a>
+          </div>
         </div>
       </div>
     </section>

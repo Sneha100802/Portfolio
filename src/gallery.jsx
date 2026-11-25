@@ -1,9 +1,9 @@
 import { Component, lazy, Suspense, useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import '@fontsource/inter/latin-400.css';
-import '@fontsource/inter/latin-600.css';
-import '@fontsource/cormorant-garamond/latin-500.css';
-import '@fontsource/cormorant-garamond/latin-500-italic.css';
+import '@fontsource/barlow-condensed/latin-600.css';
+import '@fontsource/source-sans-3/latin-400.css';
+import '@fontsource/source-sans-3/latin-600.css';
+import '@fontsource/ibm-plex-mono/latin-400.css';
 import { GalleryChapter } from './chapters/GalleryChapters';
 import { content } from './lib/content';
 import { chapterLabel, roomIndex, roomLabel, roomPath, stops } from './lib/gallery';
@@ -171,7 +171,8 @@ export function App() {
         <div className="gallery-shell gallery-masthead">
           <a href={roomPath(stops[0])} data-room="home" className="gallery-brand" data-text-reveal><RevealWords text={meta.name} /><i aria-hidden="true" /></a>
           <nav aria-label={gallery.primaryNavigation}>
-            {['experience', 'projects', 'contact'].map((id, index) => <a href={roomPath(stops.find(item => item.id === id))} data-room={id} key={id} data-text-reveal style={{ '--reveal-order': index }}><RevealWords text={chapterLabel[id]} /></a>)}
+            {['experience', 'projects', 'contact'].map((id, index) => <a href={roomPath(stops.find(item => item.id === id))} data-room={id} key={id}
+              aria-current={stop.chapter === id ? 'location' : undefined} data-text-reveal style={{ '--reveal-order': index }}><RevealWords text={chapterLabel[id]} /></a>)}
           </nav>
         </div>
       </header>

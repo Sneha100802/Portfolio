@@ -134,6 +134,7 @@ function Archive({ tour, opening, project }) {
       <icosahedronGeometry args={[0.32, 1]} /><meshStandardMaterial color={gold} metalness={0.66} roughness={0.25} wireframe />
     </mesh>}
     <Lantern at={[1.85, 0.89, -0.53]} />
+    <pointLight position={[-0.55, 2, -0.9]} color="#718bc4" intensity={6} distance={4} decay={2} />
   </group>;
 }
 
@@ -143,17 +144,30 @@ function WritingDesk({ tour, opening }) {
   const requestInk = useRef();
   const guide = useRef();
   const lamp = useRef();
-  useFrame((_, delta) => {
+  const shade = useRef();
+  useFrame(({ clock }, delta) => {
     const t = scenePhase(phase, opening.current, tour.current.step?.index, [0.49, 0.76, 1], delta);
     request.current.position.y = MathUtils.damp(request.current.position.y, 1.7 - step(0.18, 0.51, t) * 0.47, 7, delta);
     request.current.rotation.x = MathUtils.damp(request.current.rotation.x, -0.72 * step(0.18, 0.51, t), 8, delta);
-    requestInk.current.opacity = step(0.24, 0.48, t);
+    const selected = tour.current.step;
+    const inkReveal = opening.current >= 1 && selected?.index === 0
+      ? step(0, 560, performance.now() - selected.time) : 1;
+    requestInk.current.opacity = step(0.24, 0.48, t) * inkReveal;
     guide.current.rotation.y = MathUtils.damp(guide.current.rotation.y, -1.42 * (1 - step(0.48, 0.84, t)), 8, delta);
-    lamp.current.intensity = MathUtils.damp(lamp.current.intensity, 1.2 + 10 * step(0.38, 0.80, t), 7, delta);
+    const flicker = Math.sin(clock.elapsedTime * 4.6) * 0.18 + Math.sin(clock.elapsedTime * 13.2) * 0.12;
+    lamp.current.intensity = MathUtils.damp(lamp.current.intensity, 1.2 + 10 * step(0.38, 0.80, t) + flicker, 7, delta);
+    shade.current.rotation.z = -0.33 + Math.sin(clock.elapsedTime * 1.6) * 0.022;
+    shade.current.position.x = 0.52 + Math.sin(clock.elapsedTime * 1.3) * 0.055;
   });
   return <group>
     <Desk />
     <Lantern at={[1.24, 1.24, 0.01]} glow={lamp} />
+    <group ref={shade} position={[0.52, 1.65, -2.38]} rotation-z={-0.33}>
+      {[-0.31, 0, 0.31].map(x => <mesh key={x} position-x={x}>
+        <planeGeometry args={[0.09, 2.15]} />
+        <meshBasicMaterial color="#1a0e16" transparent opacity={0.22} depthWrite={false} />
+      </mesh>)}
+    </group>
     <group ref={request} position={[-0.72, 1.7, 0.47]} rotation-z={0.11}>
       <Paper lines={blankLines} width={0.79} height={0.91} />
       <group position-z={0.004}><Paper lines={question} width={0.79} height={0.91} inkLayer={requestInk} overlay /></group>
@@ -184,6 +198,10 @@ function AcousticLab({ tour, opening }) {
     diaphragm.current.scale.y = 1 + Math.sin(clock.elapsedTime * 55) * strike * 0.42;
     const travel = step(0.31, 0.96, t);
     pulse.current.position.set(-1.1 + travel * 2.4, 1.14 + Math.sin(travel * 28) * (1 - travel) * 0.15, 0.36 - travel * 0.83);
+    if (tour.current.match && opening.current < 0.29) {
+      const impact = step(0, 0.29, opening.current);
+      pulse.current.position.set(0.64 - 1.75 * impact, 1.86 - 0.72 * impact, 1.25 - 0.89 * impact);
+    }
     layers.current.forEach((layer, index) => {
       const glow = step(0.54 + index * 0.09, 0.63 + index * 0.09, t);
       layer.material.emissiveIntensity = MathUtils.damp(layer.material.emissiveIntensity, glow * 0.61, 9, delta);

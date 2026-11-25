@@ -8,6 +8,8 @@ import { chapterLabel, roomIndex, roomLabel, roomPath, roomSwapMs, roomTransitio
 import { Timeline } from './ui/gallery/Timeline';
 import { RevealWords } from './ui/gallery/RevealWords';
 import { RoomIndex } from './ui/gallery/RoomIndex';
+import { createFilmSound } from './lib/filmSound';
+import { deskTargets } from './scene/gallery/DeskShots';
 import './styles/gallery.css';
 
 const Scene = lazy(() => import('./scene/gallery/GalleryScene'));
@@ -27,10 +29,14 @@ export function App() {
   const [theme, setTheme] = useState(() => document.documentElement.dataset.theme === 'light' ? 'light' : 'dark');
   const light = theme === 'light';
   const [activeIndex, setActiveIndex] = useState(() => roomIndex(window.location));
-  const tour = useRef({ position: activeIndex, pointerX: 0, pointerY: 0, skill: null, step: null, cut: false, jump: 0, departure: 0 });
+  const tour = useRef({ position: activeIndex, pointerX: 0, pointerY: 0, skill: null, step: null, cut: false, match: false, jump: 0, departure: 0 });
   const timers = useRef([]);
   const moveFocus = useRef(false);
-  const [transit, setTransit] = useState(false);
+  const desk = useRef(null);
+  const sound = useRef(null);
+  const [soundOn, setSoundOn] = useState(false);
+  const [activeStep, setActiveStep] = useState(0);
+  const [transit, setTransit] = useState(null);
   const [replay, setReplay] = useState(0);
   const [mode, setMode] = useState('plain');
   const [graphics, setGraphics] = useState('checking');
@@ -44,23 +50,38 @@ export function App() {
   const next = stops[activeIndex + 1];
   const entrance = stop.kind === 'hero';
   const compact = mode === 'compact';
+  const paintDesk = useCallback((index, x, y, visible) => {
+    const layer = desk.current;
+    if (!layer) return;
+    layer.toggleAttribute('data-positioned', index !== undefined);
+    if (index === undefined) return;
+    const button = layer.children[index];
+    const left = `${x}px`;
+    const top = `${y}px`;
+    if (button.style.left !== left) button.style.left = left;
+    if (button.style.top !== top) button.style.top = top;
+    if (button.hidden === visible) button.hidden = !visible;
+  }, []);
 
-  const showRoom = useCallback((index) => {
+  const showRoom = useCallback((index, match = false) => {
     tour.current.position = index;
     tour.current.jump += 1;
     tour.current.departure = 0;
     tour.current.skill = null;
     tour.current.step = null;
     tour.current.cut = false;
+    tour.current.match = match;
     moveFocus.current = true;
     window.scrollTo({ top: 0, behavior: 'instant' });
     setActiveIndex(index);
+    setActiveStep(0);
   }, []);
 
   function replayOpening() {
     if (!visual || timers.current.length) return;
     window.scrollTo({ top: 0, behavior: 'instant' });
     tour.current.cut = false;
+    tour.current.match = false;
     tour.current.jump += 1;
     setReplay(value => value + 1);
   }
@@ -69,6 +90,40 @@ export function App() {
     document.documentElement.dataset.theme = theme;
     document.querySelector('meta[name="theme-color"]')?.setAttribute('content', light ? '#f5f0e6' : '#0b0b0e');
   }, [theme, light]);
+
+  useEffect(() => () => { sound.current?.close().catch(() => {}); }, []);
+
+  async function toggleSound() {
+    if (sound.current) {
+      const previous = sound.current;
+      sound.current = null;
+      setSoundOn(false);
+      await previous.close().catch(() => {});
+      return;
+    }
+    let nextSound;
+    try {
+      nextSound = createFilmSound();
+      if (!nextSound) return;
+      sound.current = nextSound;
+      await nextSound.resume();
+      if (sound.current === nextSound) setSoundOn(true);
+    } catch {
+      if (nextSound && sound.current === nextSound) {
+        sound.current = null;
+        setSoundOn(false);
+        await nextSound.close().catch(() => {});
+      }
+    }
+  }
+
+  function selectStep(index) {
+    const step = stop.data.story.steps[index];
+    tour.current.step = { room: stop.id, index, position: step.position, time: performance.now() };
+    setActiveStep(index);
+    if (stop.id === 'job-idea-company') sound.current?.paper();
+    if (stop.id === 'job-iiit-nr') sound.current?.bronze();
+  }
 
   function toggleTheme() {
     const next = light ? 'dark' : 'light';
@@ -83,19 +138,27 @@ export function App() {
     if (index < 0) return;
     event.preventDefault();
     if (index === activeIndex || timers.current.length) return;
+    const match = visual && !matchMedia('(prefers-reduced-motion: reduce)').matches &&
+      stop.id === 'job-idea-company' && stops[index].id === 'job-iiit-nr';
     const arrive = () => {
       history.pushState(null, '', link.href);
-      showRoom(index);
+      showRoom(index, match);
+      if (stops[index].id === 'job-iiit-nr') sound.current?.bronze();
     };
     if (!visual || matchMedia('(prefers-reduced-motion: reduce)').matches) {
       arrive();
       return;
     }
     tour.current.departure = performance.now();
-    setTransit(true);
+    const lantern = match ? desk.current?.querySelector('[data-desk-step="1"]') : null;
+    setTransit({
+      match,
+      x: lantern?.style.left || '76vw',
+      y: lantern?.style.top || '51vh',
+    });
     timers.current = [window.setTimeout(arrive, roomSwapMs), window.setTimeout(() => {
       timers.current = [];
-      setTransit(false);
+      setTransit(null);
     }, roomTransitionMs)];
   }
 
@@ -152,7 +215,7 @@ export function App() {
     }
     function restore() {
       clearTransition();
-      setTransit(false);
+      setTransit(null);
       showRoom(roomIndex(location));
     }
     window.addEventListener('popstate', restore);
@@ -187,7 +250,7 @@ export function App() {
 
   return (
     <div className={`gallery gallery--${visual ? mode : 'plain'} ${entrance ? 'gallery--entrance' : 'gallery--room'}`}
-      onClick={navigate} data-company={stop.kind === 'job' ? stop.data.id : undefined} data-transit={transit || undefined}
+      onClick={navigate} data-company={stop.kind === 'job' ? stop.data.id : undefined} data-transit={Boolean(transit) || undefined}
       data-scene={visual && ready ? 'ready' : 'fallback'} data-graphics={failed ? 'unavailable' : graphics}>
       <a href="#main" className="gallery-skip"><RevealWords text={gallery.skip} /></a>
       <header className="gallery-header">
@@ -199,6 +262,10 @@ export function App() {
                 aria-current={stop.chapter === id ? 'location' : undefined} data-text-reveal style={{ '--reveal-order': index }}><RevealWords text={chapterLabel[id]} /></a>)}
             </nav>
             <RoomIndex active={stop.id} />
+            {Boolean(window.AudioContext ?? window.webkitAudioContext) && <button type="button" className="theme-toggle film-sound"
+              aria-label={gallery.sound} aria-pressed={soundOn} onClick={toggleSound} data-text-reveal>
+              <span aria-hidden="true">♪</span><span className="film-sound-label"><RevealWords text={gallery.sound} /></span>
+            </button>}
             <button type="button" className="theme-toggle" onClick={toggleTheme} aria-label={light ? gallery.switchToDark : gallery.switchToLight}
               title={light ? gallery.switchToDark : gallery.switchToLight} data-text-reveal>
               <i className="theme-toggle-icon" aria-hidden="true" />
@@ -209,14 +276,20 @@ export function App() {
       </header>
       {visual && <div className="gallery-scene" aria-hidden="true">
         <SceneBoundary onError={sceneFailed}>
-          <Suspense fallback={null}><Scene tour={tour} compact={compact} entrance={entrance} light={light} replay={replay} onReady={sceneReady} onFailure={sceneFailed} /></Suspense>
+          <Suspense fallback={null}><Scene tour={tour} paintDesk={paintDesk} compact={compact} entrance={entrance} light={light} replay={replay} onReady={sceneReady} onFailure={sceneFailed} /></Suspense>
         </SceneBoundary>
       </div>}
       {(!visual || !ready) && stop.chapter === 'projects' && <div className="gallery-scene-still" aria-hidden="true" data-project-still={stop.kind} />}
       {!entrance && <Timeline active={stop.chapter} room={stop.id} />}
       <main id="main" tabIndex={-1}>
         <GalleryChapter key={stop.id} stop={stop} onSkill={(skill) => { tour.current.skill = skill; }}
-          onStep={(step) => { tour.current.step = step; }} onReplay={visual && ready ? replayOpening : undefined} />
+          activeStep={activeStep} onStep={selectStep} onReplay={visual && ready ? replayOpening : undefined} />
+        {visual && ready && stop.id === 'job-idea-company' && <div className="film-hotspots" ref={desk}>
+          {deskTargets.map(({ index, label }) => <button key={index} type="button" data-desk-step={index} aria-controls={`${stop.id}-step`}
+            aria-label={gallery[label]} aria-pressed={activeStep === index} onClick={() => selectStep(index)} data-text-reveal>
+            <i aria-hidden="true" /><span><RevealWords text={gallery[label]} /></span>
+          </button>)}
+        </div>}
         {visual && ready && !entrance && <button type="button" className="opening-skip" onClick={() => {
           tour.current.cut = true;
           document.getElementById(stop.id)?.focus({ preventScroll: true });
@@ -226,7 +299,8 @@ export function App() {
         <a href={roomPath(previous)} data-room={previous.id} aria-label={`${gallery.previousRoom} ${roomLabel(previous)}`} data-text-reveal><span aria-hidden="true">←</span> <RevealWords text={roomLabel(previous)} /></a>
         {next && <a href={roomPath(next)} data-room={next.id} aria-label={`${gallery.nextRoom} ${roomLabel(next)}`} data-text-reveal><RevealWords text={roomLabel(next)} /> <span aria-hidden="true">→</span></a>}
       </nav>}
-      {transit && <div className="room-transit" aria-hidden="true" style={{ '--room-transition': `${roomTransitionMs}ms` }} />}
+      {transit && <div className={`room-transit${transit.match ? ' room-transit--ember' : ''}`} aria-hidden="true"
+        style={{ '--room-transition': `${roomTransitionMs}ms`, '--ember-x': transit.x, '--ember-y': transit.y }} />}
     </div>
   );
 }

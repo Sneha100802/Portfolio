@@ -19,6 +19,9 @@
     "close": "Close",
     "replayOpening": "Replay opening",
     "skipOpening": "Skip opening",
+    "sound": "Sound",
+    "letterHotspot": "Read letter",
+    "lanternHotspot": "Light the guide",
     "filmProps": {
       "archive": ["Archive record", "Maya Example", "Record EX-001", "Access request"],
       "extracted": ["Access request"],

@@ -80,7 +80,7 @@ export function SceneAperture({ position = [0, 1.5, 1.15], ready, tour, index, g
   const duration = gateway ? 1.65 : passage ? 1.65 : 2.2;
 
   useFrame(({ camera, clock }, delta) => {
-    if (tour.current.cut && !gateway) {
+    if ((tour.current.cut || tour.current.match) && !gateway) {
       aperture.current.visible = false;
       return;
     }

@@ -1,27 +1,20 @@
-import { useState } from 'react';
 import { content } from '../../lib/content';
 import { RevealWords } from './RevealWords';
 
 const { gallery } = content;
 
-export function WorkStory({ stop, onStep }) {
+export function WorkStory({ stop, onStep, active = 0 }) {
   const { story, bullets } = stop.data;
-  const [active, setActive] = useState(0);
   if (!story) return null;
   const step = story.steps[active];
   const panel = `${stop.id}-step`;
-
-  function select(index) {
-    setActive(index);
-    onStep({ room: stop.id, index, position: story.steps[index].position });
-  }
 
   return <div className="work-story">
     <section aria-labelledby={`${stop.id}-walkthrough`} className="walkthrough">
       <h3 id={`${stop.id}-walkthrough`} data-text-reveal><RevealWords text={gallery.walkthrough} /></h3>
       <ol className="walkthrough-controls" role="list">
         {story.steps.map(({ label }, index) => <li key={label}>
-          <button type="button" aria-pressed={active === index} aria-controls={panel} data-text-reveal onClick={() => select(index)}>
+          <button type="button" aria-pressed={active === index} aria-controls={panel} data-text-reveal onClick={() => onStep(index)}>
             <RevealWords text={label} />
           </button>
         </li>)}

@@ -395,6 +395,76 @@ h1,h2,h3 { font-family: var(--display); font-weight: 400; }
 :root[data-theme="light"] .theme-toggle-icon { transform: rotate(180deg); }
 
 .gallery-tools > .room-index-trigger { margin-inline-end: -4px; padding-inline: 11px; }
+.gallery-tools { gap: clamp(12px, 2.1vw, 30px); }
+.film-sound[aria-pressed="true"] { border-color: var(--brass); color: var(--brass); }
+.film-sound > [aria-hidden] { font-size: 1rem; line-height: 0.85; }
+.film-hotspots {
+  position: fixed;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  visibility: hidden;
+}
+.film-hotspots[data-positioned] { visibility: visible; }
+.gallery[data-transit] .film-hotspots { visibility: hidden; }
+.film-hotspots button {
+  position: absolute;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  min-width: 44px;
+  padding: 3px 10px;
+  transform: translate(-16px, -50%);
+  border: 0;
+  border-radius: 4px;
+  color: var(--ivory);
+  background: transparent;
+  font: 600 .72rem/1.2 Inter, system-ui, sans-serif;
+  white-space: nowrap;
+  pointer-events: auto;
+  cursor: pointer;
+}
+.film-hotspots button[hidden] { display: none; }
+.film-hotspots button[data-desk-step="1"] { flex-direction: row-reverse; transform: translate(calc(-100% + 16px), -50%); }
+.film-hotspots button i {
+  flex: 0 0 12px;
+  height: 12px;
+  border: 1px solid var(--brass);
+  border-radius: 50%;
+  background: var(--night);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--night) 60%, transparent);
+}
+.film-hotspots button > span {
+  padding: 5px 7px;
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  background: var(--night);
+}
+.film-hotspots button:is(:hover, :focus-visible, [aria-pressed="true"]) i { background: var(--brass); }
+.film-hotspots button:focus-visible { outline: 2px solid var(--brass); outline-offset: 1px; }
+.room-transit--ember::before {
+  background: radial-gradient(ellipse at 48% 52%, #2b1c14, #0a0809 67%);
+  animation: ember-shade var(--room-transition) both;
+}
+.room-transit--ember::after {
+  width: 44px;
+  top: var(--ember-y);
+  left: var(--ember-x);
+  background: radial-gradient(circle, #fff7d7 0 7%, #f7c487 12%, #c5753ca3 26%, #91412b47 40%, transparent 69%);
+  animation: ember-crossing var(--room-transition) cubic-bezier(.42, 0, .32, 1) both;
+}
+@keyframes ember-shade {
+  0%, 100% { opacity: 0; }
+  48%, 57% { opacity: 1; }
+}
+@keyframes ember-crossing {
+  0% { opacity: 0; transform: translate(-50%, -50%) scale(.55); }
+  15% { opacity: 1; }
+  56% { left: 48%; top: 47%; transform: translate(-50%, -50%) scale(1.18); }
+  78% { opacity: .85; }
+  100% { opacity: 0; left: 41%; top: 51%; transform: translate(-50%, -50%) scale(.5); }
+}
 .room-index {
   width: min(730px, calc(100% - 32px));
   max-height: 84dvh;
@@ -497,7 +567,10 @@ h1,h2,h3 { font-family: var(--display); font-weight: 400; }
 }
 
 @media (max-width: 520px) {
+  .gallery-tools { gap: 8px; }
   .gallery-tools > nav { display: none; }
+  .film-sound-label { display: none; }
+  .film-sound { min-width: 34px; }
   .gallery-header .room-index-grid { gap: 18px 15px; }
   .walkthrough-controls button { min-height: 40px; }
 }

@@ -7,6 +7,7 @@ import { GalleryBackdrop } from './GalleryBackdrop';
 import { GalleryExhibit } from './GalleryExhibits';
 import { SceneAperture } from './SceneAperture';
 import { arrivalDuration, companyLook, roomArrival, roomSet } from './RoomArrival';
+import { deskTargets } from './DeskShots';
 
 const brass = '#c9a45e';
 const night = '#0b0b0e';
@@ -108,11 +109,14 @@ function Fixture({ stop, index, opticalGlass, shadow, tour, opening, keyLight, r
   );
 }
 
-function World({ tour, compact, entrance, light, replay, quality, paintStage, onReady }) {
+function World({ tour, paintDesk, compact, entrance, light, replay, quality, paintStage, onReady }) {
   const journey = useRef(null);
   const look = useRef(new Vector3());
   const destination = useRef(new Vector3());
   const drift = useRef({ x: 0, y: 0 });
+  const deskLens = useRef({ x: 0, y: 0, depth: 0 });
+  const projection = useRef(new Vector3());
+  const deskFocus = useMemo(() => new Vector3(), []);
   const [center, setCenter] = useState(0);
   const view = useRef('');
   const intro = useRef(0);
@@ -161,12 +165,19 @@ function World({ tour, compact, entrance, light, replay, quality, paintStage, on
     const focus = MathUtils.lerp(originShot.focus, nextShot.focus, move);
     const side = compact ? 0.65 : MathUtils.lerp(originShot.side, nextShot.side, move);
     const framing = compact && !entrance ? 0.5 : 1;
+    const selected = tour.current.step;
+    const examining = intro.current >= 1 && !tour.current.departure && selected?.room === 'job-idea-company';
+    const lens = deskLens.current;
+    lens.x = MathUtils.damp(lens.x, examining ? selected.position[0] * 0.68 : 0, 4, step);
+    lens.y = MathUtils.damp(lens.y, examining ? (selected.position[1] - focus) * 0.73 : 0, 4, step);
+    lens.depth = MathUtils.damp(lens.depth, examining ? (compact ? 0.65 : 1.46) : 0, 4, step);
 
-    camera.position.set(destination.current.x + side * (1 - depart * 0.55 - close * 0.4) + (arrival?.side ?? 0) * framing + arc * 1.18 + entry * 1.68 + drift.current.x * 0.23,
+    camera.position.set(destination.current.x + lens.x * 0.28 + side * (1 - depart * 0.55 - close * 0.4) + (arrival?.side ?? 0) * framing + arc * 1.18 + entry * 1.68 + drift.current.x * 0.23,
       height + (arrival?.height ?? 0) * framing + entry * 0.69 + drift.current.y * 0.15 + arc * 0.31 - depart * 0.35,
-      destination.current.z + distance - close * 2.65 * framing + entry * 1.84 + arc * 0.82 - depart * 3.8);
-    look.current.set(destination.current.x + (arrival?.target ?? 0) * framing + arc * 0.13,
-      MathUtils.lerp(focus, arrival?.focus ?? focus, close) + arc * 0.14, destination.current.z - 0.12);
+      destination.current.z + distance - close * 2.65 * framing + entry * 1.84 + arc * 0.82 - depart * 3.8 - lens.depth);
+    look.current.set(destination.current.x + lens.x + (arrival?.target ?? 0) * framing + arc * 0.13,
+      MathUtils.lerp(focus, arrival?.focus ?? focus, close) + arc * 0.14 + lens.y, destination.current.z - 0.12);
+    if (stops[nearest].id === 'job-idea-company') deskFocus.copy(look.current);
     camera.lookAt(look.current);
     if (arrival) camera.rotateZ(Math.sign(arrival.side) * close * 0.075);
     if (stage.current) stage.current.position.copy(destination.current);
@@ -179,7 +190,8 @@ function World({ tour, compact, entrance, light, replay, quality, paintStage, on
     }
     if (rimLight.current) rimLight.current.intensity = light ? 5 + close * 4 : 9 + close * 8;
     const framingSettle = MathUtils.smoothstep(intro.current, 0.53, 0.97);
-    const offsetX = entrance || compact ? 0 : Math.round(-size.width * 0.224 * framingSettle);
+    const horizontalFrame = 0.224 - lens.depth * 0.027;
+    const offsetX = entrance || compact ? 0 : Math.round(-size.width * horizontalFrame * framingSettle);
     const offsetY = Math.round(size.height * (entrance ? 0.14 : compact ? 0.20 * framingSettle : 0));
     const viewKey = `${size.width}:${size.height}:${offsetX}:${offsetY}`;
     if (view.current !== viewKey) {
@@ -188,6 +200,15 @@ function World({ tour, compact, entrance, light, replay, quality, paintStage, on
     }
     const atExhibit = nearest === center && Math.abs(journey.current - goal) < 0.045 && intro.current > 0.90;
     const station = atExhibit ? stops[nearest].id : '';
+    if (station === 'job-idea-company') {
+      camera.updateMatrixWorld();
+      for (const { index: control, anchor } of deskTargets) {
+        const point = projection.current.fromArray(anchor).add(coordinates[nearest]).project(camera);
+        const x = Math.round((point.x + 1) * size.width / 2);
+        const y = Math.round((1 - point.y) * size.height / 2);
+        paintDesk(control, x, y, x >= 24 && x <= size.width - 22 && y >= 74 && y <= size.height - 74);
+      }
+    } else paintDesk();
     paintStage(station, 1 - arc ** 7 * 0.34, intro.current < 0.77);
   });
 
@@ -224,12 +245,13 @@ function World({ tour, compact, entrance, light, replay, quality, paintStage, on
           position={entrance ? undefined : [openingShot.target * 0.8, openingShot.focus, 1.15]} />
       </group>
       {quality > 0 && !compact && !light && !new URLSearchParams(window.location.search).has('fx', '0') &&
-        <Suspense fallback={null}><Effects quality={quality} hero={center === 0} /></Suspense>}
+        <Suspense fallback={null}><Effects quality={quality} hero={center === 0}
+          deskFocus={activeStop.id === 'job-idea-company' ? deskFocus : undefined} /></Suspense>}
     </>
   );
 }
 
-export default function GalleryScene({ tour, compact, entrance, light, replay, onReady, onFailure }) {
+export default function GalleryScene({ tour, paintDesk, compact, entrance, light, replay, onReady, onFailure }) {
   const [quality, setQuality] = useState(() => compact || window.innerWidth < 1220 ? 0 : 2);
   const [visible, setVisible] = useState(true);
   const wrapper = useRef();
@@ -274,7 +296,7 @@ export default function GalleryScene({ tour, compact, entrance, light, replay, o
       <PerformanceMonitor flipflops={2} bounds={refresh => [Math.min(57, refresh * 0.93), Math.max(60, refresh * 0.78)]}
         onDecline={() => setQuality(current => Math.max(0, current - 1))}
         onFallback={() => setQuality(0)}>
-        <World tour={tour} compact={compact} entrance={entrance} light={light} replay={replay} quality={quality} paintStage={paintStage} onReady={onReady} />
+        <World tour={tour} paintDesk={paintDesk} compact={compact} entrance={entrance} light={light} replay={replay} quality={quality} paintStage={paintStage} onReady={onReady} />
       </PerformanceMonitor>
     </Canvas>
   </div>;

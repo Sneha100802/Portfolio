@@ -121,6 +121,7 @@
       "name": "Multimodal RAG Platform (Survatra)",
       "tag": "Production",
       "description": "Document ingestion, PHI/PII masking, FAISS/ChromaDB retrieval, and LLM query routing on FastAPI, PostgreSQL, and AWS.",
+      "exhibit": ["Scan documents", "Mask sensitive fields", "Retrieve vectors", "Route to the model"],
       "stack": ["FastAPI", "PostgreSQL", "AWS", "FAISS", "ChromaDB"],
       "url": "TODO"
     },
@@ -129,6 +130,7 @@
       "name": "Hotel Booking RAG Q&A",
       "tag": "",
       "description": "FAISS + Sentence Transformers semantic search with a Flask API for natural-language querying.",
+      "exhibit": ["Embed the question", "Find nearby matches", "Retrieve hotel results"],
       "stack": ["FAISS", "Sentence Transformers", "Flask"],
       "url": "TODO"
     },
@@ -137,6 +139,7 @@
       "name": "Multi-Agent System",
       "tag": "",
       "description": "Python agents with a Gradio interface routing inputs by content type and intent.",
+      "exhibit": ["Receive an input", "Route by intent", "Dispatch to an agent"],
       "stack": ["Python", "Gradio"],
       "url": "TODO"
     },
@@ -145,6 +148,7 @@
       "name": "Stock Price Prediction",
       "tag": "",
       "description": "Hybrid text + ML models (0.99 accuracy) with Streamlit, Flask, and Grafana dashboards.",
+      "exhibit": ["Example price history", "Illustrative forecast"],
       "stack": ["Streamlit", "Flask", "Grafana"],
       "url": "TODO"
     },
@@ -153,6 +157,7 @@
       "name": "AI Avatar Conversation Pipeline",
       "tag": "",
       "description": "Gemini 2.0 Flash, edge-tts, and Wav2Lip for text-to-speech-to-video output.",
+      "exhibit": ["Generate text", "Synthesize speech", "Sync the avatar’s lips"],
       "stack": ["Gemini 2.0 Flash", "edge-tts", "Wav2Lip"],
       "url": "TODO"
     }

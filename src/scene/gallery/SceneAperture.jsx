@@ -1,0 +1,75 @@
+import { useMemo, useRef } from 'react';
+import { useFrame } from '@react-three/fiber';
+import { MathUtils } from 'three';
+
+const vertexShader = /* glsl */ `
+  varying vec2 point;
+  void main() {
+    point = uv * 2.0 - 1.0;
+    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+  }
+`;
+
+const fragmentShader = /* glsl */ `
+  uniform float visibility;
+  uniform float turn;
+  varying vec2 point;
+
+  void main() {
+    float radius = length(point);
+    if (radius > 0.98) discard;
+    float angle = atan(point.y, point.x);
+    float ripple = 1.0 + 0.18 * sin(angle * 9.0 - turn * 13.0);
+    float shadow = 1.0 - smoothstep(0.33, 0.365, radius);
+    float rim = exp(-abs(radius - 0.374) * 76.0);
+    float caustic = exp(-abs(radius - 0.397) * 18.0) * ripple;
+
+    vec2 band = mat2(0.966, 0.259, -0.259, 0.966) * point;
+    float diskRadius = length(band * vec2(1.0, 4.4));
+    float disk = exp(-abs(diskRadius - 0.49) * 16.0);
+    disk *= 1.0 - smoothstep(-0.035, 0.018, band.y) * shadow;
+
+    vec3 warm = vec3(1.0, 0.63, 0.25) * (caustic * 0.28 + disk * 0.66);
+    warm += vec3(1.0, 0.86, 0.65) * rim * (0.59 + 0.32 * cos(angle - 0.85));
+    float alpha = clamp(shadow + rim * 0.8 + caustic * 0.43 + disk * 0.62, 0.0, 1.0) * visibility;
+    gl_FragColor = vec4(vec3(0.007, 0.006, 0.010) + warm, alpha);
+  }
+`;
+
+export function SceneAperture({ position = [0, 1.5, 1.15], ready, tour, index }) {
+  const aperture = useRef();
+  const shader = useRef();
+  const orbit = useRef();
+  const elapsed = useRef(0);
+  const uniforms = useMemo(() => ({ visibility: { value: 0 }, turn: { value: 0 } }), []);
+
+  useFrame(({ camera }, delta) => {
+    if (elapsed.current >= 1.08 || (ready && !ready.current)) return;
+    if (!elapsed.current && tour && Math.abs(tour.current.position - index) > 0.68) return;
+    elapsed.current = Math.min(1.08, elapsed.current + Math.min(delta, 0.05));
+    const time = elapsed.current / 1.08;
+    const emerge = MathUtils.smoothstep(time, 0, 0.23);
+    const collapse = MathUtils.smoothstep(time, 0.30, 1);
+    const alpha = emerge * (1 - collapse);
+    const object = aperture.current;
+    object.visible = time < 1;
+    object.quaternion.copy(camera.quaternion);
+    object.scale.setScalar(MathUtils.lerp(0.48, 1.23, emerge) - collapse * 0.87);
+    shader.current.uniforms.visibility.value = alpha;
+    shader.current.uniforms.turn.value = time;
+    orbit.current.rotation.set(1.24 - collapse * 0.27, 0.12 + time * 0.25, -0.25);
+    orbit.current.material.opacity = alpha * 0.39;
+  });
+
+  return <group ref={aperture} position={position} visible={false}>
+    <mesh renderOrder={7}>
+      <planeGeometry args={[3.85, 3.85]} />
+      <shaderMaterial ref={shader} uniforms={uniforms} vertexShader={vertexShader} fragmentShader={fragmentShader}
+        transparent depthWrite={false} depthTest={false} toneMapped={false} />
+    </mesh>
+    <mesh ref={orbit} renderOrder={8}>
+      <torusGeometry args={[0.95, 0.013, 6, 64]} />
+      <meshBasicMaterial color="#f4bb77" transparent opacity={0} depthWrite={false} depthTest={false} toneMapped={false} />
+    </mesh>
+  </group>;
+}

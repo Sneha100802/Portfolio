@@ -11,6 +11,7 @@ import { Timeline } from './ui/gallery/Timeline';
 import './styles/gallery.css';
 
 const Scene = lazy(() => import('./scene/gallery/GalleryScene'));
+const CompactProjectScene = lazy(() => import('./scene/gallery/CompactProjectScene'));
 const { gallery, meta } = content;
 
 class SceneBoundary extends Component {
@@ -18,14 +19,14 @@ class SceneBoundary extends Component {
   static getDerivedStateFromError() { return { failed: true }; }
   componentDidCatch(error) {
     console.error('Gallery renderer failed', error);
-    this.props.onError();
+    this.props.onError?.();
   }
   render() { return this.state.failed ? null : this.props.children; }
 }
 
 export function App() {
   const tour = useRef({ position: 0, pointerX: 0, pointerY: 0, skill: null });
-  const [active, setActive] = useState('home');
+  const [activeIndex, setActiveIndex] = useState(0);
   const [mode, setMode] = useState('plain');
   const [graphics, setGraphics] = useState('checking');
   const [ready, setReady] = useState(false);
@@ -33,6 +34,7 @@ export function App() {
   const sceneReady = useCallback(() => { setReady(true); }, []);
   const sceneFailed = useCallback(() => { setFailed(true); }, []);
   const visual = !failed && mode !== 'plain';
+  const active = stops[activeIndex].chapter;
 
   useEffect(() => {
     const reduce = matchMedia('(prefers-reduced-motion: reduce)');
@@ -80,7 +82,7 @@ export function App() {
       const between = next === undefined ? 0 : Math.max(0, Math.min(1, (anchor - centers[index]) / (next - centers[index])));
       tour.current.position = index + between;
       const nearest = Math.round(tour.current.position);
-      setActive(stops[nearest].chapter);
+      setActiveIndex(nearest);
     }
     function resize() {
       centers = elements.map(element => {
@@ -151,9 +153,14 @@ export function App() {
       <Timeline active={active} />
       <p className="gallery-announcement" aria-live="polite" aria-atomic="true">{chapterLabel[active]}</p>
       <main id="main" tabIndex={-1}>
-        {stops.slice(0, -1).map(stop => <GalleryChapter key={stop.id} stop={stop} onSkill={(skill) => { tour.current.skill = skill; }} />)}
+        {stops.slice(0, -1).map((stop, index) => <GalleryChapter key={stop.id} stop={stop}
+          current={index === activeIndex}
+          onSkill={(skill) => { tour.current.skill = skill; }}
+          projectScene={visual && mode === 'compact' && index === activeIndex && stop.chapter === 'projects' ? (
+            <SceneBoundary><Suspense fallback={null}><CompactProjectScene stop={stop} /></Suspense></SceneBoundary>
+          ) : null} />)}
       </main>
-      <GalleryChapter stop={stops.at(-1)} />
+      <GalleryChapter stop={stops.at(-1)} current={activeIndex === stops.length - 1} />
     </div>
   );
 }

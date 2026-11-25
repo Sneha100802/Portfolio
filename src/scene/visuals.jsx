@@ -93,10 +93,12 @@ export function CnnWave() {
 export function RagPipeline({ cinematic = false }) {
   const vectors = useMemo(() => cloud(5, 26, 0.2), []);
   const core = useRef();
+  const scanner = useRef();
 
-  useFrame((_, delta) => {
+  useFrame(({ clock }, delta) => {
     core.current.rotation.y += delta * 0.6;
     core.current.rotation.x += delta * 0.3;
+    if (scanner.current) scanner.current.position.y = Math.sin(clock.elapsedTime * 1.8) * 0.14;
   });
 
   const xs = [-0.8, -0.27, 0.27, 0.8];
@@ -124,6 +126,10 @@ export function RagPipeline({ cinematic = false }) {
             <meshStandardMaterial color={COLORS.brassDim} roughness={0.64} />
           </mesh>
         ))}
+        {cinematic && <mesh ref={scanner} position={[0.05, 0, 0.095]} rotation-z={0.12}>
+          <boxGeometry args={[0.27, 0.01, 0.005]} />
+          <Glow color={GLOW_TEAL} />
+        </mesh>}
       </group>
 
       {/* 2. masking: a dark plate with redaction bars */}
@@ -141,6 +147,10 @@ export function RagPipeline({ cinematic = false }) {
 
       {/* 3. vector store: a small cloud of embeddings */}
       <group position={[xs[2], y, 0]}>
+        {cinematic && <Part position-y={-0.09} geo={<cylinderGeometry args={[0.19, 0.19, 0.27, 20, 1, true]} />}
+          mat={<meshStandardMaterial color={COLORS.teal} transparent opacity={0.13} depthWrite={false} side={THREE.DoubleSide} roughness={0.44} />}>
+          <Edges color={COLORS.brassDim} threshold={30} />
+        </Part>}
         <Dots points={vectors} size={0.022} mat={<Glow color={GLOW_TEAL} />} />
       </group>
 
@@ -167,6 +177,18 @@ export function RagPipeline({ cinematic = false }) {
   );
 }
 
+function HotelResult() {
+  const windows = [-0.16, 0, 0.16].flatMap(x => [0.08, 0.25, 0.42].map(y => [x, y, 0.208]));
+  return <group position={[-0.61, -0.48, 0.12]} rotation-y={0.12}>
+    <Part position-y={0.22} geo={<boxGeometry args={[0.52, 0.64, 0.4]} />} mat={<Metal color="#37353a" />}><Edges color={COLORS.brassDim} /></Part>
+    <Part position-y={0.55} geo={<boxGeometry args={[0.59, 0.046, 0.47]} />} mat={<BrassMat />} />
+    {windows.map(([x, y, z]) => <Part key={`${x}:${y}`} position={[x, y, z]}
+      geo={<boxGeometry args={[0.07, 0.085, 0.013]} />} mat={<meshBasicMaterial color="#d6ad6d" />} />)}
+    <Part position={[0, -0.036, 0.21]} geo={<boxGeometry args={[0.17, 0.16, 0.024]} />} mat={<Metal color="#16181c" />} />
+    <Part position={[0, 0.044, 0.232]} geo={<boxGeometry args={[0.24, 0.025, 0.07]} />} mat={<BrassMat />} />
+  </group>;
+}
+
 /* ---------- PROJECT: semantic search (query vector finds its nearest neighbours) ---------- */
 export function SemanticSearch({ cinematic = false }) {
   const group = useRef();
@@ -188,7 +210,12 @@ export function SemanticSearch({ cinematic = false }) {
 
   return (
     <group position={[0, BASE_Y + 0.75, 0]}>
-      <group ref={group}>
+      {cinematic && <>
+        <HotelResult />
+        <Line points={[[0.3, 0, 0], [-0.6, -0.12, 0.12]]} color={COLORS.brassDim} lineWidth={1} />
+        <Pulse from={[0.3, 0, 0]} to={[-0.6, -0.12, 0.12]} speed={0.38} size={0.027} color={GLOW_TEAL} />
+      </>}
+      <group ref={group} position-x={cinematic ? 0.30 : 0}>
         <Dots points={rest} size={0.02} mat={<meshStandardMaterial color="#8b8576" roughness={0.6} />} />
         <Dots points={near} size={0.038} mat={<Glow color={GLOW_TEAL} />} />
         {near.map((p, i) => (
@@ -207,27 +234,50 @@ export function SemanticSearch({ cinematic = false }) {
 }
 
 /* ---------- PROJECT: multi-agent router ---------- */
-export function AgentNetwork() {
+export function AgentNetwork({ cinematic = false }) {
   const group = useRef();
   const router = useRef();
+  const dispatch = useRef();
+  const receivers = useRef([]);
+  const intake = useMemo(() => new THREE.Vector3(-0.95, 0.26, 0.22), []);
+  const origin = useMemo(() => new THREE.Vector3(), []);
 
   const agents = useMemo(
     () =>
       Array.from({ length: 5 }, (_, i) => {
         const a = (i / 5) * Math.PI * 2;
-        return [Math.cos(a) * 0.58, [0, 0.14, -0.1, 0.12, -0.05][i], Math.sin(a) * 0.58];
+        return new THREE.Vector3(Math.cos(a) * 0.58, [0, 0.14, -0.1, 0.12, -0.05][i], Math.sin(a) * 0.58);
       }),
     []
   );
 
-  useFrame((_, delta) => {
+  useFrame(({ clock }, delta) => {
     group.current.rotation.y += delta * 0.22;
     router.current.rotation.y += delta * 0.8;
+    if (dispatch.current) {
+      const route = clock.elapsedTime * 0.64;
+      const phase = route % 1;
+      const selected = Math.floor(route) % agents.length;
+      const target = agents[selected];
+      if (phase < 0.36) dispatch.current.position.lerpVectors(intake, origin, phase / 0.36);
+      else dispatch.current.position.lerpVectors(origin, target, (phase - 0.36) / 0.64);
+      receivers.current.forEach((receiver, index) => {
+        if (receiver) receiver.scale.setScalar(index === selected ? 1 + 1.1 * THREE.MathUtils.smoothstep(phase, 0.75, 1) : 1);
+      });
+    }
   });
 
   return (
     <group position={[0, BASE_Y + 0.7, 0]}>
       <group ref={group}>
+        {cinematic && <>
+          <Part position={intake} geo={<boxGeometry args={[0.22, 0.14, 0.027]} />} mat={<BrassMat />}><Edges color={COLORS.brass} /></Part>
+          <Line points={[intake, origin]} color={COLORS.brassDim} lineWidth={1} />
+          <mesh ref={dispatch}>
+            <sphereGeometry args={[0.048, 12, 8]} />
+            <Glow color={GLOW_TEAL} />
+          </mesh>
+        </>}
         <mesh ref={router}>
           <octahedronGeometry args={[0.14]} />
           <BrassMat />
@@ -241,8 +291,12 @@ export function AgentNetwork() {
             <Part position={p} geo={<boxGeometry args={[0.14, 0.14, 0.14]} />} mat={<Metal color="#23262d" />}>
               <Edges color={COLORS.brass} />
             </Part>
+            {cinematic && <mesh position={[p.x, p.y + 0.077, p.z]} ref={el => { receivers.current[i] = el; }}>
+              <boxGeometry args={[0.052, 0.014, 0.052]} />
+              <meshBasicMaterial color="#86c5ba" />
+            </mesh>}
             <Line points={[[0, 0, 0], p]} color={COLORS.brassDim} lineWidth={1} />
-            <Pulse from={[0, 0, 0]} to={p} offset={i * 0.2} speed={0.3} size={0.025} color={GLOW_TEAL} />
+            {!cinematic && <Pulse from={[0, 0, 0]} to={p.toArray()} offset={i * 0.2} speed={0.3} size={0.025} color={GLOW_TEAL} />}
           </group>
         ))}
       </group>
@@ -251,7 +305,8 @@ export function AgentNetwork() {
 }
 
 /* ---------- PROJECT: stock chart with a dashed prediction ---------- */
-export function StockChart() {
+export function StockChart({ cinematic = false }) {
+  const cursor = useRef();
   const { candles, forecast } = useMemo(() => {
     const rand = rng(7);
     let p = 0.35;
@@ -274,9 +329,26 @@ export function StockChart() {
     return { candles: cs, forecast: fc };
   }, []);
 
+  useFrame(({ clock }) => {
+    if (!cursor.current) return;
+    const progress = (clock.elapsedTime * 0.62) % (forecast.length - 1);
+    const segment = Math.floor(progress);
+    const [x, y] = forecast[segment];
+    const [nextX, nextY] = forecast[segment + 1];
+    cursor.current.position.set(THREE.MathUtils.lerp(x, nextX, progress - segment), THREE.MathUtils.lerp(y, nextY, progress - segment), 0.02);
+  });
+
   return (
     <group position={[0, BASE_Y, 0]} rotation={FACE}>
       <Part position={[0.1, 0.02, 0]} geo={<boxGeometry args={[2.0, 0.04, 0.5]} />} mat={<Metal color="#15171b" />} />
+      {cinematic && <>
+        <Line points={[[-0.87, 0.83, -0.09], [-0.87, 0.10, -0.09], [0.65, 0.10, -0.09]]} color={COLORS.brassDim} lineWidth={1} />
+        {[0.26, 0.48, 0.7].map(y => <Line key={y} points={[[-0.87, y, -0.09], [0.65, y, -0.09]]} color="#494741" lineWidth={0.65} />)}
+        <mesh ref={cursor}>
+          <sphereGeometry args={[0.035, 12, 8]} />
+          <Glow color={GLOW_TEAL} />
+        </mesh>
+      </>}
       {candles.map((c, i) => {
         const up = c.close >= c.open;
         const color = up ? '#6fbf9a' : '#c97a6b';

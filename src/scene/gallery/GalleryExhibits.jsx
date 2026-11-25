@@ -195,6 +195,7 @@ function Folios({ count }) {
 }
 
 function AvatarHead() {
+  const mouth = useRef();
   const geometry = useMemo(() => {
     const head = new SphereGeometry(1, 31, 24);
     const vertices = head.attributes.position;
@@ -210,6 +211,9 @@ function AvatarHead() {
     head.computeVertexNormals();
     return head;
   }, []);
+  useFrame(({ clock }) => {
+    if (mouth.current) mouth.current.scale.y = 1 + 0.48 * (1 + Math.sin(clock.elapsedTime * 7.0));
+  });
   return <group position={[0, 1.5, 0.13]} rotation-y={0.22} scale={0.85}>
     <mesh geometry={geometry}>
       <meshStandardMaterial color="#ba995e" metalness={0.66} roughness={0.41} wireframe transparent opacity={0.58} />
@@ -217,7 +221,9 @@ function AvatarHead() {
     {[-1, 1].map(side => <Line key={side} color="#cfad74" lineWidth={1.15}
       points={[[side * 0.13, 0.21, 0.553], [side * 0.26, 0.248, 0.545], [side * 0.405, 0.211, 0.47]]} />)}
     <Line color="#cfad74" lineWidth={1.05} points={[[-0.05, 0.03, 0.714], [0, -0.08, 0.79], [0.065, -0.09, 0.69]]} />
-    <Line color="#cfad74" lineWidth={1.1} points={[[-0.157, -0.25, 0.54], [0, -0.226, 0.634], [0.157, -0.25, 0.54]]} />
+    <group ref={mouth} position-y={-0.25}>
+      <Line color="#cfad74" lineWidth={1.1} points={[[-0.157, 0, 0.54], [0, 0.024, 0.634], [0.157, 0, 0.54], [0, -0.022, 0.626], [-0.157, 0, 0.54]]} />
+    </group>
   </group>;
 }
 
@@ -244,7 +250,11 @@ export function GalleryExhibit({ stop, opticalGlass, tour }) {
   return (
     <group>
       {Artwork && <group rotation-y={kind === 'hotel-rag' || kind === 'multi-agent' ? 0 : -Math.PI / 4} scale={kind === 'stock-prediction' ? [2.03, 3.2, 1.85] : 1.91}><Artwork cinematic /></group>}
-      {kind === 'ai-avatar' && <AvatarHead />}
+      {kind === 'ai-avatar' && <>
+        <AvatarHead />
+        {[-1, 1].flatMap(x => [-1, 1].map(y => <Line key={`${x}:${y}`} color="#977c54" lineWidth={1}
+          points={[[x * 1.07, 1.55 + y * 0.51, -0.58], [x * 1.07, 1.55 + y * 0.7, -0.58], [x * 0.88, 1.55 + y * 0.7, -0.58]]} />))}
+      </>}
     </group>
   );
 }

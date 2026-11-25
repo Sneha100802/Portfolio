@@ -5,6 +5,7 @@ import { MathUtils, Object3D, Vector3 } from 'three';
 import { stops } from '../../lib/gallery';
 import { GalleryBackdrop } from './GalleryBackdrop';
 import { GalleryExhibit } from './GalleryExhibits';
+import { SceneAperture } from './SceneAperture';
 
 const brass = '#c9a45e';
 const night = '#0b0b0e';
@@ -142,7 +143,7 @@ function World({ tour, compact, quality, paintStage, onReady }) {
     }
     const atExhibit = nearest === center && Math.abs(journey.current - goal) < 0.045 && intro.current > 0.90;
     const station = atExhibit ? stops[nearest].id : '';
-    paintStage(station, 1 - arc ** 7 * 0.56);
+    paintStage(station, 1 - arc ** 7 * 0.34);
   });
 
   const activeIndex = compact ? 0 : center;
@@ -170,6 +171,9 @@ function World({ tour, compact, quality, paintStage, onReady }) {
         <Line points={rail.map(([x, y, z]) => [x + 6.2, y, z])} color="#3d3229" lineWidth={0.52} />
       </>}
       <Fixture key={activeStop.id} stop={activeStop} index={activeIndex} opticalGlass={quality === 2} shadow={quality > 0} tour={tour} keyLight={keyLight} />
+      <group key={`opening-${activeStop.id}`} position={coordinates[activeIndex]}>
+        <SceneAperture ready={lightingReady} tour={compact ? undefined : tour} index={activeIndex} />
+      </group>
       {quality > 0 && !compact && !new URLSearchParams(window.location.search).has('fx', '0') &&
         <Suspense fallback={null}><Effects quality={quality} hero={center === 0} /></Suspense>}
     </>

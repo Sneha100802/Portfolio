@@ -47,11 +47,15 @@ function Job({ stop }) {
   </>;
 }
 
-function Project({ stop }) {
-  const { name, description, tag, stack, url } = stop.data;
+function Project({ stop, projectScene }) {
+  const { name, description, tag, stack, url, exhibit } = stop.data;
   return <>
     <Heading id={`${stop.id}-title`} chapter={stop.chapter} title={name} eyebrow={tag} />
     <p className="caption-description" data-text-reveal>{description}</p>
+    <div className="project-model" aria-hidden="true" data-project-model={stop.kind}>{projectScene}</div>
+    <ol className="project-exhibit-steps">
+      {exhibit.map((step, index) => <li key={step} data-text-reveal style={{ '--reveal-order': index }}>{step}</li>)}
+    </ol>
     <Tech items={stack} />
     {url && <a className="text-link" href={url} data-text-reveal>{gallery.website}<ExternalMark /></a>}
   </>;
@@ -106,7 +110,7 @@ function Education({ schools }) {
   </>;
 }
 
-export function GalleryChapter({ stop, onSkill }) {
+export function GalleryChapter({ stop, onSkill, projectScene, current }) {
   const { kind, id } = stop;
   if (kind === 'hero') return (
     <section className="exhibit gallery-hero" id={id} data-stop={id} tabIndex={-1} aria-labelledby="gallery-title">
@@ -123,7 +127,7 @@ export function GalleryChapter({ stop, onSkill }) {
   );
 
   if (kind === 'contact') return (
-    <footer className="exhibit gallery-contact" id={id} data-stop={id} tabIndex={-1} aria-labelledby="contact-title">
+    <footer className="exhibit gallery-contact" id={id} data-stop={id} data-current={current || undefined} tabIndex={-1} aria-labelledby="contact-title">
       <div className="gallery-shell">
         <div className="caption">
           <Heading id="contact-title" chapter={stop.chapter} title={meta.name} subtitle={meta.location} />
@@ -135,11 +139,11 @@ export function GalleryChapter({ stop, onSkill }) {
   );
 
   return (
-    <section className={`exhibit exhibit--${stop.chapter}`} id={id} data-stop={id} tabIndex={-1} aria-labelledby={`${id}-title`}>
+    <section className={`exhibit exhibit--${stop.chapter}`} id={id} data-stop={id} data-current={current || undefined} tabIndex={-1} aria-labelledby={`${id}-title`}>
       <div className="gallery-shell">
         <div className="caption">
           {kind === 'job' && <Job stop={stop} />}
-          {stop.chapter === 'projects' && <Project stop={stop} />}
+          {stop.chapter === 'projects' && <Project stop={stop} projectScene={projectScene} />}
           {kind === 'skills' && <Skills groups={stop.data} onSkill={onSkill} />}
           {kind === 'research' && <Research papers={stop.data} />}
           {kind === 'education' && <Education schools={stop.data} />}

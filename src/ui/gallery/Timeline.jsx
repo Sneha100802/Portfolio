@@ -1,6 +1,7 @@
 import { useRef } from 'react';
 import { content } from '../../lib/content';
 import { roomPath, stops } from '../../lib/gallery';
+import { RevealWords } from './RevealWords';
 
 const { chapters, navigation } = content.gallery;
 
@@ -38,7 +39,7 @@ export function Timeline({ active, room }) {
             aria-label={label}
             onKeyDown={(event) => navigate(event, index)}
           >
-            <span className="timeline-label">{label}</span>
+            <span className="timeline-label"><RevealWords text={label} /></span>
             <span className="timeline-notch" aria-hidden="true" />
           </a>
         </li>

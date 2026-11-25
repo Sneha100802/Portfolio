@@ -143,31 +143,40 @@ h1,h2,h3 { font-family: var(--serif); font-weight: 500; }
 .hero-caption h1 { font-size: clamp(5.2rem, 10.2vw, 10rem); line-height: .78; letter-spacing: -.065em; margin-block: 17px 25px; white-space: nowrap; }
 .hero-role { color: #e4c68e; font: 500 italic clamp(1.18rem, 2.32vw, 1.8rem)/1.16 var(--serif); max-width: 34ch; }
 .hero-summary { color: var(--dim); max-width: 48ch; margin: 20px 0 22px; font-size: .87rem; line-height: 1.72; }
-.reveal-word { display: inline-block; }
+.reveal-words--headline > .reveal-word { display: inline-block; }
 @media (prefers-reduced-motion: no-preference) {
-  [data-text-reveal="played"] > .reveal-word {
-    animation: word-exposure .48s cubic-bezier(.22, .75, .28, 1) backwards;
-    animation-delay: calc(var(--word-delay) + var(--line-delay, 70ms));
+  [data-text-reveal="waiting"] .reveal-word { opacity: 0; }
+  [data-text-reveal="played"] .reveal-word {
+    animation: prose-exposure .32s ease-out backwards;
+    animation-delay: calc(var(--word-delay) + var(--intro-delay, 0ms) + var(--text-delay, 150ms) + min(var(--reveal-order, 0), 6) * 46ms);
   }
-  .hero-role { --line-delay: 160ms; }
-  h3[data-text-reveal] { --line-delay: 135ms; }
-  [data-text-reveal="played"]:is(p, li, a):not(.hero-role) {
-    animation: text-exposure .52s cubic-bezier(.22, .75, .28, 1) backwards;
-    animation-delay: calc(var(--text-delay, 200ms) + min(var(--reveal-order, 0), 6) * 36ms);
+  [data-text-reveal="played"] .reveal-words--headline > .reveal-word {
+    animation-name: word-exposure;
+    animation-duration: .54s;
+    animation-timing-function: cubic-bezier(.22, .75, .28, 1);
   }
+  .gallery--room .caption { --intro-delay: 175ms; }
+  :is(h1, h2) { --text-delay: 65ms; }
+  h3[data-text-reveal] { --text-delay: 125ms; }
+  .hero-role { --text-delay: 185ms; }
   :is(.gallery-brand, .chapter-kicker, .gallery-header nav a) { --text-delay: 0ms; }
   .caption-eyebrow { --text-delay: 50ms; }
+  :is(.hero-summary, .caption-description, .caption-highlights li) { --text-delay: 240ms; }
   :is(.caption-tech li, .skill-groups li, .profile-links a) { --text-delay: 270ms; }
   :is(.entry-link, .text-link) { --text-delay: 350ms; }
-  .gallery-skip:focus { animation: text-exposure .24s ease-out; }
+  .gallery-skip:focus .reveal-word,
+  .gallery-timeline a:is(:hover, :focus-visible) .reveal-word {
+    animation: prose-exposure .24s ease-out var(--word-delay) backwards;
+  }
+  [data-text-reveal]:focus-visible .reveal-word { opacity: 1; animation: none; }
 }
 @keyframes word-exposure {
   0% { opacity: .16; clip-path: inset(-.18em 100% -.3em -.08em); transform: translateY(.18em); }
   100% { opacity: 1; clip-path: inset(-.18em -.12em -.3em -.08em); transform: translateY(0); }
 }
-@keyframes text-exposure {
-  from { opacity: .7; transform: translateY(6px); }
-  to { opacity: 1; transform: translateY(0); }
+@keyframes prose-exposure {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 .profile-links { display: flex; flex-wrap: wrap; gap: 12px 22px; align-items: center; width: fit-content; }
 .profile-links a { display: inline-flex; gap: 6px; align-items: center; font-size: .72rem; text-underline-offset: 5px; text-decoration-color: var(--line); }
@@ -259,8 +268,8 @@ h1,h2,h3 { font-family: var(--serif); font-weight: 500; }
 .room-navigation { position: relative; z-index: 3; display: flex; justify-content: space-between; gap: 20px; padding-block: 18px 23px; border-top: 1px solid var(--line); }
 .gallery--desktop .room-navigation { position: fixed; inset: auto 0 0; }
 .room-navigation a { color: var(--ivory); font-size: .74rem; text-decoration: none; padding-block: 5px; }
-.room-navigation a:hover, .room-navigation span { color: var(--brass); }
-.room-navigation span { margin-inline: 5px; }
+.room-navigation a:hover, .room-navigation a > [aria-hidden="true"] { color: var(--brass); }
+.room-navigation a > [aria-hidden="true"] { margin-inline: 5px; }
 .room-transit { position: fixed; z-index: 10; inset: 0; pointer-events: none; }
 .room-transit::before, .room-transit::after { content: ""; position: absolute; }
 .room-transit::before { inset: 0; background: #030306; animation: room-blackout 1.08s both; }

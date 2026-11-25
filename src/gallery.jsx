@@ -1,4 +1,4 @@
-import { Component, lazy, Suspense, useCallback, useEffect, useRef, useState } from 'react';
+import { Component, lazy, Suspense, useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import '@fontsource/inter/latin-400.css';
 import '@fontsource/inter/latin-600.css';
@@ -8,6 +8,7 @@ import { GalleryChapter } from './chapters/GalleryChapters';
 import { content } from './lib/content';
 import { chapterLabel, roomIndex, roomLabel, roomPath, stops } from './lib/gallery';
 import { Timeline } from './ui/gallery/Timeline';
+import { RevealWords } from './ui/gallery/RevealWords';
 import './styles/gallery.css';
 
 const Scene = lazy(() => import('./scene/gallery/GalleryScene'));
@@ -145,16 +146,19 @@ export function App() {
     document.getElementById(stop.id)?.focus({ preventScroll: true });
   }, [stop, entrance]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!('IntersectionObserver' in window)) return;
     const observer = new IntersectionObserver((entries) => {
       for (const entry of entries) {
-        if (entry.intersectionRatio < 0.28) continue;
+      if (entry.intersectionRatio < 0.16) continue;
         entry.target.dataset.textReveal = 'played';
         observer.unobserve(entry.target);
       }
-    }, { rootMargin: '0px 0px -8% 0px', threshold: 0.28 });
-    document.querySelectorAll('[data-text-reveal]').forEach(element => observer.observe(element));
+    }, { threshold: 0.16 });
+    document.querySelectorAll('[data-text-reveal]').forEach(element => {
+      element.dataset.textReveal = 'waiting';
+      observer.observe(element);
+    });
     return () => observer.disconnect();
   }, [activeIndex]);
 
@@ -162,12 +166,12 @@ export function App() {
     <div className={`gallery gallery--${visual ? mode : 'plain'} ${entrance ? 'gallery--entrance' : 'gallery--room'}`}
       onClick={navigate} data-company={stop.kind === 'job' ? stop.data.id : undefined} data-transit={transit || undefined}
       data-scene={visual && ready ? 'ready' : 'fallback'} data-graphics={failed ? 'unavailable' : graphics}>
-      <a href="#main" className="gallery-skip">{gallery.skip}</a>
+      <a href="#main" className="gallery-skip"><RevealWords text={gallery.skip} /></a>
       <header className="gallery-header">
         <div className="gallery-shell gallery-masthead">
-          <a href={roomPath(stops[0])} data-room="home" className="gallery-brand" data-text-reveal>{meta.name}<i aria-hidden="true" /></a>
+          <a href={roomPath(stops[0])} data-room="home" className="gallery-brand" data-text-reveal><RevealWords text={meta.name} /><i aria-hidden="true" /></a>
           <nav aria-label={gallery.primaryNavigation}>
-            {['experience', 'projects', 'contact'].map((id, index) => <a href={roomPath(stops.find(item => item.id === id))} data-room={id} key={id} data-text-reveal style={{ '--reveal-order': index }}>{chapterLabel[id]}</a>)}
+            {['experience', 'projects', 'contact'].map((id, index) => <a href={roomPath(stops.find(item => item.id === id))} data-room={id} key={id} data-text-reveal style={{ '--reveal-order': index }}><RevealWords text={chapterLabel[id]} /></a>)}
           </nav>
         </div>
       </header>
@@ -182,8 +186,8 @@ export function App() {
         <GalleryChapter key={stop.id} stop={stop} onSkill={(skill) => { tour.current.skill = skill; }} />
       </main>
       {!entrance && <nav className="gallery-shell room-navigation" aria-label={gallery.roomNavigation}>
-        <a href={roomPath(previous)} data-room={previous.id} aria-label={`${gallery.previousRoom} ${roomLabel(previous)}`} data-text-reveal><span aria-hidden="true">←</span> {roomLabel(previous)}</a>
-        {next && <a href={roomPath(next)} data-room={next.id} aria-label={`${gallery.nextRoom} ${roomLabel(next)}`} data-text-reveal>{roomLabel(next)} <span aria-hidden="true">→</span></a>}
+        <a href={roomPath(previous)} data-room={previous.id} aria-label={`${gallery.previousRoom} ${roomLabel(previous)}`} data-text-reveal><span aria-hidden="true">←</span> <RevealWords text={roomLabel(previous)} /></a>
+        {next && <a href={roomPath(next)} data-room={next.id} aria-label={`${gallery.nextRoom} ${roomLabel(next)}`} data-text-reveal><RevealWords text={roomLabel(next)} /> <span aria-hidden="true">→</span></a>}
       </nav>}
       {transit && <div className="room-transit" aria-hidden="true" />}
     </div>

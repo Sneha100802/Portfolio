@@ -31,4 +31,4 @@ The chapter views share a renderer and content flow and were committed together 
 
 ## Remaining content
 
-Project URL placeholders remain for Multimodal RAG Platform, Hotel Booking RAG Q&A, Multi-Agent System, Stock Price Prediction and AI Avatar Conversation Pipeline. Both publication URL fields are also placeholders. The blank experience locations for Hex N Bit and Gauravgo Technologies remain optional, as does the unused profile-photo field. The loader hides placeholder values.
+Experience rooms use descriptive labels. The document retrieval demo runs on fictional records and reference passages. The loader hides any placeholder values.

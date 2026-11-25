@@ -152,12 +152,12 @@ function Deployment({ accent }) {
 }
 
 const companyModels = {
-  blazetrail: InvestmentDashboard,
-  survatra: SecureArchive,
-  'idea-company': Conversation,
-  'iiit-nr': RespiratorySignal,
-  hexnbit: Prototype,
-  gauravgo: Deployment,
+  'fund-discovery': InvestmentDashboard,
+  'document-processing': SecureArchive,
+  'founder-guidance': Conversation,
+  'audio-research': RespiratorySignal,
+  'ml-prototyping': Prototype,
+  'web-delivery': Deployment,
 };
 
 export function CompanyExhibit({ company, accent }) {

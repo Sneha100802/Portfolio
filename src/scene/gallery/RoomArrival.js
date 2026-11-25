@@ -3,12 +3,12 @@ import { MathUtils } from 'three';
 export const arrivalDuration = 4;
 
 const companies = {
-  blazetrail: { night: '#07090d', accent: '#d6a45f', daylightAccent: '#895027', rim: '#465b74' },
-  survatra: { night: '#0a070e', accent: '#b294c0', daylightAccent: '#6c457c', rim: '#57466c' },
-  'idea-company': { night: '#0a080f', accent: '#baa4d3', daylightAccent: '#635083', rim: '#575373' },
-  'iiit-nr': { night: '#060c0d', accent: '#80b9b5', daylightAccent: '#396d6a', rim: '#375963' },
-  hexnbit: { night: '#0b080d', accent: '#bd95ac', daylightAccent: '#855671', rim: '#584656' },
-  gauravgo: { night: '#08090e', accent: '#c9a777', daylightAccent: '#825733', rim: '#4c586b' },
+  'fund-discovery': { night: '#07090d', accent: '#d6a45f', daylightAccent: '#895027', rim: '#465b74' },
+  'document-processing': { night: '#0a070e', accent: '#b294c0', daylightAccent: '#6c457c', rim: '#57466c' },
+  'founder-guidance': { night: '#0a080f', accent: '#baa4d3', daylightAccent: '#635083', rim: '#575373' },
+  'audio-research': { night: '#060c0d', accent: '#80b9b5', daylightAccent: '#396d6a', rim: '#375963' },
+  'ml-prototyping': { night: '#0b080d', accent: '#bd95ac', daylightAccent: '#855671', rim: '#584656' },
+  'web-delivery': { night: '#08090e', accent: '#c9a777', daylightAccent: '#825733', rim: '#4c586b' },
 };
 
 export function companyLook(stop) {
@@ -18,11 +18,11 @@ export function companyLook(stop) {
 const sets = {
   home: ['#2d304b', '#b18a58', 'petal'],
   experience: ['#35324a', '#ab8855', 'column'],
-  'job-survatra': ['#29293e', '#9b744a', 'shelf'],
-  'job-idea-company': ['#35233e', '#bc8559', 'petal'],
-  'job-iiit-nr': ['#1b3438', '#9c855e', 'arch'],
-  'job-hexnbit': ['#3d293b', '#a07956', 'diamond'],
-  'job-gauravgo': ['#343447', '#a47b56', 'column'],
+  'job-document-processing': ['#29293e', '#9b744a', 'shelf'],
+  'job-founder-guidance': ['#35233e', '#bc8559', 'petal'],
+  'job-audio-research': ['#1b3438', '#9c855e', 'arch'],
+  'job-ml-prototyping': ['#3d293b', '#a07956', 'diamond'],
+  'job-web-delivery': ['#343447', '#a47b56', 'column'],
   projects: ['#282b46', '#b58a51', 'shelf'],
   'project-hotel-rag': ['#34334c', '#a38660', 'arch'],
   'project-multi-agent': ['#213642', '#9d875d', 'diamond'],
@@ -38,7 +38,7 @@ export function roomSet(stop) {
   return sets[stop.id];
 }
 
-const filmRooms = new Set(['projects', 'job-survatra', 'job-idea-company', 'job-iiit-nr']);
+const filmRooms = new Set(['projects', 'job-document-processing', 'job-founder-guidance', 'job-audio-research']);
 
 export function hasFilmExhibit(stop) {
   return filmRooms.has(stop.id);
@@ -47,12 +47,12 @@ export function hasFilmExhibit(stop) {
 // Approach side, initial height, close-up target and height, and direction of the reveal.
 const arrivalShots = {
   job: [-2.8, -0.85, -0.91, 1.03, 1.3],
-  'job-survatra': [-1.5, 0.48, -0.95, 1.13, 1.7],
-  'job-idea-company': [-2.2, 0.6, -0.69, 1.53, 1.1],
-  'job-iiit-nr': [-2.0, -0.56, -1.12, 1.17, 1.8],
-  'job-hexnbit': [-2.07, 0.55, 0.02, 0.94, 0.6],
-  'job-gauravgo': [2.55, 0.12, -0.16, 1.24, 1.1],
-  'survatra-rag': [-2.05, -0.55, -1.42, 1.19, 2.45],
+  'job-document-processing': [-1.5, 0.48, -0.95, 1.13, 1.7],
+  'job-founder-guidance': [-2.2, 0.6, -0.69, 1.53, 1.1],
+  'job-audio-research': [-2.0, -0.56, -1.12, 1.17, 1.8],
+  'job-ml-prototyping': [-2.07, 0.55, 0.02, 0.94, 0.6],
+  'job-web-delivery': [2.55, 0.12, -0.16, 1.24, 1.1],
+  'document-retrieval': [-2.05, -0.55, -1.42, 1.19, 2.45],
   'hotel-rag': [3.0, 0.72, 0.78, 1.66, -1.25],
   'multi-agent': [-3.1, 1.15, -0.65, 1.48, 1.3],
   'stock-prediction': [2.7, 0.45, -0.95, 1.47, 2.3],

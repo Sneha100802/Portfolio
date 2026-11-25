@@ -65,9 +65,9 @@
     "back": "Back to the entrance"
   },
   "quickResults": [
-    "Built the Survatra backend as the sole backend developer. Four-pass document extraction ran on a CPU-only EC2 instance with 1.9 GB of RAM.",
-    "Built PDF factsheet scrapers for 45+ mutual fund companies at Blazetrail.",
-    "Co-authored two IEEE papers on pulmonary audio and COPD at IIIT Naya Raipur."
+    "Built a Python backend for document processing and semantic retrieval.",
+    "Developed financial product interfaces and automated collection of public factsheets.",
+    "Co-authored two peer-reviewed IEEE papers on pulmonary audio and COPD."
   ],
   "ragDemo": {
     "documents": [
@@ -96,15 +96,15 @@
   ],
   "experience": [
     {
-      "id": "blazetrail",
+      "id": "fund-discovery",
       "story": {
-        "role": "Built Kaalfi’s fund discovery and portfolio interfaces and contributed to its Django REST backend.",
-        "constraint": "Fund factsheets came from 45+ companies, with access paths ranging from page scraping to direct GraphQL calls.",
-        "result": "Built fund scanning, filtering, detail tabs and portfolio components, and implemented OTP flows with Redis-backed tokens.",
+        "role": "Built fund discovery screens and contributed to the API behind them.",
+        "constraint": "The interface had to make dense financial information easy to compare.",
+        "result": "Built discovery, filtering, and portfolio views and automated the collection of public fund factsheets.",
         "steps": [
           {
             "label": "Scan funds",
-            "detail": "Kaalfi displays funds for discovery. I also built PDF factsheet scrapers using BeautifulSoup, Playwright and direct GraphQL calls.",
+            "detail": "The exhibit begins with a list of funds ready for discovery.",
             "position": [
               -1.05,
               0.9,
@@ -114,7 +114,7 @@
           },
           {
             "label": "Apply filters",
-            "detail": "I built the filtering interface in Next.js and TypeScript so investors could narrow the fund list.",
+            "detail": "The filter view narrows a list of funds using the selected criteria.",
             "position": [
               0,
               1.2,
@@ -123,7 +123,7 @@
           },
           {
             "label": "Inspect a fund",
-            "detail": "Fund detail tabs and portfolio dashboard components present information at the next step of the investment workflow.",
+            "detail": "The detail view brings fund information together to make comparison easier.",
             "position": [
               1.04,
               1.65,
@@ -132,31 +132,35 @@
           }
         ]
       },
-      "role": "Frontend & Backend Developer (Internship)",
-      "company": "Blazetrail Fintech Solutions",
+      "role": "Full-stack Development Internship",
+      "company": "Financial Product Interfaces",
       "exhibit": "Mutual fund dashboard",
-      "exhibitSteps": ["Scan funds", "Filter results", "Inspect fund details"],
-      "location": "New Delhi, India (Remote)",
-      "start": "Jul 2026",
-      "end": "Oct 2026",
-      "stack": ["Next.js", "TypeScript", "Tailwind CSS", "shadcn/ui", "Django REST Framework", "Redis", "PostgreSQL", "BeautifulSoup", "Playwright", "GraphQL"],
+      "exhibitSteps": [
+        "Scan funds",
+        "Filter results",
+        "Inspect fund details"
+      ],
+      "stack": [
+        "TypeScript",
+        "Web APIs",
+        "Data extraction"
+      ],
       "bullets": [
-        "Built frontend features for Kaalfi, a fintech mutual fund investment app, using Next.js (App Router), TypeScript, Tailwind CSS, and shadcn/ui.",
-        "Developed mutual fund scanning and filtering pages, fund detail tabs, portfolio dashboard components, and OTP-based authentication flows.",
-        "Contributed to Django REST Framework backend: auth APIs, Redis-backed token management, and database extensions on PostgreSQL.",
-        "Built PDF factsheet scrapers for 45+ mutual fund companies using BeautifulSoup, Playwright, and GraphQL direct API calls."
+        "Built product interfaces in TypeScript.",
+        "Contributed to API and database changes.",
+        "Automated collection of public factsheets."
       ]
     },
     {
-      "id": "survatra",
+      "id": "document-processing",
       "story": {
-        "role": "Designed and built the platform as the sole backend developer.",
-        "constraint": "Four-pass document extraction ran on a CPU-only EC2 server with 1.9 GB of RAM. Sensitive fields had to be masked before LLM calls.",
-        "result": "Delivered a FastAPI platform with project-scoped keys and history, approval controls, immutable audit trails and expiring access.",
+        "role": "Designed and built a backend for document processing and semantic retrieval.",
+        "constraint": "The pipeline had to handle several document formats with limited compute.",
+        "result": "Built a searchable workflow that removes sensitive fields from input and supports reviewed access.",
         "steps": [
           {
             "label": "Ingest files",
-            "detail": "A four-pass workflow extracted data from PDFs, CSVs and scanned files.",
+            "detail": "A document pipeline accepts mixed inputs and prepares the text for processing.",
             "position": [
               -0.95,
               1.11,
@@ -165,7 +169,7 @@
           },
           {
             "label": "Mask fields",
-            "detail": "A combined regex replaced sequential passes to mask protected and identifying information before an LLM could receive it.",
+            "detail": "In this illustration, identifying fields are masked before text is used downstream.",
             "position": [
               -0.62,
               1.21,
@@ -174,7 +178,7 @@
           },
           {
             "label": "Govern access",
-            "detail": "Three levels of admin approval, audit trails and auto-revoking access windows governed access to protected data.",
+            "detail": "Review and logging give authorized readers a traceable way to access the information.",
             "position": [
               0.88,
               1.3,
@@ -184,31 +188,34 @@
         ]
       },
       "role": "Python Developer",
-      "company": "Survatra",
+      "company": "Document Processing and Retrieval",
       "exhibit": "Document masking and secure storage",
-      "exhibitSteps": ["Ingest documents", "Mask sensitive fields", "Store protected data"],
-      "location": "New Delhi, India",
-      "start": "Sep 2025",
-      "end": "Jun 2026",
-      "stack": ["Python", "FastAPI", "PostgreSQL", "AWS S3", "AWS EC2", "FAISS", "ChromaDB", "LLM APIs"],
+      "exhibitSteps": [
+        "Ingest documents",
+        "Mask sensitive fields",
+        "Store protected data"
+      ],
+      "stack": [
+        "Python",
+        "FastAPI",
+        "Semantic retrieval"
+      ],
       "bullets": [
-        "Sole backend developer. Architected and built a multimodal RAG platform using Python/FastAPI, PostgreSQL, and AWS S3, integrating LLM APIs with vector-based semantic retrieval using FAISS and ChromaDB.",
-        "Built document ingestion pipelines for PDFs, CSVs, and scanned files, including a 4-pass extraction workflow that ran stably on a 1.9GB RAM CPU-only EC2 server.",
-        "Implemented PHI/PII masking before LLM calls, replacing sequential multi-pass regex with a single combined alternation regex for faster processing.",
-        "Implemented PHI data governance with a three-level admin approval system, immutable audit trails, and auto-revoking access windows.",
-        "Built multi-project isolation with scoped API keys, per-project chat history, OTP brute-force protection, and HTTP 429 rate limiting."
+        "Built document ingestion for structured, unstructured, and scanned inputs.",
+        "Integrated semantic retrieval with a Python API.",
+        "Supported reviewed access and audit logging."
       ]
     },
     {
-      "id": "idea-company",
+      "id": "founder-guidance",
       "story": {
-        "role": "Built the founder-facing NLP chatbot with LangChain, LLM APIs and structured knowledge bases.",
-        "constraint": "The same chatbot needed to handle questions across legal, financial and operational workflows.",
-        "result": "Delivered a conversational way for founders to explore those three areas.",
+        "role": "Built a conversational interface that helps founders navigate business topics.",
+        "constraint": "Questions needed to connect with the right part of a structured knowledge base.",
+        "result": "Built a question-to-guidance workflow for common startup operations.",
         "steps": [
           {
             "label": "Ask a question",
-            "detail": "A founder enters a question in their own words.",
+            "detail": "The letter introduces a fictional question from a startup founder.",
             "position": [
               -0.66,
               1.28,
@@ -218,7 +225,7 @@
           },
           {
             "label": "Find relevant guidance",
-            "detail": "The chatbot uses a structured knowledge base to ground guidance in the relevant startup workflow.",
+            "detail": "The lantern reveals guidance from a fictional operations folio.",
             "position": [
               0.53,
               1.24,
@@ -228,7 +235,7 @@
           },
           {
             "label": "Respond",
-            "detail": "LangChain and an LLM API generate a conversational response for the founder.",
+            "detail": "The assistant presents a short response based on the relevant guidance.",
             "position": [
               0.5,
               0.99,
@@ -239,27 +246,32 @@
         ]
       },
       "role": "AI Developer",
-      "company": "The Idea Company",
+      "company": "Founder Guidance Assistant",
       "exhibit": "Chatbot response generation",
-      "exhibitSteps": ["Founder asks a question", "Retrieve relevant knowledge", "Generate a reply"],
-      "location": "Remote",
-      "start": "Mar 2025",
-      "end": "Jun 2025",
-      "stack": ["LangChain", "LLM APIs", "NLP"],
+      "exhibitSteps": [
+        "Founder asks a question",
+        "Retrieve relevant knowledge",
+        "Generate a reply"
+      ],
+      "stack": [
+        "LangChain",
+        "LLM APIs",
+        "NLP"
+      ],
       "bullets": [
-        "Built an NLP-powered chatbot using LangChain, LLM APIs, and structured knowledge bases to guide startup founders through legal, financial, and operational workflows."
+        "Built a conversational workflow around a structured knowledge base and language-model APIs."
       ]
     },
     {
-      "id": "iiit-nr",
+      "id": "audio-research",
       "story": {
-        "role": "Developed a DenseNet combining three CNN models and trained 1D CNN models with Adam and RMSprop.",
-        "constraint": "The research explored COPD detection from pulmonary audio and compared 40 papers published between 2019 and 2024.",
-        "result": "Reported 94% training accuracy with Adam and co-authored two peer-reviewed IEEE conference papers.",
+        "role": "Developed and compared convolutional models for classifying pulmonary audio.",
+        "constraint": "The study compared different training approaches on time-series audio features.",
+        "result": "Co-authored two peer-reviewed IEEE papers on pulmonary audio and COPD.",
         "steps": [
           {
             "label": "Read pulmonary audio",
-            "detail": "The waveform represents the respiratory audio used as input for the research.",
+            "detail": "A synthetic waveform illustrates the type of signal studied in the research.",
             "position": [
               -1.12,
               1.15,
@@ -268,7 +280,7 @@
           },
           {
             "label": "Compare CNNs",
-            "detail": "I developed a DenseNet combining three CNNs and trained 1D CNN variants with Adam and RMSprop.",
+            "detail": "The layered scene illustrates how a convolutional model processes features.",
             "position": [
               0.55,
               1.15,
@@ -277,7 +289,7 @@
           },
           {
             "label": "Review results",
-            "detail": "The Adam model reached 94% training accuracy. The two IEEE publications document the research.",
+            "detail": "The final stage represents the results discussed in the published research.",
             "position": [
               1.1,
               1.2,
@@ -286,28 +298,35 @@
           }
         ]
       },
-      "role": "Summer Research Intern, Data Science",
-      "company": "IIIT Naya Raipur",
+      "role": "Data Science Research Internship",
+      "company": "Pulmonary Audio Research",
       "exhibit": "Pulmonary audio and convolution layers",
-      "exhibitSteps": ["Analyze respiratory audio", "Extract CNN features", "Identify COPD patterns"],
-      "location": "Raipur, India",
-      "start": "Mar 2024",
-      "end": "Jun 2024",
-      "stack": ["TensorFlow", "Keras", "DenseNet", "1D CNN", "Librosa"],
+      "exhibitSteps": [
+        "Analyze respiratory audio",
+        "Extract CNN features",
+        "Identify COPD patterns"
+      ],
+      "stack": [
+        "TensorFlow",
+        "Keras",
+        "DenseNet",
+        "1D CNN",
+        "Librosa"
+      ],
       "bullets": [
-        "Developed a DenseNet architecture combining three CNN models, and 1D CNN models using Adam and RMSprop, for COPD detection from pulmonary audio (94% training accuracy with Adam).",
-        "Conducted comparative analysis across 40 papers (2019–2024) and published two peer-reviewed IEEE papers: 15th ICCCNT and IEEE TENSYMP 2024."
+        "Compared convolutional model architectures and training approaches.",
+        "Co-authored two peer-reviewed IEEE publications."
       ]
     },
     {
-      "id": "hexnbit",
+      "id": "ml-prototyping",
       "story": {
-        "role": "Developed AI and ML prototypes during an early-career industry rotation.",
-        "result": "The rotation gave me hands-on practice in AI and ML prototyping.",
+        "role": "Developed small machine learning prototypes during an early-career rotation.",
+        "result": "Gained hands-on experience with AI and ML prototyping.",
         "steps": [
           {
             "label": "Build a prototype",
-            "detail": "The scene represents the experimental AI and ML prototypes built during the rotation.",
+            "detail": "This exhibit represents the experimental models I built during the rotation.",
             "position": [
               -1.19,
               0.72,
@@ -316,7 +335,7 @@
           },
           {
             "label": "Explore model output",
-            "detail": "This stage illustrates what probing a prototype output can look like.",
+            "detail": "A fictional prediction illustrates how a model output can be inspected.",
             "position": [
               0,
               1.23,
@@ -326,27 +345,27 @@
           }
         ]
       },
-      "role": "AI & ML Developer",
-      "company": "Hex N Bit",
+      "role": "AI/ML Development Rotation",
+      "company": "Machine Learning Prototypes",
       "exhibit": "AI and ML prototype",
-      "exhibitSteps": ["Prototype a model", "Explore its output"],
-      "location": "TODO",
-      "start": "Aug 2023",
-      "end": "Sep 2023",
+      "exhibitSteps": [
+        "Prototype a model",
+        "Explore its output"
+      ],
       "stack": [],
       "bullets": [
-        "Developed AI/ML prototypes during an early-career industry rotation."
+        "Developed small AI and ML prototypes."
       ]
     },
     {
-      "id": "gauravgo",
+      "id": "web-delivery",
       "story": {
-        "role": "Joined as a web development intern and gained exposure to hosting, deployment pipelines and full-stack fundamentals.",
-        "result": "The internship gave me an overview of how a web project goes from source to a hosted application.",
+        "role": "Gained exposure to hosting, deployment workflows, and full-stack web fundamentals.",
+        "result": "Learned how a web project moves from its source files to a hosted site.",
         "steps": [
           {
             "label": "Prepare the site",
-            "detail": "This stage illustrates how a web interface is prepared for deployment.",
+            "detail": "This stage illustrates preparing a web interface for deployment.",
             "position": [
               -0.68,
               1.25,
@@ -355,7 +374,7 @@
           },
           {
             "label": "Pass through deployment",
-            "detail": "The middle stage represents the pipeline that takes a web build toward a host.",
+            "detail": "The middle stage represents a software build moving toward a host.",
             "position": [
               0.44,
               1.24,
@@ -364,7 +383,7 @@
           },
           {
             "label": "Serve the result",
-            "detail": "The last stage shows where visitors reach the hosted application.",
+            "detail": "The last stage shows where visitors reach the hosted site.",
             "position": [
               1.02,
               1.3,
@@ -373,74 +392,79 @@
           }
         ]
       },
-      "role": "Web Developer Intern",
-      "company": "Gauravgo Technologies",
+      "role": "Web Development Internship",
+      "company": "Web Delivery and Hosting",
       "exhibit": "Web hosting and deployment",
-      "exhibitSteps": ["Build the web interface", "Deploy the build", "Serve it from a host"],
-      "location": "TODO",
-      "start": "Sep 2023",
-      "end": "Sep 2023",
+      "exhibitSteps": [
+        "Build the web interface",
+        "Deploy the build",
+        "Serve it from a host"
+      ],
       "stack": [],
       "bullets": [
-        "Gained exposure to web hosting, deployment pipelines, and full-stack web fundamentals."
+        "Gained exposure to hosting, deployment workflows, and full-stack fundamentals."
       ]
     }
   ],
   "projects": [
     {
-      "id": "survatra-rag",
+      "id": "document-retrieval",
       "story": {
-        "role": "Architected and implemented the production RAG backend as Survatra’s sole backend developer.",
-        "constraint": "The platform had to ingest different document formats on CPU-only infrastructure and mask identifying fields before invoking LLM APIs.",
-        "result": "Delivered document extraction, semantic retrieval and model routing on FastAPI, PostgreSQL and AWS.",
+        "role": "Built an interactive portfolio simulation to explain a document-retrieval workflow.",
+        "constraint": "The scene runs on fictional records and reference passages inside the browser.",
+        "result": "Visitors can step through masking and retrieval, then open the passage cited by the answer.",
         "steps": [
           {
             "label": "Extract content",
-            "detail": "Ingestion handles PDFs, CSVs and scanned files. A four-pass workflow runs on a CPU-only EC2 instance.",
+            "detail": "Select a fictional record and view the extracted question.",
             "position": [
               -1.53,
               1.09,
               0.14
-            ],
-            "sample": "Uploaded scan contains: Maya Example requests record EX-001."
+            ]
           },
           {
             "label": "Mask identifiers",
-            "detail": "A combined regular expression masks protected and identifying text before model calls.",
+            "detail": "The demo replaces the example name and reference number before retrieval.",
             "position": [
               -0.52,
               1.09,
               0.14
-            ],
-            "sample": "[NAME] requests record [RECORD ID]."
+            ]
           },
           {
             "label": "Retrieve context",
-            "detail": "FAISS and ChromaDB provide vector search to surface related document context.",
+            "detail": "The demo ranks its sample policy passages against the masked question.",
             "position": [
               0.52,
               1.09,
               0.14
-            ],
-            "sample": "Example matches: access-guide-01, policy-note-02."
+            ]
           },
           {
             "label": "Route the query",
-            "detail": "The backend routes the query to an LLM with the retrieved context.",
+            "detail": "The demo returns an answer with a citation you can open and inspect.",
             "position": [
               1.53,
               1.09,
               0.14
-            ],
-            "sample": "For record access, follow the steps in access-guide-01."
+            ]
           }
         ]
       },
-      "name": "Multimodal RAG Platform (Survatra)",
-      "tag": "Production",
-      "description": "Document ingestion, PHI/PII masking, FAISS/ChromaDB retrieval, and LLM query routing on FastAPI, PostgreSQL, and AWS.",
-      "exhibit": ["Scan documents", "Mask sensitive fields", "Retrieve vectors", "Route to the model"],
-      "stack": ["FastAPI", "PostgreSQL", "AWS", "FAISS", "ChromaDB"],
+      "name": "Document Retrieval Demo",
+      "tag": "Fictional demo",
+      "description": "Follow a fictional record through extraction, identifier masking, retrieval, and a source-backed answer.",
+      "exhibit": [
+        "Scan documents",
+        "Mask sensitive fields",
+        "Retrieve vectors",
+        "Route to the model"
+      ],
+      "stack": [
+        "JavaScript",
+        "WebGL"
+      ],
       "url": "TODO"
     },
     {

@@ -126,8 +126,8 @@ export function App() {
     const step = stop.data.story.steps[index];
     tour.current.step = { room: stop.id, index, position: step.position, time: performance.now() };
     setActiveStep(index);
-    if (stop.id === 'job-idea-company') sound.current?.paper();
-    if (stop.id === 'job-iiit-nr') sound.current?.bronze();
+    if (stop.id === 'job-founder-guidance') sound.current?.paper();
+    if (stop.id === 'job-audio-research') sound.current?.bronze();
   }
 
   function toggleTheme() {
@@ -160,14 +160,14 @@ export function App() {
     const target = stops[index].id;
     const animated = visual && !matchMedia('(prefers-reduced-motion: reduce)').matches;
     const match = animated && (
-      stop.id === 'job-idea-company' && target === 'job-iiit-nr' ? 'ember' :
-      continuing && stop.id === 'projects' && target === 'job-idea-company' ? 'folio' : false
+      stop.id === 'job-founder-guidance' && target === 'job-audio-research' ? 'ember' :
+      continuing && stop.id === 'projects' && target === 'job-founder-guidance' ? 'folio' : false
     );
     const arrive = () => {
       history.pushState({ guided: continuing }, '', link.href);
       setGuided(continuing);
       showRoom(index, match);
-      if (target === 'job-iiit-nr') sound.current?.bronze();
+      if (target === 'job-audio-research') sound.current?.bronze();
       if (match === 'folio') sound.current?.paper();
     };
     if (!animated) {
@@ -311,8 +311,8 @@ export function App() {
       <main id="main" tabIndex={-1}>
         <GalleryChapter key={stop.id} stop={stop} onSkill={(skill) => { tour.current.skill = skill; }}
           activeStep={activeStep} onStep={selectStep} onReplay={visual && ready ? replayOpening : undefined}
-          demo={stop.kind === 'survatra-rag' ? { documentIndex, onDocument: setDocumentIndex } : undefined} />
-        {visual && ready && stop.id === 'job-idea-company' && <div className="film-hotspots" ref={desk}>
+          demo={stop.kind === 'document-retrieval' ? { documentIndex, onDocument: setDocumentIndex } : undefined} />
+        {visual && ready && stop.id === 'job-founder-guidance' && <div className="film-hotspots" ref={desk}>
           {deskTargets.map(({ index, label }) => <button key={index} type="button" data-desk-step={index} aria-controls={`${stop.id}-step`}
             aria-label={gallery[label]} aria-pressed={activeStep === index} onClick={() => selectStep(index)} data-text-reveal>
             <i aria-hidden="true" /><span><RevealWords text={gallery[label]} /></span>

@@ -19,7 +19,7 @@ const Effects = lazy(() => import('./GalleryEffects'));
 const defaultShot = { distance: 7.45, height: 2.5, focus: 1.45, side: 0.92 };
 const shots = {
   hero: { distance: 7.38, height: 2.34, focus: 1.62, side: 1.37 },
-  'survatra-rag': { distance: 8.14, height: 2.96, focus: 1.35, side: 1.08 },
+  'document-retrieval': { distance: 8.14, height: 2.96, focus: 1.35, side: 1.08 },
   'hotel-rag': { distance: 7.30, height: 2.43, focus: 1.48, side: 1.5 },
   'multi-agent': { distance: 7.73, height: 3.12, focus: 1.42, side: -0.83 },
   'stock-prediction': { distance: 8.05, height: 2.69, focus: 1.24, side: 1.43 },
@@ -167,7 +167,7 @@ function World({ tour, documentIndex, paintDesk, compact, entrance, light, repla
     const side = compact ? 0.65 : MathUtils.lerp(originShot.side, nextShot.side, move);
     const framing = compact && !entrance ? 0.5 : 1;
     const selected = tour.current.step;
-    const examining = intro.current >= 1 && !tour.current.departure && selected?.room === 'job-idea-company';
+    const examining = intro.current >= 1 && !tour.current.departure && selected?.room === 'job-founder-guidance';
     const lens = deskLens.current;
     lens.x = MathUtils.damp(lens.x, examining ? selected.position[0] * 0.68 : 0, 4, step);
     lens.y = MathUtils.damp(lens.y, examining ? (selected.position[1] - focus) * 0.73 : 0, 4, step);
@@ -178,7 +178,7 @@ function World({ tour, documentIndex, paintDesk, compact, entrance, light, repla
       destination.current.z + distance - close * 2.65 * framing + entry * 1.84 + arc * 0.82 - depart * 3.8 - lens.depth);
     look.current.set(destination.current.x + lens.x + (arrival?.target ?? 0) * framing + arc * 0.13,
       MathUtils.lerp(focus, arrival?.focus ?? focus, close) + arc * 0.14 + lens.y, destination.current.z - 0.12);
-    if (stops[nearest].id === 'job-idea-company') deskFocus.copy(look.current);
+    if (stops[nearest].id === 'job-founder-guidance') deskFocus.copy(look.current);
     camera.lookAt(look.current);
     if (arrival) camera.rotateZ(Math.sign(arrival.side) * close * 0.075);
     if (stage.current) stage.current.position.copy(destination.current);
@@ -202,7 +202,7 @@ function World({ tour, documentIndex, paintDesk, compact, entrance, light, repla
     }
     const atExhibit = nearest === center && Math.abs(journey.current - goal) < 0.045 && intro.current > 0.90;
     const station = atExhibit ? stops[nearest].id : '';
-    if (station === 'job-idea-company') {
+    if (station === 'job-founder-guidance') {
       camera.updateMatrixWorld();
       for (const { index: control, anchor } of deskTargets) {
         const point = projection.current.fromArray(anchor).add(coordinates[nearest]).project(camera);
@@ -243,12 +243,12 @@ function World({ tour, documentIndex, paintDesk, compact, entrance, light, repla
       </>}
       <Fixture key={activeStop.id} stop={activeStop} index={activeIndex} opticalGlass={quality === 2} shadow={quality > 0} tour={tour} opening={intro} keyLight={keyLight} rimLight={rimLight} light={light} documentIndex={documentIndex} />
       <group key={`opening-${activeStop.id}-${replay}`} position={coordinates[activeIndex]}>
-        <SceneAperture ready={lightingReady} tour={tour} index={activeIndex} gateway={entrance} passage={activeStop.kind === 'survatra-rag' || activeStop.id === 'job-survatra'} accent={light ? '#b46530' : grade?.accent}
+        <SceneAperture ready={lightingReady} tour={tour} index={activeIndex} gateway={entrance} passage={activeStop.kind === 'document-retrieval' || activeStop.id === 'job-document-processing'} accent={light ? '#b46530' : grade?.accent}
           position={entrance ? undefined : [openingShot.target * 0.8, openingShot.focus, 1.15]} />
       </group>
       {quality > 0 && !compact && !light && !new URLSearchParams(window.location.search).has('fx', '0') &&
         <Suspense fallback={null}><Effects quality={quality} hero={center === 0}
-          deskFocus={activeStop.id === 'job-idea-company' ? deskFocus : undefined} /></Suspense>}
+          deskFocus={activeStop.id === 'job-founder-guidance' ? deskFocus : undefined} /></Suspense>}
     </>
   );
 }

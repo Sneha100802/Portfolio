@@ -33,7 +33,7 @@ function RoomCamera({ stop, distance, focus, visible }) {
 
 export default function CompactProjectScene({ stop, tour }) {
   const stock = stop.kind === 'stock-prediction';
-  const focus = stock ? 1.52 : stop.kind === 'survatra-rag' ? 0.85 : 1.10;
+  const focus = stock ? 1.52 : stop.kind === 'document-retrieval' ? 0.85 : 1.10;
   const distance = stock ? 7.65 : 6.55;
   const openingShot = roomArrival(stop, 0);
   const grade = companyLook(stop);

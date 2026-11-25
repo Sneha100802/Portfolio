@@ -56,7 +56,7 @@ function Project({ stop, onStep, activeStep, demo }) {
   const { name, description, tag, stack, url, exhibit } = stop.data;
   return <>
     <Heading id={`${stop.id}-title`} chapter={stop.chapter} title={name} eyebrow={tag} />
-    <p className="caption-description" data-text-reveal><RevealWords text={description} /></p>
+    <p className="caption-description" data-text-reveal><RevealWords text={description} linewise /></p>
     {stop.data.story ? <WorkStory stop={stop} onStep={onStep} active={activeStep} demo={demo} /> : <ExhibitSteps steps={exhibit} />}
     <Tech items={stack} />
     {url && <a className="text-link" href={url} data-text-reveal><RevealWords text={gallery.website} /><ExternalMark /></a>}
@@ -129,7 +129,7 @@ export function GalleryChapter({ stop, onSkill, onStep, activeStep, onReplay, de
             <p className="hero-role" data-text-reveal><RevealWords text={meta.title} /></p>
           </div>
           <div className="hero-context">
-            <p className="hero-summary" data-text-reveal><RevealWords text={summary} /></p>
+            <p className="hero-summary" data-text-reveal><RevealWords text={summary} linewise /></p>
             <ProfileLinks />
             <a className="entry-link" href={roomPath(stops[1])} data-room="experience" data-text-reveal><RevealWords text={gallery.start} /><span aria-hidden="true">↗</span></a>
             <Replay run={onReplay} />

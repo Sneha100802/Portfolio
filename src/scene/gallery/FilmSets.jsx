@@ -261,7 +261,7 @@ function AcousticLab({ tour, opening }) {
 }
 
 export function FilmExhibit({ stop, tour, opening, light, documentIndex }) {
-  if (stop.id === 'job-idea-company') return <WritingDesk tour={tour} opening={opening} light={light} />;
-  if (stop.id === 'job-iiit-nr') return <AcousticLab tour={tour} opening={opening} />;
-  return <Archive tour={tour} opening={opening} project={stop.kind === 'survatra-rag'} documentIndex={documentIndex} />;
+  if (stop.id === 'job-founder-guidance') return <WritingDesk tour={tour} opening={opening} light={light} />;
+  if (stop.id === 'job-audio-research') return <AcousticLab tour={tour} opening={opening} />;
+  return <Archive tour={tour} opening={opening} project={stop.kind === 'document-retrieval'} documentIndex={documentIndex} />;
 }

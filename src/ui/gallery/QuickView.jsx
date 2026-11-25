@@ -9,8 +9,9 @@ function QuickRooms({ chapter, onNavigate }) {
     <h3 id={`quick-${chapter}`} data-text-reveal="played"><RevealWords text={chapterLabel[chapter]} /></h3>
     <ul>{stops.filter(stop => stop.chapter === chapter).map(stop => <li key={stop.id}>
       <a href={roomPath(stop)} data-room={stop.id} data-text-reveal="played" onClick={onNavigate}><RevealWords text={roomLabel(stop)} /></a>
-      {stop.data.role && <p data-text-reveal="played"><RevealWords text={`${stop.data.role} · ${dateSpan(stop.data.start, stop.data.end)}`} /></p>}
-      {!stop.data.role && <p data-text-reveal="played"><RevealWords text={stop.data.description} /></p>}
+      <p data-text-reveal="played"><RevealWords text={stop.data.role
+        ? [stop.data.role, dateSpan(stop.data.start, stop.data.end)].filter(Boolean).join(' · ')
+        : stop.data.description} linewise /></p>
     </li>)}</ul>
   </section>;
 }
@@ -20,7 +21,7 @@ export function QuickView({ onNavigate }) {
     <p className="quick-view-role" data-text-reveal="played"><RevealWords text={`${meta.name} · ${meta.title}`} /></p>
     <section className="quick-results" aria-labelledby="quick-results">
       <h3 id="quick-results" data-text-reveal="played"><RevealWords text={gallery.results} /></h3>
-      <ul>{quickResults.map(result => <li key={result} data-text-reveal="played"><RevealWords text={result} /></li>)}</ul>
+      <ul>{quickResults.map(result => <li key={result} data-text-reveal="played"><RevealWords text={result} linewise /></li>)}</ul>
     </section>
     <div className="quick-view-grid">
       <QuickRooms chapter="experience" onNavigate={onNavigate} />

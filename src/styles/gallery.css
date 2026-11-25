@@ -337,6 +337,7 @@ h1,h2,h3 { font-family: var(--display); font-weight: 400; }
   .gallery-header nav { gap: 10px; }
   .gallery-header nav a { font-size: .72rem; }
   .gallery-brand { font-size: .83rem; }
+  .gallery-brand i { display: none; }
   .chapter-kicker { margin-bottom: 12px; }
   .hero-summary { font-size: .9rem; margin-block: 14px 17px; }
   .caption h2 { font-size: clamp(2rem, 8.5vw, 2.45rem); }
@@ -345,7 +346,7 @@ h1,h2,h3 { font-family: var(--display); font-weight: 400; }
 @media (max-width: 360px) {
   .gallery-tools { gap: 8px; }
   .gallery-header nav { gap: 7px; }
-  .gallery-brand i, .theme-toggle-label { display: none; }
+  .theme-toggle-label { display: none; }
   .theme-toggle { min-width: 32px; padding: 4px; }
 }
 @media (prefers-reduced-motion: reduce) {

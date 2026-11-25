@@ -140,7 +140,7 @@ h1,h2,h3 { font-family: var(--display); font-weight: 600; }
 .text-link { display: inline-flex; gap: 10px; margin-top: 16px; align-items: center; text-underline-offset: 4px; font-size: .87rem; font-weight: 600; }
 .hero-caption { width: min(52%, 615px); }
 .hero-caption h1 { font-size: clamp(4rem, 8.8vw, 8rem); line-height: .86; letter-spacing: -.008em; margin-block: 12px 19px; text-transform: uppercase; }
-.hero-role { color: #d4d6db; font: 400 clamp(.73rem, 1.05vw, .88rem)/1.65 var(--mono); max-width: 50ch; }
+.hero-role { color: #d4d6db; font: 400 clamp(.73rem, 1.05vw, .88rem)/1.65 var(--mono); max-width: 50ch; text-wrap: balance; }
 .hero-summary { color: var(--dim); max-width: 57ch; margin: 18px 0 21px; font-size: .96rem; line-height: 1.55; }
 .reveal-words--headline > .reveal-word { display: inline-block; }
 @media (prefers-reduced-motion: no-preference) {

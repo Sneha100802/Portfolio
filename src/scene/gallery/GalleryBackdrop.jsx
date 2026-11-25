@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { useTexture } from '@react-three/drei';
-import { AdditiveBlending, Shape } from 'three';
+import { AdditiveBlending, Color, Shape } from 'three';
 import { rng } from '../Parts';
 
 function archProfile(width, rise, trim) {
@@ -35,10 +35,11 @@ const wallVertex = /* glsl */ `
 const wallFragment = /* glsl */ `
   uniform sampler2D vault;
   uniform float exposure;
+  uniform vec3 wallColor;
   varying vec2 surface;
   void main() {
     vec3 glow = texture2D(vault, surface).rgb;
-    gl_FragColor = vec4(glow * exposure + vec3(11.0, 11.0, 14.0) / 255.0, 1.0);
+    gl_FragColor = vec4(wallColor + glow * exposure, 1.0);
   }
 `;
 
@@ -66,9 +67,13 @@ const moteFragment = /* glsl */ `
   }
 `;
 
-export function GalleryBackdrop({ stage, motes, compact, dim }) {
+export function GalleryBackdrop({ stage, motes, compact, dim, light, roomColor }) {
   const vault = useTexture(`${import.meta.env.BASE_URL}gallery-vault.webp`);
-  const wallUniforms = useMemo(() => ({ vault: { value: vault }, exposure: { value: dim ? 0.48 : 1 } }), [vault, dim]);
+  const wallUniforms = useMemo(() => ({
+    vault: { value: vault },
+    exposure: { value: light ? -0.36 : dim ? 0.48 : 1 },
+    wallColor: { value: new Color(light ? roomColor : '#0b0b0e').convertLinearToSRGB() },
+  }), [vault, dim, light, roomColor]);
   const positions = useMemo(() => {
     const random = rng(142);
     return new Float32Array(Array.from({ length: 44 }, () => [
@@ -85,11 +90,11 @@ export function GalleryBackdrop({ stage, motes, compact, dim }) {
     <group position={[0, compact ? -0.1 : 0, -2.35]} scale={compact ? 0.79 : 1}>
       <mesh>
         <extrudeGeometry args={[archStone, stoneDepth]} />
-        <meshStandardMaterial color={dim ? '#18171d' : '#262428'} roughness={0.55} metalness={0.37} envMapIntensity={dim ? 0.14 : 0.3} />
+        <meshStandardMaterial color={light ? '#b7a792' : dim ? '#18171d' : '#262428'} roughness={light ? 0.83 : 0.55} metalness={light ? 0.04 : 0.37} envMapIntensity={dim ? 0.14 : 0.3} />
       </mesh>
       <mesh position-z={0.429}>
         <extrudeGeometry args={[archBrass, trimDepth]} />
-        <meshStandardMaterial color="#8b6b3e" metalness={0.79} roughness={0.39} emissive="#604425" emissiveIntensity={0.16} />
+        <meshStandardMaterial color={light ? '#846143' : '#8b6b3e'} metalness={0.79} roughness={0.39} emissive="#604425" emissiveIntensity={light ? 0.04 : 0.16} />
       </mesh>
     </group>
     {!compact && <points ref={motes} frustumCulled={false}>

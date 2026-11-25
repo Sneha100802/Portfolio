@@ -102,9 +102,10 @@ export function OpticalInstrument({ simple = false, opticalGlass = false }) {
   );
 }
 
-function JobExhibit({ stop }) {
+function JobExhibit({ stop, light }) {
   const { data } = stop;
-  const accent = companyLook(stop)?.accent ?? brass;
+  const grade = companyLook(stop);
+  const accent = (light ? grade?.daylightAccent : grade?.accent) ?? brass;
   const icons = iconsFor(data.stack, Infinity);
   return <group>
     <CompanyExhibit company={data.id} accent={accent} />
@@ -239,11 +240,11 @@ const projectExhibits = {
   'ai-avatar': AvatarVoice,
 };
 
-export function GalleryExhibit({ stop, opticalGlass, tour }) {
+export function GalleryExhibit({ stop, opticalGlass, tour, light }) {
   const { kind, data } = stop;
   if (kind === 'hero') return <OpticalInstrument opticalGlass={opticalGlass} />;
   if (kind === 'contact') return <ContactPaths />;
-  if (kind === 'job') return <JobExhibit stop={stop} />;
+  if (kind === 'job') return <JobExhibit stop={stop} light={light} />;
   if (kind === 'skills') return <SkillsExhibit groups={data} tour={tour} />;
   if (kind === 'education') return <Folios count={data.length + 3} />;
   if (kind === 'research') return <group>

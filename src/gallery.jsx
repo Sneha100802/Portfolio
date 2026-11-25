@@ -23,6 +23,8 @@ class SceneBoundary extends Component {
 }
 
 export function App() {
+  const [theme, setTheme] = useState(() => document.documentElement.dataset.theme === 'light' ? 'light' : 'dark');
+  const light = theme === 'light';
   const [activeIndex, setActiveIndex] = useState(() => roomIndex(window.location));
   const tour = useRef({ position: activeIndex, pointerX: 0, pointerY: 0, skill: null, jump: 0, departure: 0 });
   const timers = useRef([]);
@@ -50,6 +52,17 @@ export function App() {
     window.scrollTo({ top: 0, behavior: 'instant' });
     setActiveIndex(index);
   }, []);
+
+  useLayoutEffect(() => {
+    document.documentElement.dataset.theme = theme;
+    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', light ? '#f5f0e6' : '#0b0b0e');
+  }, [theme, light]);
+
+  function toggleTheme() {
+    const next = light ? 'dark' : 'light';
+    setTheme(next);
+    try { localStorage.setItem('portfolio-theme', next); } catch { /* The toggle also works with storage blocked. */ }
+  }
 
   function navigate(event) {
     const link = event.target.closest('a[data-room]');
@@ -168,15 +181,22 @@ export function App() {
       <header className="gallery-header">
         <div className="gallery-shell gallery-masthead">
           <a href={roomPath(stops[0])} data-room="home" className="gallery-brand" data-text-reveal><RevealWords text={meta.name} /><i aria-hidden="true" /></a>
-          <nav aria-label={gallery.primaryNavigation}>
-            {['experience', 'projects', 'contact'].map((id, index) => <a href={roomPath(stops.find(item => item.id === id))} data-room={id} key={id}
-              aria-current={stop.chapter === id ? 'location' : undefined} data-text-reveal style={{ '--reveal-order': index }}><RevealWords text={chapterLabel[id]} /></a>)}
-          </nav>
+          <div className="gallery-tools">
+            <nav aria-label={gallery.primaryNavigation}>
+              {['experience', 'projects', 'contact'].map((id, index) => <a href={roomPath(stops.find(item => item.id === id))} data-room={id} key={id}
+                aria-current={stop.chapter === id ? 'location' : undefined} data-text-reveal style={{ '--reveal-order': index }}><RevealWords text={chapterLabel[id]} /></a>)}
+            </nav>
+            <button type="button" className="theme-toggle" onClick={toggleTheme} aria-label={light ? gallery.switchToDark : gallery.switchToLight}
+              title={light ? gallery.switchToDark : gallery.switchToLight} data-text-reveal>
+              <i className="theme-toggle-icon" aria-hidden="true" />
+              <span className="theme-toggle-label"><RevealWords text={light ? gallery.dark : gallery.light} /></span>
+            </button>
+          </div>
         </div>
       </header>
       {visual && <div className="gallery-scene" aria-hidden="true">
         <SceneBoundary onError={sceneFailed}>
-          <Suspense fallback={null}><Scene tour={tour} compact={compact} entrance={entrance} onReady={sceneReady} onFailure={sceneFailed} /></Suspense>
+          <Suspense fallback={null}><Scene tour={tour} compact={compact} entrance={entrance} light={light} onReady={sceneReady} onFailure={sceneFailed} /></Suspense>
         </SceneBoundary>
       </div>}
       {(!visual || !ready) && stop.chapter === 'projects' && <div className="gallery-scene-still" aria-hidden="true" data-project-still={stop.kind} />}

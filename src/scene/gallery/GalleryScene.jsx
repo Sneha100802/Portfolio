@@ -10,6 +10,7 @@ import { arrivalDuration, companyLook, roomArrival } from './RoomArrival';
 
 const brass = '#c9a45e';
 const night = '#0b0b0e';
+const daylight = '#ded7c9';
 const base = import.meta.env.BASE_URL;
 const coordinates = stops.map((_, index) => new Vector3(Math.sin(index * 0.64) * 1.6, 0, -index * 8.5));
 const rail = coordinates.map(({ x, z }) => [x - 3.1, -0.47, z]);
@@ -68,22 +69,22 @@ function Pedestal() {
   );
 }
 
-function Fixture({ stop, index, opticalGlass, shadow, tour, keyLight, rimLight }) {
+function Fixture({ stop, index, opticalGlass, shadow, tour, keyLight, rimLight, light }) {
   const aim = useMemo(() => new Object3D(), []);
   const grade = companyLook(stop);
   return (
     <group position={coordinates[index]}>
       {stop.kind === 'hero' && <Pedestal />}
-      <GalleryExhibit stop={stop} opticalGlass={opticalGlass} tour={tour} />
+      <GalleryExhibit stop={stop} opticalGlass={opticalGlass} tour={tour} light={light} />
       <primitive object={aim} position={[0, 1.35, 0]} />
-      <spotLight ref={keyLight} target={aim} position={[-3.1, 5.8, 3.9]} color={grade?.accent ?? '#ffd497'} intensity={31} angle={0.44} penumbra={0.91} distance={11} />
-      <pointLight ref={rimLight} position={[1.55, 2.25, -1.55]} color={grade?.rim ?? '#88bcbd'} intensity={9} distance={6} decay={2} />
+      <spotLight ref={keyLight} target={aim} position={[-3.1, 5.8, 3.9]} color={light ? '#fff1dc' : grade?.accent ?? '#ffd497'} intensity={31} angle={0.44} penumbra={0.91} distance={11} />
+      <pointLight ref={rimLight} position={[1.55, 2.25, -1.55]} color={light ? '#f6ebd9' : grade?.rim ?? '#88bcbd'} intensity={9} distance={6} decay={2} />
       {shadow && <ContactShadows position={[0, -0.464, 0]} scale={6.1} opacity={0.49} blur={2.7} frames={1} resolution={128} far={3.5} />}
     </group>
   );
 }
 
-function World({ tour, compact, entrance, quality, paintStage, onReady }) {
+function World({ tour, compact, entrance, light, quality, paintStage, onReady }) {
   const journey = useRef(null);
   const look = useRef(new Vector3());
   const destination = useRef(new Vector3());
@@ -148,10 +149,10 @@ function World({ tour, compact, entrance, quality, paintStage, onReady }) {
     if (keyLight.current) {
       keyLight.current.position.x = -3.1 + entry * 2.3 + arc * 0.9 - (arrival?.side ?? 0) * 0.85;
       keyLight.current.position.y = 5.8 - entry * 0.55;
-      const exposure = stops[center].kind === 'job' ? 23 : stops[center].kind === 'contact' ? 21 : 34;
+      const exposure = light ? 20 : stops[center].kind === 'job' ? 23 : stops[center].kind === 'contact' ? 21 : 34;
       keyLight.current.intensity = exposure * (1 - 0.50 * arc ** 9 - entry * 0.54) * MathUtils.lerp(0.21, 1, arrival?.light ?? 1);
     }
-    if (rimLight.current) rimLight.current.intensity = 9 + close * 8;
+    if (rimLight.current) rimLight.current.intensity = light ? 5 + close * 4 : 9 + close * 8;
     const viewKey = `${size.width}:${size.height}:${compact}:${entrance}`;
     if (view.current !== viewKey) {
       view.current = viewKey;
@@ -167,41 +168,41 @@ function World({ tour, compact, entrance, quality, paintStage, onReady }) {
   const activeStop = stops[activeIndex];
   const openingShot = roomArrival(activeStop, 0);
   const grade = companyLook(activeStop);
-  const darkness = grade?.night ?? night;
+  const roomColor = light ? daylight : grade?.night ?? night;
   return (
     <>
-      <color attach="background" args={[darkness]} />
-      <fog attach="fog" args={[darkness, 8.6, 16]} />
-      <ambientLight intensity={grade ? 0.065 : 0.12} />
-      <directionalLight position={[-4, 6, 4]} color="#ffe5bd" intensity={grade ? 0.37 : 0.72} />
-      <directionalLight position={[4, 3, -4]} color={grade?.rim ?? '#8ca6aa'} intensity={grade ? 0.28 : 0.58} />
+      <color attach="background" args={[roomColor]} />
+      <fog attach="fog" args={[roomColor, 8.6, 16]} />
+      <ambientLight intensity={light ? 0.50 : grade ? 0.065 : 0.12} />
+      <directionalLight position={[-4, 6, 4]} color={light ? '#fff3df' : '#ffe5bd'} intensity={light ? 1.17 : grade ? 0.37 : 0.72} />
+      <directionalLight position={[4, 3, -4]} color={light ? '#e5e8e7' : grade?.rim ?? '#8ca6aa'} intensity={light ? 0.72 : grade ? 0.28 : 0.58} />
       <StudioBoundary ready={studioReady}><Suspense fallback={null}>
         <StudioLight ready={studioReady} />
       </Suspense></StudioBoundary>
       <mesh position={[0, -0.48, -60]} rotation-x={-Math.PI / 2}>
         <planeGeometry args={[75, 160]} />
-        {quality === 2 ? <MeshReflectorMaterial
+        {quality === 2 && !light ? <MeshReflectorMaterial
           color="#0c0c0f" metalness={0.25} roughness={0.77} envMapIntensity={0.18} blur={[120, 39]} mixBlur={1.7} mixStrength={0.15}
           resolution={192} mirror={0.19} depthScale={0.75} minDepthThreshold={0.2} maxDepthThreshold={1.5}
-        /> : <meshStandardMaterial color="#09090d" metalness={0.06} roughness={0.96} envMapIntensity={0.08} />}
+        /> : <meshStandardMaterial color={light ? '#b5a58f' : '#09090d'} metalness={0.06} roughness={0.96} envMapIntensity={0.08} />}
       </mesh>
-      <Suspense fallback={null}><GalleryBackdrop stage={stage} motes={motes} compact={compact} dim={Boolean(grade)} /></Suspense>
+      <Suspense fallback={null}><GalleryBackdrop stage={stage} motes={motes} compact={compact} dim={Boolean(grade)} light={light} roomColor={roomColor} /></Suspense>
       {!compact && <>
         <Line points={rail} color="#4f3d2f" lineWidth={0.61} />
         <Line points={rail.map(([x, y, z]) => [x + 6.2, y, z])} color="#3d3229" lineWidth={0.52} />
       </>}
-      <Fixture key={activeStop.id} stop={activeStop} index={activeIndex} opticalGlass={quality === 2} shadow={quality > 0} tour={tour} keyLight={keyLight} rimLight={rimLight} />
+      <Fixture key={activeStop.id} stop={activeStop} index={activeIndex} opticalGlass={quality === 2} shadow={quality > 0} tour={tour} keyLight={keyLight} rimLight={rimLight} light={light} />
       <group key={`opening-${activeStop.id}`} position={coordinates[activeIndex]}>
-        <SceneAperture ready={lightingReady} tour={tour} index={activeIndex} gateway={entrance} accent={grade?.accent}
+        <SceneAperture ready={lightingReady} tour={tour} index={activeIndex} gateway={entrance} accent={light ? '#b46530' : grade?.accent}
           position={entrance ? undefined : [openingShot.target * 0.8, openingShot.focus, 1.15]} />
       </group>
-      {quality > 0 && !compact && !new URLSearchParams(window.location.search).has('fx', '0') &&
+      {quality > 0 && !compact && !light && !new URLSearchParams(window.location.search).has('fx', '0') &&
         <Suspense fallback={null}><Effects quality={quality} hero={center === 0} /></Suspense>}
     </>
   );
 }
 
-export default function GalleryScene({ tour, compact, entrance, onReady, onFailure }) {
+export default function GalleryScene({ tour, compact, entrance, light, onReady, onFailure }) {
   const [quality, setQuality] = useState(() => compact || window.innerWidth < 1220 ? 0 : 2);
   const [visible, setVisible] = useState(true);
   const wrapper = useRef();
@@ -244,7 +245,7 @@ export default function GalleryScene({ tour, compact, entrance, onReady, onFailu
       <PerformanceMonitor flipflops={2} bounds={refresh => [Math.min(57, refresh * 0.93), Math.max(60, refresh * 0.78)]}
         onDecline={() => setQuality(current => Math.max(0, current - 1))}
         onFallback={() => setQuality(0)}>
-        <World tour={tour} compact={compact} entrance={entrance} quality={quality} paintStage={paintStage} onReady={onReady} />
+        <World tour={tour} compact={compact} entrance={entrance} light={light} quality={quality} paintStage={paintStage} onReady={onReady} />
       </PerformanceMonitor>
     </Canvas>
   </div>;

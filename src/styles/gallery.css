@@ -37,14 +37,15 @@ h1,h2,h3 { font-family: var(--serif); font-weight: 500; }
 .gallery-header nav { gap: clamp(15px, 3vw, 39px); }
 .gallery-header nav a { color: var(--dim); text-decoration: none; font-size: .7rem; font-weight: 600; letter-spacing: .065em; }
 .gallery-header nav a:hover { color: var(--brass); }
-.gallery-scene { position: fixed; inset: 0; z-index: 0; pointer-events: none; opacity: 0; }
+.gallery-scene { position: fixed; inset: 0; z-index: 0; pointer-events: none; opacity: 0; transition: opacity .68s cubic-bezier(.16, 1, .3, 1); }
 .gallery[data-scene="ready"] .gallery-scene { opacity: 1; }
 .gallery[data-scene="ready"] .gallery-scene::after {
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(90deg, #0b0b0ef2 1%, #0b0b0ed2 35%, #0b0b0e55 51%, transparent 68%),
-              linear-gradient(0deg, #0b0b0eeb 1%, #0b0b0e85 28%, transparent 61%);
+  background: linear-gradient(90deg, #0b0b0ef7 2%, #0b0b0ee8 30%, #0b0b0e77 49%, transparent 67%),
+              linear-gradient(0deg, #0b0b0ef2 0%, #0b0b0e73 15%, transparent 43%),
+              radial-gradient(ellipse at 71% 48%, transparent 31%, #0b0b0eac 95%);
   pointer-events: none;
 }
 .gallery-timeline { position: fixed; inset: 50% clamp(10px, 2.3vw, 35px) auto auto; z-index: 5; translate: 0 -50%; }
@@ -102,6 +103,13 @@ h1,h2,h3 { font-family: var(--serif); font-weight: 500; }
 .hero-caption h1 { font-size: clamp(5.2rem, 10.2vw, 10rem); line-height: .78; letter-spacing: -.065em; margin-block: 17px 25px; white-space: nowrap; }
 .hero-role { color: #e4c68e; font: 500 italic clamp(1.18rem, 2.32vw, 1.8rem)/1.16 var(--serif); max-width: 34ch; }
 .hero-summary { color: var(--dim); max-width: 48ch; margin: 20px 0 22px; font-size: .87rem; line-height: 1.72; }
+.gallery[data-scene="ready"] .hero-caption > :is(.chapter-kicker, h1, .hero-role) { animation: hero-reveal .9s cubic-bezier(.19, 1, .22, 1) both; }
+.gallery[data-scene="ready"] .hero-caption > h1 { animation-delay: .07s; }
+.gallery[data-scene="ready"] .hero-caption > .hero-role { animation-delay: .14s; }
+@keyframes hero-reveal {
+  from { opacity: .72; transform: translateY(15px); }
+  to { opacity: 1; transform: translateY(0); }
+}
 .profile-links { display: flex; flex-wrap: wrap; gap: 12px 22px; align-items: center; width: fit-content; }
 .profile-links a { display: inline-flex; gap: 6px; align-items: center; font-size: .72rem; text-underline-offset: 5px; text-decoration-color: var(--line); }
 .arrow-mark { color: var(--brass); }
@@ -153,10 +161,24 @@ h1,h2,h3 { font-family: var(--serif); font-weight: 500; }
 .gallery--plain .exhibit--experience:nth-child(odd), .gallery--compact .exhibit--experience:nth-child(odd) { background: #111014; }
 .gallery--compact .gallery-scene { position: absolute; height: 813px; }
 .gallery--compact[data-scene="ready"] .gallery-scene::after {
-  background: linear-gradient(180deg, #0b0b0e 9%, #0b0b0eeb 34%, transparent 62%, #0b0b0e 100%);
+  background: linear-gradient(180deg, #0b0b0e 9%, #0b0b0ef2 33%, transparent 65%, #0b0b0e 100%),
+              radial-gradient(ellipse at 46% 74%, #bf8a3a24, transparent 56%);
 }
 .gallery--compact .gallery-hero { align-items: start; padding: 113px 0 24px; min-height: 809px; }
 .gallery--compact .gallery-hero .entry-link { margin-top: 20px; }
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .gallery--desktop .exhibit:not(.gallery-hero):not(:focus-within) .caption {
+      animation: caption-reveal linear both;
+      animation-timeline: view();
+      animation-range: entry 18% cover 41%;
+    }
+  }
+}
+@keyframes caption-reveal {
+  from { opacity: .84; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
 @media (max-width: 880px) {
   .gallery--plain .gallery-hero { align-items: start; min-height: 809px; padding: 113px 0 24px; }
   .gallery[data-scene="fallback"] .gallery-hero::before { inset: auto 3% 2%; height: min(42%, 82vw); }

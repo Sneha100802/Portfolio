@@ -38,11 +38,13 @@ function GaugeFace() {
 export function OpticalInstrument({ simple = false, opticalGlass = false }) {
   const lens = useRef();
   const sweep = useRef();
+  const gimbal = useRef();
 
   useFrame(({ clock }) => {
     const time = clock.elapsedTime;
     if (lens.current) lens.current.rotation.y = 0.25 + Math.sin(time * 0.41) * 0.11;
     if (sweep.current) sweep.current.rotation.z = -0.35 + Math.sin(time * 0.28) * 0.42;
+    if (gimbal.current) gimbal.current.rotation.x = 0.89 + Math.sin(time * 0.43 + 0.7) * 0.19;
   });
 
   return (
@@ -61,7 +63,7 @@ export function OpticalInstrument({ simple = false, opticalGlass = false }) {
           <meshStandardMaterial color="#ddbd7d" metalness={0.81} roughness={0.32} />
         </mesh>
         <GaugeFace />
-        <mesh rotation={[0.89, -0.29, -0.79]}>
+        <mesh ref={gimbal} rotation={[0.89, -0.29, -0.79]}>
           <torusGeometry args={[1.23, 0.06, 12, 120]} />
           <meshStandardMaterial color="#d7ab5f" metalness={0.9} roughness={0.26} />
         </mesh>
@@ -74,9 +76,9 @@ export function OpticalInstrument({ simple = false, opticalGlass = false }) {
           <meshPhysicalMaterial color="#313335" roughness={0.17} metalness={0.36} clearcoat={1} clearcoatRoughness={0.18}
             transmission={opticalGlass ? 0.13 : 0} thickness={0.5} />
         </mesh>}
-        <mesh rotation={[0.45, -0.27, 0.35]}>
-          <torusGeometry args={[0.65, 0.025, 12, 90]} />
-          <meshStandardMaterial color={teal} emissive={teal} emissiveIntensity={1.7} metalness={0.31} roughness={0.37} />
+        <mesh rotation={[0.16, -0.18, 0.35]} position-z={simple ? 0.16 : 0.44}>
+          <torusGeometry args={[0.56, 0.011, 10, 90]} />
+          <meshStandardMaterial color={teal} emissive={teal} emissiveIntensity={0.78} metalness={0.41} roughness={0.38} />
         </mesh>
         <group ref={sweep} position-z={0.51}>
           <mesh>

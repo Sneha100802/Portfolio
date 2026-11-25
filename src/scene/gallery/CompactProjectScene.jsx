@@ -26,7 +26,7 @@ function RoomCamera({ stop, distance, focus, visible }) {
     camera.lookAt(shot.target * 0.55, MathUtils.lerp(focus, shot.focus, shot.close * 0.50), 0);
     camera.rotateZ(Math.sign(shot.side) * shot.close * 0.08);
     keyLight.current.position.x = -3 - shot.side;
-    keyLight.current.intensity = companyLook(stop) ? 0.43 + shot.light * 1.02 : 0.55 + shot.light * 1.45;
+    keyLight.current.intensity = companyLook(stop) ? 0.63 + shot.light * 1.65 : 0.55 + shot.light * 1.45;
   });
   return <directionalLight ref={keyLight} position={[-3, 5, 4]} color={companyLook(stop)?.accent ?? '#ffe5bd'} intensity={2.0} />;
 }
@@ -41,8 +41,8 @@ export default function CompactProjectScene({ stop, tour }) {
   return <Canvas dpr={1} camera={{ position: [0.52, 2.28, distance], fov: 36 }}
     onCreated={({ camera }) => camera.lookAt(0, focus, 0)}>
     <color attach="background" args={[grade?.night ?? '#101014']} />
-    <ambientLight intensity={grade ? 0.42 : 0.6} />
-    <directionalLight position={[3, 2, -3]} color={grade?.rim ?? '#9cc8ca'} intensity={grade ? 0.64 : 1.1} />
+    <ambientLight intensity={grade ? 0.82 : 0.6} />
+    <directionalLight position={[3, 2, -3]} color={grade?.rim ?? '#9cc8ca'} intensity={grade ? 1.05 : 1.1} />
     <mesh position-y={-0.13}>
       <cylinderGeometry args={[2.32, 2.32, 0.2, 40]} />
       <meshStandardMaterial color="#191a1f" roughness={0.72} metalness={0.28} />

@@ -119,6 +119,19 @@ export function App() {
     return () => cancelAnimationFrame(frame);
   }, [mode, visual]);
 
+  useEffect(() => {
+    if (!('IntersectionObserver' in window)) return;
+    const observer = new IntersectionObserver((entries) => {
+      for (const entry of entries) {
+        if (entry.intersectionRatio < 0.28) continue;
+        entry.target.dataset.textReveal = 'played';
+        observer.unobserve(entry.target);
+      }
+    }, { rootMargin: '0px 0px -8% 0px', threshold: 0.28 });
+    document.querySelectorAll('[data-text-reveal]').forEach(caption => observer.observe(caption));
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <div className={`gallery gallery--${visual ? mode : 'plain'}`} data-scene={visual && ready ? 'ready' : 'fallback'} data-graphics={failed ? 'unavailable' : graphics}>
       <a href="#main" className="gallery-skip">{gallery.skip}</a>

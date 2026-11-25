@@ -4,6 +4,13 @@ import { iconFor } from '../lib/icons';
 
 const { gallery, meta, links, summary } = content;
 
+function RevealWords({ text }) {
+  let word = 0;
+  return text.split(/(\s+)/).map((part, index) => part.trim()
+    ? <span className="reveal-word" key={index} style={{ '--word-delay': `${Math.min(word++, 10) * 48}ms` }}>{part}</span>
+    : part);
+}
+
 function ExternalMark() {
   return <span aria-hidden="true" className="arrow-mark">↗</span>;
 }
@@ -18,7 +25,7 @@ function Heading({ id, chapter, title, eyebrow, subtitle }) {
   return <>
     {chapter && <p className="chapter-kicker"><i aria-hidden="true" />{chapterLabel[chapter]}</p>}
     {eyebrow && <p className="caption-eyebrow">{eyebrow}</p>}
-    <h2 id={id}>{title}</h2>
+    <h2 id={id}><RevealWords text={title} /></h2>
     {subtitle && <p className="caption-subtitle">{subtitle}</p>}
   </>;
 }
@@ -104,10 +111,10 @@ export function GalleryChapter({ stop, onSkill }) {
   if (kind === 'hero') return (
     <section className="exhibit gallery-hero" id={id} data-stop={id} tabIndex={-1} aria-labelledby="gallery-title">
       <div className="gallery-shell">
-        <div className="caption hero-caption">
+        <div className="caption hero-caption" data-text-reveal>
           <p className="chapter-kicker"><i aria-hidden="true" />{gallery.name}</p>
-          <h1 id="gallery-title">{meta.name}</h1>
-          <p className="hero-role">{meta.title}</p>
+          <h1 id="gallery-title"><RevealWords text={meta.name} /></h1>
+          <p className="hero-role"><RevealWords text={meta.title} /></p>
           <p className="hero-summary">{summary}</p>
           <ProfileLinks />
           <a className="entry-link" href="#experience">{gallery.start}<span aria-hidden="true">↓</span></a>
@@ -119,7 +126,7 @@ export function GalleryChapter({ stop, onSkill }) {
   if (kind === 'contact') return (
     <footer className="exhibit gallery-contact" id={id} data-stop={id} tabIndex={-1} aria-labelledby="contact-title">
       <div className="gallery-shell">
-        <div className="caption">
+        <div className="caption" data-text-reveal>
           <Heading id="contact-title" chapter={stop.chapter} title={meta.name} subtitle={meta.location} />
           <ProfileLinks />
           <a className="entry-link" href="#home">{gallery.back}<span aria-hidden="true">↑</span></a>
@@ -131,7 +138,7 @@ export function GalleryChapter({ stop, onSkill }) {
   return (
     <section className={`exhibit exhibit--${stop.chapter}`} id={id} data-stop={id} tabIndex={-1} aria-labelledby={`${id}-title`}>
       <div className="gallery-shell">
-        <div className="caption">
+        <div className="caption" data-text-reveal>
           {kind === 'job' && <Job stop={stop} />}
           {stop.chapter === 'projects' && <Project stop={stop} />}
           {kind === 'skills' && <Skills groups={stop.data} onSkill={onSkill} />}

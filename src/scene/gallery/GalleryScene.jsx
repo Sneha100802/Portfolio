@@ -8,6 +8,8 @@ import { GalleryExhibit } from './GalleryExhibits';
 import { SceneAperture } from './SceneAperture';
 import { arrivalDuration, companyLook, roomArrival, roomSet } from './RoomArrival';
 import { deskTargets } from './DeskShots';
+import { ArchiveFilm } from './ArchiveFilm';
+import { archiveBeat, archiveCues, archiveCut, archiveDuration, directArchiveCamera } from './ArchiveDirection';
 
 const brass = '#c9a45e';
 const night = '#0b0b0e';
@@ -70,7 +72,7 @@ function Pedestal() {
   );
 }
 
-function Fixture({ stop, index, opticalGlass, shadow, tour, opening, keyLight, rimLight, light, documentIndex }) {
+function Fixture({ stop, index, opticalGlass, shadow, tour, opening, keyLight, rimLight, light, documentIndex, rig }) {
   const aim = useMemo(() => new Object3D(), []);
   const grade = companyLook(stop);
   const focus = useRef();
@@ -88,7 +90,7 @@ function Fixture({ stop, index, opticalGlass, shadow, tour, opening, keyLight, r
     focus.current.scale.setScalar(1 + Math.sin(clock.elapsedTime * 2.3) * 0.055);
   });
   return (
-    <group position={coordinates[index]}>
+    <group ref={rig} position={coordinates[index]}>
       {stop.kind === 'hero' && <Pedestal />}
       <GalleryExhibit stop={stop} opticalGlass={opticalGlass} tour={tour} light={light} opening={opening} documentIndex={documentIndex} />
       <primitive object={aim} position={[0, 1.35, 0]} />
@@ -109,7 +111,7 @@ function Fixture({ stop, index, opticalGlass, shadow, tour, opening, keyLight, r
   );
 }
 
-function World({ tour, documentIndex, paintDesk, compact, entrance, light, replay, quality, paintStage, onReady }) {
+function World({ tour, documentIndex, paintDesk, compact, entrance, light, replay, quality, paintStage, onReady, onFilmCue }) {
   const journey = useRef(null);
   const look = useRef(new Vector3());
   const destination = useRef(new Vector3());
@@ -120,7 +122,10 @@ function World({ tour, documentIndex, paintDesk, compact, entrance, light, repla
   const [center, setCenter] = useState(0);
   const view = useRef('');
   const intro = useRef(0);
+  const archiveStart = useRef(null);
   const jump = useRef(0);
+  const cue = useRef(0);
+  const exhibit = useRef();
   const lightingReady = useRef(false);
   const stage = useRef();
   const screen = useRef();
@@ -135,13 +140,34 @@ function World({ tour, documentIndex, paintDesk, compact, entrance, light, repla
   useFrame(({ camera, size, clock }, delta) => {
     const step = Math.min(delta, 1.5);
     const goal = tour.current.position;
+    const archive = stops[goal].kind === 'document-retrieval';
     if (jump.current !== tour.current.jump) {
       jump.current = tour.current.jump;
       journey.current = goal;
       intro.current = 0;
+      archiveStart.current = null;
+      cue.current = 0;
     }
     if (tour.current.cut) intro.current = 1;
-    else if (lightingReady.current) intro.current = Math.min(intro.current + Math.min(step, 0.085) / (entrance ? 1.8 : arrivalDuration), 1);
+    else if (lightingReady.current) {
+      if (archive) {
+        const now = performance.now();
+        archiveStart.current ??= now;
+        intro.current = Math.min((now - archiveStart.current) / (archiveDuration * 1000), 1);
+      } else {
+        intro.current = Math.min(intro.current + Math.min(step, .085) / (entrance ? 1.8 : arrivalDuration), 1);
+      }
+    }
+    const film = archive && intro.current < 1;
+    const time = intro.current * archiveDuration;
+    const beat = film ? archiveBeat(time) : '';
+    const insert = film && time < archiveCut;
+    let nextCue;
+    while (insert && !tour.current.departure && cue.current < archiveCues.length && time >= archiveCues[cue.current].at) {
+      nextCue = archiveCues[cue.current].name;
+      cue.current++;
+    }
+    if (nextCue) onFilmCue(nextCue);
     const starting = journey.current === null;
     journey.current = starting ? goal : MathUtils.damp(journey.current, goal, 4.6, step);
     const index = Math.floor(journey.current);
@@ -156,7 +182,7 @@ function World({ tour, documentIndex, paintDesk, compact, entrance, light, repla
     drift.current.y = MathUtils.damp(drift.current.y, compact ? 0 : tour.current.pointerY, 3, step);
     const arc = Math.sin(fraction * Math.PI);
     const entry = entrance ? (1 - intro.current) ** 3 * (compact ? 0.35 : 1) : 0;
-    const arrival = entrance || intro.current >= 1 ? null : roomArrival(stops[nearest], intro.current);
+    const arrival = archive || entrance || intro.current >= 1 ? null : roomArrival(stops[nearest], intro.current);
     const close = arrival?.close ?? 0;
     const depart = tour.current.departure ? MathUtils.smoothstep(performance.now() - tour.current.departure, 0, roomSwapMs) : 0;
     const originShot = shots[stops[index].kind] ?? defaultShot;
@@ -173,15 +199,21 @@ function World({ tour, documentIndex, paintDesk, compact, entrance, light, repla
     lens.y = MathUtils.damp(lens.y, examining ? (selected.position[1] - focus) * 0.73 : 0, 4, step);
     lens.depth = MathUtils.damp(lens.depth, examining ? (compact ? 0.65 : 1.46) : 0, 4, step);
 
+    const titlePush = beat === 'title' ? .65 * (1 - MathUtils.smootherstep(time, archiveCut, 11.7)) : 0;
     camera.position.set(destination.current.x + lens.x * 0.28 + side * (1 - depart * 0.55 - close * 0.4) + (arrival?.side ?? 0) * framing + arc * 1.18 + entry * 1.68 + drift.current.x * 0.23,
       height + (arrival?.height ?? 0) * framing + entry * 0.69 + drift.current.y * 0.15 + arc * 0.31 - depart * 0.35,
-      destination.current.z + distance - close * 2.65 * framing + entry * 1.84 + arc * 0.82 - depart * 3.8 - lens.depth);
+      destination.current.z + distance - close * 2.65 * framing + entry * 1.84 + arc * 0.82 - depart * 3.8 - lens.depth - titlePush);
     look.current.set(destination.current.x + lens.x + (arrival?.target ?? 0) * framing + arc * 0.13,
       MathUtils.lerp(focus, arrival?.focus ?? focus, close) + arc * 0.14 + lens.y, destination.current.z - 0.12);
     if (stops[nearest].id === 'job-founder-guidance') deskFocus.copy(look.current);
     camera.lookAt(look.current);
     if (arrival) camera.rotateZ(Math.sign(arrival.side) * close * 0.075);
-    if (stage.current) stage.current.position.copy(destination.current);
+    if (insert) directArchiveCamera(time, coordinates[goal], camera, look.current, compact);
+    if (stage.current) {
+      stage.current.position.copy(destination.current);
+      stage.current.visible = !insert;
+    }
+    if (exhibit.current) exhibit.current.visible = !insert;
     if (screen.current) screen.current.position.x = MathUtils.lerp(compact ? -2.35 : -2.85, -4.8, MathUtils.smoothstep(intro.current, 0.18, 0.96));
     if (motes.current) motes.current.material.uniforms.time.value = clock.elapsedTime * 0.65;
     if (keyLight.current) {
@@ -191,7 +223,7 @@ function World({ tour, documentIndex, paintDesk, compact, entrance, light, repla
       keyLight.current.intensity = exposure * (1 - 0.50 * arc ** 9 - entry * 0.54) * MathUtils.lerp(0.21, 1, arrival?.light ?? 1);
     }
     if (rimLight.current) rimLight.current.intensity = light ? 5 + close * 4 : 9 + close * 8;
-    const framingSettle = MathUtils.smoothstep(intro.current, 0.53, 0.97);
+    const framingSettle = film ? MathUtils.smoothstep(time, archiveCut - .15, 10.75) : MathUtils.smoothstep(intro.current, 0.53, 0.97);
     const horizontalFrame = 0.224 - lens.depth * 0.027;
     const offsetX = entrance || compact ? 0 : Math.round(-size.width * horizontalFrame * framingSettle);
     const offsetY = Math.round(size.height * (entrance ? 0.14 : compact ? 0.20 * framingSettle : 0));
@@ -200,7 +232,7 @@ function World({ tour, documentIndex, paintDesk, compact, entrance, light, repla
       view.current = viewKey;
       camera.setViewOffset(size.width, size.height, offsetX, offsetY, size.width, size.height);
     }
-    const atExhibit = nearest === center && Math.abs(journey.current - goal) < 0.045 && intro.current > 0.90;
+    const atExhibit = nearest === center && Math.abs(journey.current - goal) < 0.045 && intro.current > 0.90 && !film;
     const station = atExhibit ? stops[nearest].id : '';
     if (station === 'job-founder-guidance') {
       camera.updateMatrixWorld();
@@ -211,8 +243,8 @@ function World({ tour, documentIndex, paintDesk, compact, entrance, light, repla
         paintDesk(control, x, y, x >= 24 && x <= size.width - 22 && y >= 74 && y <= size.height - 74);
       }
     } else paintDesk();
-    paintStage(station, 1 - arc ** 7 * 0.34, intro.current < 0.77);
-  });
+    paintStage(station, 1 - arc ** 7 * 0.34, film || intro.current < 0.77, beat);
+  }, -1);
 
   const activeIndex = center;
   const activeStop = stops[activeIndex];
@@ -241,11 +273,13 @@ function World({ tour, documentIndex, paintDesk, compact, entrance, light, repla
         <Line points={rail} color="#4f3d2f" lineWidth={0.61} />
         <Line points={rail.map(([x, y, z]) => [x + 6.2, y, z])} color="#3d3229" lineWidth={0.52} />
       </>}
-      <Fixture key={activeStop.id} stop={activeStop} index={activeIndex} opticalGlass={quality === 2} shadow={quality > 0} tour={tour} opening={intro} keyLight={keyLight} rimLight={rimLight} light={light} documentIndex={documentIndex} />
-      <group key={`opening-${activeStop.id}-${replay}`} position={coordinates[activeIndex]}>
-        <SceneAperture ready={lightingReady} tour={tour} index={activeIndex} gateway={entrance} passage={activeStop.kind === 'document-retrieval' || activeStop.id === 'job-document-processing'} accent={light ? '#b46530' : grade?.accent}
-          position={entrance ? undefined : [openingShot.target * 0.8, openingShot.focus, 1.15]} />
-      </group>
+      <Fixture key={activeStop.id} stop={activeStop} index={activeIndex} opticalGlass={quality === 2} shadow={quality > 0} tour={tour} opening={intro} keyLight={keyLight} rimLight={rimLight} light={light} documentIndex={documentIndex} rig={exhibit} />
+      {activeStop.kind === 'document-retrieval'
+        ? <ArchiveFilm opening={intro} position={coordinates[activeIndex]} light={light} />
+        : <group key={`opening-${activeStop.id}-${replay}`} position={coordinates[activeIndex]}>
+          <SceneAperture ready={lightingReady} tour={tour} index={activeIndex} gateway={entrance} passage={activeStop.id === 'job-document-processing'} accent={light ? '#b46530' : grade?.accent}
+            position={entrance ? undefined : [openingShot.target * 0.8, openingShot.focus, 1.15]} />
+        </group>}
       {quality > 0 && !compact && !light && !new URLSearchParams(window.location.search).has('fx', '0') &&
         <Suspense fallback={null}><Effects quality={quality} hero={center === 0}
           deskFocus={activeStop.id === 'job-founder-guidance' ? deskFocus : undefined} /></Suspense>}
@@ -253,7 +287,7 @@ function World({ tour, documentIndex, paintDesk, compact, entrance, light, repla
   );
 }
 
-export default function GalleryScene({ tour, documentIndex, paintDesk, compact, entrance, light, replay, onReady, onFailure }) {
+export default function GalleryScene({ tour, documentIndex, paintDesk, compact, entrance, light, replay, onReady, onFailure, onFilmCue }) {
   const [quality, setQuality] = useState(() => compact || window.innerWidth < 1220 ? 0 : 2);
   const [visible, setVisible] = useState(true);
   const wrapper = useRef();
@@ -281,12 +315,13 @@ export default function GalleryScene({ tour, documentIndex, paintDesk, compact, 
     else if (/intel.*(?:iris|uhd|hd graphics)/i.test(renderer)) setQuality(0);
   }
 
-  function paintStage(station, opacity, opening) {
+  function paintStage(station, opacity, opening, beat) {
     const element = wrapper.current;
     if (!element) return;
     if (element.dataset.station !== station) element.dataset.station = station;
     const openingState = String(opening);
     if (element.dataset.opening !== openingState) element.dataset.opening = openingState;
+    if (element.dataset.filmBeat !== beat) element.dataset.filmBeat = beat;
     const alpha = String(Math.round(opacity * 100) / 100);
     if (element.style.opacity !== alpha) element.style.opacity = alpha;
   }
@@ -298,7 +333,7 @@ export default function GalleryScene({ tour, documentIndex, paintDesk, compact, 
       <PerformanceMonitor flipflops={2} bounds={refresh => [Math.min(57, refresh * 0.93), Math.max(60, refresh * 0.78)]}
         onDecline={() => setQuality(current => Math.max(0, current - 1))}
         onFallback={() => setQuality(0)}>
-        <World tour={tour} documentIndex={documentIndex} paintDesk={paintDesk} compact={compact} entrance={entrance} light={light} replay={replay} quality={quality} paintStage={paintStage} onReady={onReady} />
+        <World tour={tour} documentIndex={documentIndex} paintDesk={paintDesk} compact={compact} entrance={entrance} light={light} replay={replay} quality={quality} paintStage={paintStage} onReady={onReady} onFilmCue={onFilmCue} />
       </PerformanceMonitor>
     </Canvas>
   </div>;

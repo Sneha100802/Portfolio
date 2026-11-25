@@ -47,6 +47,7 @@ export function App() {
   const [failed, setFailed] = useState(false);
   const sceneReady = useCallback(() => { setReady(true); }, []);
   const sceneFailed = useCallback(() => { setFailed(true); }, []);
+  const playFilmCue = useCallback((name) => { sound.current?.[name]?.(); }, []);
   const visual = !failed && mode !== 'plain';
   const stop = stops[activeIndex];
   const guidedIndex = guided ? guidedStops.indexOf(stop) : -1;
@@ -275,7 +276,7 @@ export function App() {
   }, [activeIndex, replay]);
 
   return (
-    <div className={`gallery gallery--${visual ? mode : 'plain'} ${entrance ? 'gallery--entrance' : 'gallery--room'}`}
+    <div className={`gallery gallery--${visual ? mode : 'plain'} ${entrance ? 'gallery--entrance' : 'gallery--room'}${stop.kind === 'document-retrieval' ? ' gallery--archive' : ''}`}
       onClick={navigate} data-company={stop.kind === 'job' ? stop.data.id : undefined} data-transit={Boolean(transit) || undefined}
       data-guided={guidedIndex >= 0 || undefined}
       data-scene={visual && ready ? 'ready' : 'fallback'} data-graphics={failed ? 'unavailable' : graphics}>
@@ -303,7 +304,7 @@ export function App() {
       </header>
       {visual && <div className="gallery-scene" aria-hidden="true">
         <SceneBoundary onError={sceneFailed}>
-          <Suspense fallback={null}><Scene tour={tour} documentIndex={documentIndex} paintDesk={paintDesk} compact={compact} entrance={entrance} light={light} replay={replay} onReady={sceneReady} onFailure={sceneFailed} /></Suspense>
+          <Suspense fallback={null}><Scene tour={tour} documentIndex={documentIndex} paintDesk={paintDesk} compact={compact} entrance={entrance} light={light} replay={replay} onReady={sceneReady} onFailure={sceneFailed} onFilmCue={playFilmCue} /></Suspense>
         </SceneBoundary>
       </div>}
       {(!visual || !ready) && stop.chapter === 'projects' && <div className="gallery-scene-still" aria-hidden="true" data-project-still={stop.kind} />}

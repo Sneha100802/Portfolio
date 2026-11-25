@@ -21,20 +21,20 @@ export function createFilmSound() {
   ambience.connect(room).connect(roomGain).connect(master);
   ambience.start();
 
-  function paper() {
+  function sweep(high, low, duration, volume) {
     const start = context.currentTime;
     const rustle = context.createBufferSource();
     const tone = context.createBiquadFilter();
     const envelope = context.createGain();
     rustle.buffer = buffer;
     tone.type = 'bandpass';
-    tone.frequency.setValueAtTime(1700, start);
-    tone.frequency.exponentialRampToValueAtTime(480, start + 0.36);
+    tone.frequency.setValueAtTime(high, start);
+    tone.frequency.exponentialRampToValueAtTime(low, start + duration);
     envelope.gain.setValueAtTime(0, start);
-    envelope.gain.linearRampToValueAtTime(0.32, start + 0.05);
-    envelope.gain.exponentialRampToValueAtTime(0.001, start + 0.37);
+    envelope.gain.linearRampToValueAtTime(volume, start + 0.05);
+    envelope.gain.exponentialRampToValueAtTime(0.001, start + duration);
     rustle.connect(tone).connect(envelope).connect(master);
-    rustle.start(start, 0.7, 0.39);
+    rustle.start(start, 0.7, duration + .02);
   }
 
   function bronze() {
@@ -59,7 +59,8 @@ export function createFilmSound() {
       master.disconnect();
       return context.close();
     },
-    paper,
+    paper: () => sweep(1700, 480, .37, .32),
+    screen: () => sweep(780, 230, .57, .22),
     bronze,
   };
 }

@@ -164,7 +164,7 @@ function World({ tour, compact, quality, paintStage, onReady }) {
         /> : <meshStandardMaterial color="#09090d" metalness={0.06} roughness={0.96} envMapIntensity={0.08} />}
       </mesh>
       {!compact && <>
-        <GalleryBackdrop stage={stage} motes={motes} />
+        <Suspense fallback={null}><GalleryBackdrop stage={stage} motes={motes} /></Suspense>
         <Line points={rail} color="#4f3d2f" lineWidth={0.61} />
         <Line points={rail.map(([x, y, z]) => [x + 6.2, y, z])} color="#3d3229" lineWidth={0.52} />
       </>}

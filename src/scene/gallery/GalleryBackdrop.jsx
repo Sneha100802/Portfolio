@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { useTexture } from '@react-three/drei';
 import { AdditiveBlending } from 'three';
 import { rng } from '../Parts';
 
@@ -11,33 +12,10 @@ const wallVertex = /* glsl */ `
 `;
 
 const wallFragment = /* glsl */ `
+  uniform sampler2D vault;
   varying vec2 surface;
-
-  float arch(vec2 p, float radius, float spring, float floor) {
-    return max(length(vec2(p.x, max(0.0, p.y - spring))) - radius, floor - p.y);
-  }
-
   void main() {
-    vec2 p = (surface - 0.5) * vec2(1.5, 1.0);
-    float edge = 1.0 - smoothstep(0.43, 0.5, abs(surface.y - 0.5));
-    edge *= 1.0 - smoothstep(0.38, 0.5, abs(surface.x - 0.5));
-    float a = arch(p, 0.405, 0.06, -0.495);
-    float b = arch(p, 0.36, 0.052, -0.495);
-    float light = exp(-2.9 * length((p - vec2(-0.11, 0.22)) * vec2(1.35, 0.86)));
-    float room = 1.0 - smoothstep(-0.04, 0.006, b);
-    float reveal = room * smoothstep(-0.46, 0.38, p.y);
-    float outerTrim = 1.0 - smoothstep(0.0014, 0.004, abs(a));
-    float innerTrim = 1.0 - smoothstep(0.0010, 0.003, abs(b));
-    float molding = smoothstep(-0.026, -0.007, a) * (1.0 - smoothstep(-0.006, 0.007, a));
-
-    // The shaft widens and softens as it crosses the stone behind the plinth.
-    float beam = (1.0 - smoothstep(0.01, 0.31 - p.y * 0.23, abs(p.x + p.y * 0.55 + 0.025)));
-    beam *= smoothstep(-0.49, 0.24, p.y) * (1.0 - smoothstep(0.35, 0.49, p.y));
-    vec3 warm = vec3(0.35, 0.225, 0.105);
-    vec3 cool = vec3(0.075, 0.126, 0.129);
-    vec3 color = cool * 0.20 * room + warm * (light * 0.25 + beam * 0.27 + reveal * 0.09);
-    color += warm * (outerTrim * 0.64 + innerTrim * 0.32 + molding * 0.18) * (0.33 + light * 0.90);
-    gl_FragColor = vec4(color, edge);
+    gl_FragColor = texture2D(vault, surface);
   }
 `;
 
@@ -66,6 +44,8 @@ const moteFragment = /* glsl */ `
 `;
 
 export function GalleryBackdrop({ stage, motes }) {
+  const vault = useTexture(`${import.meta.env.BASE_URL}gallery-vault.webp`);
+  const wallUniforms = useMemo(() => ({ vault: { value: vault } }), [vault]);
   const positions = useMemo(() => {
     const random = rng(142);
     return new Float32Array(Array.from({ length: 44 }, () => [
@@ -77,7 +57,7 @@ export function GalleryBackdrop({ stage, motes }) {
   return <group ref={stage}>
     <mesh position={[0, 2.36, -3.4]}>
       <planeGeometry args={[11.3, 6.25]} />
-      <shaderMaterial vertexShader={wallVertex} fragmentShader={wallFragment}
+      <shaderMaterial uniforms={wallUniforms} vertexShader={wallVertex} fragmentShader={wallFragment}
         transparent toneMapped={false} depthWrite={false} blending={AdditiveBlending} />
     </mesh>
     <points ref={motes} frustumCulled={false}>

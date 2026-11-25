@@ -1,6 +1,6 @@
 import { MathUtils } from 'three';
 
-export const arrivalDuration = 2.25;
+export const arrivalDuration = 3.45;
 
 const companies = {
   blazetrail: { night: '#07090d', accent: '#d6a45f', rim: '#465b74' },

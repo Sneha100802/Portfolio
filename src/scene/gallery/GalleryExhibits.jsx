@@ -44,7 +44,7 @@ export function OpticalInstrument({ simple = false, opticalGlass = false }) {
   const gimbal = useRef();
 
   useFrame(({ clock }) => {
-    const time = clock.elapsedTime;
+    const time = clock.elapsedTime * 0.72;
     if (lens.current) lens.current.rotation.y = 0.25 + Math.sin(time * 0.41) * 0.11;
     if (sweep.current) sweep.current.rotation.z = -0.35 + Math.sin(time * 0.28) * 0.42;
     if (gimbal.current) gimbal.current.rotation.x = 0.89 + Math.sin(time * 0.43 + 0.7) * 0.19;

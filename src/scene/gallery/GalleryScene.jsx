@@ -2,7 +2,7 @@ import { Component, lazy, Suspense, useEffect, useMemo, useRef, useState } from 
 import { Canvas, useFrame } from '@react-three/fiber';
 import { ContactShadows, Environment, Lightformer, MeshReflectorMaterial, PerformanceMonitor, RoundedBox, Line, useEnvironment } from '@react-three/drei';
 import { MathUtils, Object3D, Vector3 } from 'three';
-import { stops } from '../../lib/gallery';
+import { roomSwapMs, stops } from '../../lib/gallery';
 import { GalleryBackdrop } from './GalleryBackdrop';
 import { GalleryExhibit } from './GalleryExhibits';
 import { SceneAperture } from './SceneAperture';
@@ -110,7 +110,7 @@ function World({ tour, compact, entrance, quality, paintStage, onReady }) {
       journey.current = goal;
       intro.current = 0;
     }
-    if (lightingReady.current) intro.current = Math.min(intro.current + Math.min(step, 0.085) / (entrance ? 1.18 : arrivalDuration), 1);
+    if (lightingReady.current) intro.current = Math.min(intro.current + Math.min(step, 0.085) / (entrance ? 1.8 : arrivalDuration), 1);
     const starting = journey.current === null;
     journey.current = starting ? goal : MathUtils.damp(journey.current, goal, 4.6, step);
     const index = Math.floor(journey.current);
@@ -127,7 +127,7 @@ function World({ tour, compact, entrance, quality, paintStage, onReady }) {
     const entry = entrance ? (1 - intro.current) ** 3 * (compact ? 0.35 : 1) : 0;
     const arrival = entrance || intro.current >= 1 ? null : roomArrival(stops[nearest], intro.current);
     const close = arrival?.close ?? 0;
-    const depart = tour.current.departure ? MathUtils.smoothstep(performance.now() - tour.current.departure, 0, 600) : 0;
+    const depart = tour.current.departure ? MathUtils.smoothstep(performance.now() - tour.current.departure, 0, roomSwapMs) : 0;
     const originShot = shots[stops[index].kind] ?? defaultShot;
     const nextShot = shots[stops[following].kind] ?? defaultShot;
     const distance = compact ? (entrance ? 10.8 : Math.max(8.8, 5.85 * size.height / size.width)) : MathUtils.lerp(originShot.distance, nextShot.distance, move);
@@ -144,7 +144,7 @@ function World({ tour, compact, entrance, quality, paintStage, onReady }) {
     camera.lookAt(look.current);
     if (arrival) camera.rotateZ(Math.sign(arrival.side) * close * 0.075);
     if (stage.current) stage.current.position.copy(destination.current);
-    if (motes.current) motes.current.material.uniforms.time.value = clock.elapsedTime;
+    if (motes.current) motes.current.material.uniforms.time.value = clock.elapsedTime * 0.65;
     if (keyLight.current) {
       keyLight.current.position.x = -3.1 + entry * 2.3 + arc * 0.9 - (arrival?.side ?? 0) * 0.85;
       keyLight.current.position.y = 5.8 - entry * 0.55;

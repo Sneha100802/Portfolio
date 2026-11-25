@@ -55,7 +55,7 @@ export function Pulse({ from, to, speed = 0.4, offset = 0, size = 0.03, color = 
   const b = useMemo(() => new THREE.Vector3(...to), [to]);
 
   useFrame((state) => {
-    const u = (state.clock.elapsedTime * speed + offset) % 1;
+    const u = (state.clock.elapsedTime * speed * 0.74 + offset) % 1;
     ref.current.position.lerpVectors(a, b, u);
     ref.current.scale.setScalar(Math.max(Math.sin(u * Math.PI), 0.001));
   });

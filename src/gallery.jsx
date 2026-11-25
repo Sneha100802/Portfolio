@@ -1,12 +1,10 @@
 import { Component, lazy, Suspense, useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import '@fontsource/barlow-condensed/latin-600.css';
-import '@fontsource/source-sans-3/latin-400.css';
-import '@fontsource/source-sans-3/latin-600.css';
-import '@fontsource/ibm-plex-mono/latin-400.css';
+import '@fontsource/inter/latin-400.css';
+import '@fontsource/inter/latin-600.css';
 import { GalleryChapter } from './chapters/GalleryChapters';
 import { content } from './lib/content';
-import { chapterLabel, roomIndex, roomLabel, roomPath, stops } from './lib/gallery';
+import { chapterLabel, roomIndex, roomLabel, roomPath, roomSwapMs, roomTransitionMs, stops } from './lib/gallery';
 import { Timeline } from './ui/gallery/Timeline';
 import { RevealWords } from './ui/gallery/RevealWords';
 import './styles/gallery.css';
@@ -70,10 +68,10 @@ export function App() {
     }
     tour.current.departure = performance.now();
     setTransit(true);
-    timers.current = [window.setTimeout(arrive, 590), window.setTimeout(() => {
+    timers.current = [window.setTimeout(arrive, roomSwapMs), window.setTimeout(() => {
       timers.current = [];
       setTransit(false);
-    }, 1080)];
+    }, roomTransitionMs)];
   }
 
   useEffect(() => {
@@ -190,7 +188,7 @@ export function App() {
         <a href={roomPath(previous)} data-room={previous.id} aria-label={`${gallery.previousRoom} ${roomLabel(previous)}`} data-text-reveal><span aria-hidden="true">←</span> <RevealWords text={roomLabel(previous)} /></a>
         {next && <a href={roomPath(next)} data-room={next.id} aria-label={`${gallery.nextRoom} ${roomLabel(next)}`} data-text-reveal><RevealWords text={roomLabel(next)} /> <span aria-hidden="true">→</span></a>}
       </nav>}
-      {transit && <div className="room-transit" aria-hidden="true" />}
+      {transit && <div className="room-transit" aria-hidden="true" style={{ '--room-transition': `${roomTransitionMs}ms` }} />}
     </div>
   );
 }

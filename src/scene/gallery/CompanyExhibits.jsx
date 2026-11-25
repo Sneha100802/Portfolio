@@ -25,7 +25,7 @@ function InvestmentDashboard({ accent }) {
   const trend = [[-1.22, 0.91, 0.15], [-0.77, 1.06, 0.15], [-0.32, 1.03, 0.15], [0.13, 1.38, 0.15], [0.57, 1.32, 0.15], [1.04, 1.67, 0.15]];
   const cursor = useRef();
   useFrame(({ clock }) => {
-    const offset = (clock.elapsedTime * 1.38) % (trend.length - 1);
+    const offset = (clock.elapsedTime * 1.02) % (trend.length - 1);
     const segment = Math.floor(offset);
     const [x, y, z] = trend[segment];
     const [nextX, nextY] = trend[segment + 1];
@@ -62,7 +62,7 @@ function SecureArchive({ accent }) {
 function Conversation({ accent }) {
   const typing = useRef([]);
   useFrame(({ clock }) => {
-    const time = clock.elapsedTime % 4.7;
+    const time = (clock.elapsedTime * 0.73) % 4.7;
     typing.current.forEach((line, index) => {
       if (line) line.scale.x = Math.max(0.035, Math.min(1, (time - index * 0.41) * 1.6));
     });
@@ -90,7 +90,7 @@ function RespiratorySignal({ accent }) {
     return [-1.35 + x * 1.20, 1.15 + Math.sin(x * 42) * Math.sin(x * Math.PI) ** 2 * 0.34, 0.34];
   });
   useFrame(({ clock }) => {
-    const phase = (clock.elapsedTime * 0.48) % 1;
+    const phase = (clock.elapsedTime * 0.36) % 1;
     if (phase < 0.55) {
       const sample = wave[Math.floor(phase / 0.55 * (wave.length - 1))];
       cursor.current.position.set(sample[0], sample[1], sample[2] + 0.04);

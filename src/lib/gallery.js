@@ -1,6 +1,8 @@
 import { content } from './content.js';
 
 export const chapterIds = content.gallery.chapters.map(({ id }) => id);
+export const roomTransitionMs = 1560;
+export const roomSwapMs = 840;
 export const chapterLabel = Object.fromEntries(content.gallery.chapters.map(({ id, label }) => [id, label]));
 
 export const stops = [

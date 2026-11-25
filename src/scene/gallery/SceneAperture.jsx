@@ -77,7 +77,7 @@ export function SceneAperture({ position = [0, 1.5, 1.15], ready, tour, index, g
   const tint = useMemo(() => new Color(accent ?? '#ffa140').convertLinearToSRGB(), [accent]);
   const uniforms = useMemo(() => ({ visibility: { value: 0 }, turn: { value: 0 }, tint: { value: tint } }), [tint]);
   const particleUniforms = useMemo(() => ({ time: { value: 0 }, tint: { value: tint } }), [tint]);
-  const duration = gateway ? 1.08 : 1.72;
+  const duration = gateway ? 1.65 : 2.55;
 
   useFrame(({ camera, clock }, delta) => {
     if ((!gateway && elapsed.current >= duration) || (ready && !ready.current)) return;
@@ -90,11 +90,11 @@ export function SceneAperture({ position = [0, 1.5, 1.15], ready, tour, index, g
     const object = aperture.current;
     object.visible = gateway || time < 1;
     object.quaternion.copy(camera.quaternion);
-    const size = gateway ? 1.78 + Math.sin(clock.elapsedTime * 0.8) * 0.07 : 1.23;
+    const size = gateway ? 1.78 + Math.sin(clock.elapsedTime * 0.51) * 0.06 : 1.23;
     object.scale.setScalar(MathUtils.lerp(0.48, size, emerge) - collapse * 0.87);
     shader.current.uniforms.visibility.value = alpha;
-    shader.current.uniforms.turn.value = gateway ? clock.elapsedTime * 0.22 : time;
-    orbit.current.rotation.set(1.24 - collapse * 0.27, 0.12 + Math.sin(clock.elapsedTime * 0.7) * 0.15, -0.25);
+    shader.current.uniforms.turn.value = gateway ? clock.elapsedTime * 0.15 : time;
+    orbit.current.rotation.set(1.24 - collapse * 0.27, 0.12 + Math.sin(clock.elapsedTime * 0.48) * 0.15, -0.25);
     orbit.current.material.opacity = alpha * 0.39;
     if (particles.current) particles.current.material.uniforms.time.value = time;
   });

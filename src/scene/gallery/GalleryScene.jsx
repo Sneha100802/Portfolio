@@ -52,7 +52,7 @@ function StudioLight({ ready }) {
   return <Environment map={map} environmentIntensity={0.48} />;
 }
 
-function Pedestal({ hero }) {
+function Pedestal({ hero, dim }) {
   return (
     <group>
       <RoundedBox args={hero ? [3.76, 0.36, 2.61] : [4.0, 0.36, 2.45]} position-y={-0.29} radius={0.035} smoothness={2}>
@@ -62,7 +62,8 @@ function Pedestal({ hero }) {
         <meshStandardMaterial color={brass} metalness={0.91} roughness={0.37} />
       </RoundedBox>
       <RoundedBox args={hero ? [3.59, 0.065, 2.49] : [3.84, 0.065, 2.34]} position-y={-0.057} radius={0.025} smoothness={2}>
-        <meshStandardMaterial color="#101115" metalness={0.25} roughness={0.74} envMapIntensity={0.18} />
+        <meshStandardMaterial color={dim ? '#07080c' : '#101115'} metalness={dim ? 0.14 : 0.25}
+          roughness={dim ? 0.91 : 0.74} envMapIntensity={dim ? 0.045 : 0.18} />
       </RoundedBox>
     </group>
   );
@@ -73,7 +74,7 @@ function Fixture({ stop, index, opticalGlass, shadow, tour, keyLight, rimLight }
   const grade = companyLook(stop);
   return (
     <group position={coordinates[index]}>
-      <Pedestal hero={stop.kind === 'hero'} />
+      <Pedestal hero={stop.kind === 'hero'} dim={Boolean(grade)} />
       <GalleryExhibit stop={stop} opticalGlass={opticalGlass} tour={tour} />
       <primitive object={aim} position={[0, 1.35, 0]} />
       <spotLight ref={keyLight} target={aim} position={[-3.1, 5.8, 3.9]} color={grade?.accent ?? '#ffd497'} intensity={31} angle={0.44} penumbra={0.91} distance={11} />

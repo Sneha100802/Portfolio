@@ -1,6 +1,7 @@
 import { useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { Edges, Line, RoundedBox } from '@react-three/drei';
+import { MathUtils } from 'three';
 import { Part, Pulse } from '../Parts';
 
 const stone = '#14151b';
@@ -22,13 +23,24 @@ function Signal({ from, to, color, offset = 0 }) {
 
 function InvestmentDashboard({ accent }) {
   const trend = [[-1.22, 0.91, 0.15], [-0.77, 1.06, 0.15], [-0.32, 1.03, 0.15], [0.13, 1.38, 0.15], [0.57, 1.32, 0.15], [1.04, 1.67, 0.15]];
+  const cursor = useRef();
+  useFrame(({ clock }) => {
+    const offset = (clock.elapsedTime * 1.38) % (trend.length - 1);
+    const segment = Math.floor(offset);
+    const [x, y, z] = trend[segment];
+    const [nextX, nextY] = trend[segment + 1];
+    cursor.current.position.set(MathUtils.lerp(x, nextX, offset - segment), MathUtils.lerp(y, nextY, offset - segment), z + 0.015);
+  });
   return <group rotation-y={0.11}>
     <Case size={[3.15, 1.66, 0.24]} position={[0, 1.25, 0]} />
     {[0.72, 1.03, 1.34, 1.65].map(y => <Line key={y} points={[[-1.34, y, 0.135], [1.34, y, 0.135]]} color="#303947" lineWidth={0.75} />)}
     {trend.map(([x, y], i) => <Part key={x} position={[x, (y + 0.56) / 2, 0.14]} geo={<boxGeometry args={[0.22, y - 0.56, 0.04]} />}
       mat={<meshStandardMaterial color={accent} emissive={accent} emissiveIntensity={0.26 + i * 0.022} roughness={0.48} />} />)}
     <Line points={trend} color={accent} lineWidth={1.65} />
-    <Pulse from={trend[0]} to={trend[1]} color={accent} size={0.042} />
+    <mesh ref={cursor}>
+      <sphereGeometry args={[0.042, 12, 8]} />
+      <meshBasicMaterial color="#f5dbb4" />
+    </mesh>
   </group>;
 }
 

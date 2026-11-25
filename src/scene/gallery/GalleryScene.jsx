@@ -6,7 +6,7 @@ import { roomSwapMs, stops } from '../../lib/gallery';
 import { GalleryBackdrop } from './GalleryBackdrop';
 import { GalleryExhibit } from './GalleryExhibits';
 import { SceneAperture } from './SceneAperture';
-import { arrivalDuration, companyLook, roomArrival } from './RoomArrival';
+import { arrivalDuration, companyLook, roomArrival, roomSet } from './RoomArrival';
 
 const brass = '#c9a45e';
 const night = '#0b0b0e';
@@ -69,7 +69,7 @@ function Pedestal() {
   );
 }
 
-function Fixture({ stop, index, opticalGlass, shadow, tour, keyLight, rimLight, light }) {
+function Fixture({ stop, index, opticalGlass, shadow, tour, opening, keyLight, rimLight, light }) {
   const aim = useMemo(() => new Object3D(), []);
   const grade = companyLook(stop);
   const focus = useRef();
@@ -77,6 +77,7 @@ function Fixture({ stop, index, opticalGlass, shadow, tour, keyLight, rimLight, 
   useFrame(({ camera, clock }, delta) => {
     if (!focus.current) return;
     const selected = tour.current.step;
+    focus.current.visible = opening.current > 0.93;
     const position = selected?.room === stop.id ? selected.position : stop.data.story.steps[0].position;
     target.current.fromArray(position);
     const blend = 1 - Math.exp(-6 * delta);
@@ -88,7 +89,7 @@ function Fixture({ stop, index, opticalGlass, shadow, tour, keyLight, rimLight, 
   return (
     <group position={coordinates[index]}>
       {stop.kind === 'hero' && <Pedestal />}
-      <GalleryExhibit stop={stop} opticalGlass={opticalGlass} tour={tour} light={light} />
+      <GalleryExhibit stop={stop} opticalGlass={opticalGlass} tour={tour} light={light} opening={opening} />
       <primitive object={aim} position={[0, 1.35, 0]} />
       {stop.data?.story && <group ref={focus} position={stop.data.story.steps[0].position}>
         <mesh renderOrder={7}>
@@ -134,7 +135,8 @@ function World({ tour, compact, entrance, light, replay, quality, paintStage, on
       journey.current = goal;
       intro.current = 0;
     }
-    if (lightingReady.current) intro.current = Math.min(intro.current + Math.min(step, 0.085) / (entrance ? 1.8 : arrivalDuration), 1);
+    if (tour.current.cut) intro.current = 1;
+    else if (lightingReady.current) intro.current = Math.min(intro.current + Math.min(step, 0.085) / (entrance ? 1.8 : arrivalDuration), 1);
     const starting = journey.current === null;
     journey.current = starting ? goal : MathUtils.damp(journey.current, goal, 4.6, step);
     const index = Math.floor(journey.current);
@@ -154,7 +156,7 @@ function World({ tour, compact, entrance, light, replay, quality, paintStage, on
     const depart = tour.current.departure ? MathUtils.smoothstep(performance.now() - tour.current.departure, 0, roomSwapMs) : 0;
     const originShot = shots[stops[index].kind] ?? defaultShot;
     const nextShot = shots[stops[following].kind] ?? defaultShot;
-    const distance = compact ? (entrance ? 10.8 : Math.max(8.8, 5.85 * size.height / size.width)) : MathUtils.lerp(originShot.distance, nextShot.distance, move);
+    const distance = compact ? (entrance ? 10.8 : Math.max(8.8, 6.3 * size.height / size.width)) : MathUtils.lerp(originShot.distance, nextShot.distance, move);
     const height = MathUtils.lerp(originShot.height, nextShot.height, move);
     const focus = MathUtils.lerp(originShot.focus, nextShot.focus, move);
     const side = compact ? 0.65 : MathUtils.lerp(originShot.side, nextShot.side, move);
@@ -176,15 +178,17 @@ function World({ tour, compact, entrance, light, replay, quality, paintStage, on
       keyLight.current.intensity = exposure * (1 - 0.50 * arc ** 9 - entry * 0.54) * MathUtils.lerp(0.21, 1, arrival?.light ?? 1);
     }
     if (rimLight.current) rimLight.current.intensity = light ? 5 + close * 4 : 9 + close * 8;
-    const viewKey = `${size.width}:${size.height}:${compact}:${entrance}`;
+    const framingSettle = MathUtils.smoothstep(intro.current, 0.53, 0.97);
+    const offsetX = entrance || compact ? 0 : Math.round(-size.width * 0.224 * framingSettle);
+    const offsetY = Math.round(size.height * (entrance ? 0.14 : compact ? 0.20 * framingSettle : 0));
+    const viewKey = `${size.width}:${size.height}:${offsetX}:${offsetY}`;
     if (view.current !== viewKey) {
       view.current = viewKey;
-      camera.setViewOffset(size.width, size.height, entrance || compact ? 0 : -size.width * 0.224,
-        size.height * (entrance ? 0.14 : compact ? 0.20 : 0), size.width, size.height);
+      camera.setViewOffset(size.width, size.height, offsetX, offsetY, size.width, size.height);
     }
     const atExhibit = nearest === center && Math.abs(journey.current - goal) < 0.045 && intro.current > 0.90;
     const station = atExhibit ? stops[nearest].id : '';
-    paintStage(station, 1 - arc ** 7 * 0.34);
+    paintStage(station, 1 - arc ** 7 * 0.34, intro.current < 0.77);
   });
 
   const activeIndex = center;
@@ -209,14 +213,14 @@ function World({ tour, compact, entrance, light, replay, quality, paintStage, on
           resolution={192} mirror={0.19} depthScale={0.75} minDepthThreshold={0.2} maxDepthThreshold={1.5}
         /> : <meshStandardMaterial color={light ? '#b5a58f' : '#09090d'} metalness={0.06} roughness={0.96} envMapIntensity={0.08} />}
       </mesh>
-      <Suspense fallback={null}><GalleryBackdrop stage={stage} motes={motes} compact={compact} dim={Boolean(grade)} light={light} roomColor={roomColor} /></Suspense>
+      <Suspense fallback={null}><GalleryBackdrop stage={stage} motes={motes} compact={compact} dim={Boolean(grade)} light={light} roomColor={roomColor} set={roomSet(activeStop)} /></Suspense>
       {!compact && <>
         <Line points={rail} color="#4f3d2f" lineWidth={0.61} />
         <Line points={rail.map(([x, y, z]) => [x + 6.2, y, z])} color="#3d3229" lineWidth={0.52} />
       </>}
-      <Fixture key={activeStop.id} stop={activeStop} index={activeIndex} opticalGlass={quality === 2} shadow={quality > 0} tour={tour} keyLight={keyLight} rimLight={rimLight} light={light} />
+      <Fixture key={activeStop.id} stop={activeStop} index={activeIndex} opticalGlass={quality === 2} shadow={quality > 0} tour={tour} opening={intro} keyLight={keyLight} rimLight={rimLight} light={light} />
       <group key={`opening-${activeStop.id}-${replay}`} position={coordinates[activeIndex]}>
-        <SceneAperture ready={lightingReady} tour={tour} index={activeIndex} gateway={entrance} accent={light ? '#b46530' : grade?.accent}
+        <SceneAperture ready={lightingReady} tour={tour} index={activeIndex} gateway={entrance} passage={activeStop.kind === 'survatra-rag' || activeStop.id === 'job-survatra'} accent={light ? '#b46530' : grade?.accent}
           position={entrance ? undefined : [openingShot.target * 0.8, openingShot.focus, 1.15]} />
       </group>
       {quality > 0 && !compact && !light && !new URLSearchParams(window.location.search).has('fx', '0') &&
@@ -253,10 +257,12 @@ export default function GalleryScene({ tour, compact, entrance, light, replay, o
     else if (/intel.*(?:iris|uhd|hd graphics)/i.test(renderer)) setQuality(0);
   }
 
-  function paintStage(station, opacity) {
+  function paintStage(station, opacity, opening) {
     const element = wrapper.current;
     if (!element) return;
     if (element.dataset.station !== station) element.dataset.station = station;
+    const openingState = String(opening);
+    if (element.dataset.opening !== openingState) element.dataset.opening = openingState;
     const alpha = String(Math.round(opacity * 100) / 100);
     if (element.style.opacity !== alpha) element.style.opacity = alpha;
   }

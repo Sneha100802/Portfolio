@@ -1,6 +1,6 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useTexture } from '@react-three/drei';
-import { AdditiveBlending, Color, Shape } from 'three';
+import { AdditiveBlending, CanvasTexture, Color, Shape, SRGBColorSpace } from 'three';
 import { rng } from '../Parts';
 
 function archProfile(width, rise, trim) {
@@ -67,8 +67,74 @@ const moteFragment = /* glsl */ `
   }
 `;
 
-export function GalleryBackdrop({ stage, motes, compact, dim, light, roomColor }) {
+function paintedPanel([indigo, gold, motif], light) {
+  const canvas = document.createElement('canvas');
+  canvas.width = 512;
+  canvas.height = 512;
+  const pen = canvas.getContext('2d');
+  pen.beginPath();
+  pen.moveTo(4, 512);
+  pen.lineTo(4, 237);
+  pen.bezierCurveTo(5, 114, 112, 7, 256, 7);
+  pen.bezierCurveTo(400, 7, 507, 114, 508, 237);
+  pen.lineTo(508, 512);
+  pen.closePath();
+  pen.clip();
+  const wash = pen.createRadialGradient(266, 202, 34, 256, 260, 365);
+  wash.addColorStop(0, light ? '#cec1a7' : indigo);
+  wash.addColorStop(1, light ? '#9a8065' : '#140f1c');
+  pen.fillStyle = wash;
+  pen.fillRect(0, 0, 512, 512);
+  const random = rng(441);
+  for (let i = 0; i < 6200; i += 1) {
+    pen.fillStyle = i % 2 ? '#fff7dc10' : '#130b201b';
+    pen.fillRect(random() * 512, random() * 512, 1 + random() * 2.2, 1 + random() * 2);
+  }
+  pen.strokeStyle = gold;
+  pen.lineWidth = 1.7;
+  pen.globalAlpha = light ? 0.7 : 0.56;
+  [17, 23, 38, 42].forEach(inset => pen.strokeRect(inset, inset, 512 - inset * 2, 512 - inset * 2));
+  for (let y = 68; y < 455; y += 47) {
+    for (let x = 66 + (y % 2) * 8; x < 456; x += 45) {
+      pen.beginPath();
+      if (motif === 'shelf') {
+        pen.rect(x - 17, y + 15, 45, 2);
+        pen.rect(x - 10, y - 11, 10, 24);
+        pen.rect(x + 4, y - 5, 7, 18);
+      } else if (motif === 'column') {
+        pen.moveTo(x - 13, y + 17);
+        pen.lineTo(x - 13, y - 4);
+        pen.quadraticCurveTo(x, y - 30, x + 13, y - 4);
+        pen.lineTo(x + 13, y + 17);
+      } else if (motif === 'petal') {
+        for (let i = 0; i < 4; i += 1) {
+          const theta = i * Math.PI / 2;
+          pen.moveTo(x, y);
+          pen.ellipse(x + Math.cos(theta) * 7, y + Math.sin(theta) * 7, 11, 3.4, theta, Math.PI, Math.PI * 3);
+        }
+      } else if (motif === 'arch') {
+        pen.moveTo(x - 16, y + 11);
+        pen.bezierCurveTo(x - 15, y - 12, x - 4, y - 10, x, y - 19);
+        pen.bezierCurveTo(x + 4, y - 10, x + 15, y - 12, x + 16, y + 11);
+      } else {
+        pen.moveTo(x, y - 17);
+        pen.lineTo(x + 15, y);
+        pen.lineTo(x, y + 17);
+        pen.lineTo(x - 15, y);
+        pen.closePath();
+      }
+      pen.stroke();
+    }
+  }
+  const texture = new CanvasTexture(canvas);
+  texture.colorSpace = SRGBColorSpace;
+  return texture;
+}
+
+export function GalleryBackdrop({ stage, motes, compact, dim, light, roomColor, set }) {
   const vault = useTexture(`${import.meta.env.BASE_URL}gallery-vault.webp`);
+  const painted = useMemo(() => paintedPanel(set, light), [set, light]);
+  useEffect(() => () => painted.dispose(), [painted]);
   const wallUniforms = useMemo(() => ({
     vault: { value: vault },
     exposure: { value: light ? -0.36 : dim ? 0.48 : 1 },
@@ -88,9 +154,23 @@ export function GalleryBackdrop({ stage, motes, compact, dim, light, roomColor }
       <shaderMaterial uniforms={wallUniforms} vertexShader={wallVertex} fragmentShader={wallFragment} toneMapped={false} />
     </mesh>
     <group position={[0, compact ? -0.1 : 0, -2.35]} scale={compact ? 0.79 : 1}>
+      <mesh position={[0, 1.76, -0.38]}>
+        <planeGeometry args={[4.85, 4.48]} />
+        <meshStandardMaterial map={painted} roughness={0.96} color={light ? '#cbb18e' : '#9e8a84'} alphaTest={0.5} />
+      </mesh>
+      {[-1, 1].map(side => <group key={side} position={[side * 2.68, 1.11, -0.03]}>
+        <mesh>
+          <boxGeometry args={[0.28, 3.23, 0.44]} />
+          <meshStandardMaterial color={light ? '#a98d70' : '#72503e'} roughness={0.81} />
+        </mesh>
+        {[-1.48, 0.92, 1.43].map(y => <mesh key={y} position-y={y}>
+          <boxGeometry args={[0.33, 0.06, 0.49]} />
+          <meshStandardMaterial color={set[1]} metalness={0.46} roughness={0.44} />
+        </mesh>)}
+      </group>)}
       <mesh>
         <extrudeGeometry args={[archStone, stoneDepth]} />
-        <meshStandardMaterial color={light ? '#b7a792' : dim ? '#18171d' : '#262428'} roughness={light ? 0.83 : 0.55} metalness={light ? 0.04 : 0.37} envMapIntensity={dim ? 0.14 : 0.3} />
+        <meshStandardMaterial color={light ? '#bea080' : '#765747'} roughness={0.84} metalness={0.045} envMapIntensity={dim ? 0.14 : 0.3} />
       </mesh>
       <mesh position-z={0.429}>
         <extrudeGeometry args={[archBrass, trimDepth]} />

@@ -18,6 +18,13 @@
     "rooms": "Rooms",
     "close": "Close",
     "replayOpening": "Replay opening",
+    "skipOpening": "Skip opening",
+    "filmProps": {
+      "archive": ["Archive record", "Maya Example", "Record EX-001", "Access request"],
+      "extracted": ["Access request"],
+      "request": ["Vendor onboarding", "Where do I start?", "Who should approve it?"],
+      "guide": ["Operations folio", "Vendor contact", "Scope and approval", "Review checklist"]
+    },
     "walkthrough": "Walkthrough",
     "caseStudy": "Case study",
     "roleLabel": "My role",
@@ -168,8 +175,8 @@
             "detail": "A founder enters a question in their own words.",
             "position": [
               -0.66,
-              1.77,
-              0
+              1.28,
+              0.49
             ],
             "sample": "Where do I start with a vendor onboarding checklist?"
           },
@@ -177,9 +184,9 @@
             "label": "Find relevant guidance",
             "detail": "The chatbot uses a structured knowledge base to ground guidance in the relevant startup workflow.",
             "position": [
-              -0.18,
-              1.39,
-              -0.46
+              0.53,
+              1.24,
+              -0.25
             ],
             "sample": "Workflow matched: vendor onboarding."
           },
@@ -218,7 +225,7 @@
             "label": "Read pulmonary audio",
             "detail": "The waveform represents the respiratory audio used as input for the research.",
             "position": [
-              -0.75,
+              -1.12,
               1.15,
               0.35
             ]

@@ -379,7 +379,7 @@ h1,h2,h3 { font-family: var(--display); font-weight: 400; }
 }
 :root[data-theme="light"] .gallery--compact.gallery--room[data-scene="ready"] .gallery-scene::after,
 :root[data-theme="light"] .gallery--compact.gallery--room[data-company][data-scene="ready"] .gallery-scene::after {
-  background: linear-gradient(180deg, #f5f0e6cb 0%, transparent 17%, transparent 28%, #f5f0e67a 42%, #f5f0e6f0 57%, #f5f0e6 80%);
+  background: linear-gradient(180deg, #f5f0e6af 0%, transparent 17%, transparent 34%, #f5f0e668 44%, #f5f0e6f0 57%, #f5f0e6 80%);
 }
 :root[data-theme="light"] .gallery--plain .gallery-hero { background: radial-gradient(ellipse at 68% 35%, #ddd1bb, var(--night) 68%); }
 :root[data-theme="light"] .gallery--plain .exhibit--experience:nth-child(odd),
@@ -465,6 +465,36 @@ h1,h2,h3 { font-family: var(--display); font-weight: 400; }
 .gallery--entrance .replay-opening { display: inline-block; margin-left: 10px; }
 .gallery--desktop .exhibit:has(.case-study[open]) { padding-bottom: 110px; }
 .gallery--desktop:has(.case-study[open]) .room-navigation { background: var(--night); }
+
+.opening-skip {
+  display: none;
+  position: fixed;
+  z-index: 6;
+  inset: auto 50% max(62px, env(safe-area-inset-bottom)) auto;
+  translate: 50% 0;
+  min-height: 40px;
+  padding: 8px 14px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  color: var(--ivory);
+  background: var(--night);
+  font: 600 .76rem/1.25 Inter, system-ui, sans-serif;
+  cursor: pointer;
+}
+.opening-skip:focus-visible { outline: 2px solid var(--brass); outline-offset: 3px; }
+@media (prefers-reduced-motion: no-preference) {
+  .gallery--room[data-scene="ready"] .caption { transition: opacity .65s ease-out; }
+  .gallery--room:has(.gallery-scene [data-opening="true"]) .caption { opacity: 0; visibility: hidden; }
+  .gallery--room:has(.gallery-scene [data-opening="true"]) .opening-skip { display: block; }
+  .gallery--room:has(.gallery-scene [data-opening="true"]) .caption h2 .reveal-word {
+    opacity: 0;
+    animation: none;
+  }
+  .gallery--room[data-scene="ready"]:has(.gallery-scene [data-opening="true"]) .gallery-scene::after,
+  :root[data-theme="light"] .gallery--room[data-scene="ready"]:has(.gallery-scene [data-opening="true"]) .gallery-scene::after {
+    background: linear-gradient(180deg, color-mix(in srgb, var(--night) 79%, transparent), transparent 18%, transparent 72%, var(--night));
+  }
+}
 
 @media (max-width: 520px) {
   .gallery-tools > nav { display: none; }

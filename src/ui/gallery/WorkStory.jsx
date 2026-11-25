@@ -13,7 +13,7 @@ export function WorkStory({ stop, onStep }) {
 
   function select(index) {
     setActive(index);
-    onStep({ room: stop.id, position: story.steps[index].position });
+    onStep({ room: stop.id, index, position: story.steps[index].position });
   }
 
   return <div className="work-story">

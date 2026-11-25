@@ -27,7 +27,7 @@ export function App() {
   const [theme, setTheme] = useState(() => document.documentElement.dataset.theme === 'light' ? 'light' : 'dark');
   const light = theme === 'light';
   const [activeIndex, setActiveIndex] = useState(() => roomIndex(window.location));
-  const tour = useRef({ position: activeIndex, pointerX: 0, pointerY: 0, skill: null, step: null, jump: 0, departure: 0 });
+  const tour = useRef({ position: activeIndex, pointerX: 0, pointerY: 0, skill: null, step: null, cut: false, jump: 0, departure: 0 });
   const timers = useRef([]);
   const moveFocus = useRef(false);
   const [transit, setTransit] = useState(false);
@@ -51,6 +51,7 @@ export function App() {
     tour.current.departure = 0;
     tour.current.skill = null;
     tour.current.step = null;
+    tour.current.cut = false;
     moveFocus.current = true;
     window.scrollTo({ top: 0, behavior: 'instant' });
     setActiveIndex(index);
@@ -59,6 +60,7 @@ export function App() {
   function replayOpening() {
     if (!visual || timers.current.length) return;
     window.scrollTo({ top: 0, behavior: 'instant' });
+    tour.current.cut = false;
     tour.current.jump += 1;
     setReplay(value => value + 1);
   }
@@ -215,6 +217,10 @@ export function App() {
       <main id="main" tabIndex={-1}>
         <GalleryChapter key={stop.id} stop={stop} onSkill={(skill) => { tour.current.skill = skill; }}
           onStep={(step) => { tour.current.step = step; }} onReplay={visual && ready ? replayOpening : undefined} />
+        {visual && ready && !entrance && <button type="button" className="opening-skip" onClick={() => {
+          tour.current.cut = true;
+          document.getElementById(stop.id)?.focus({ preventScroll: true });
+        }}><RevealWords text={gallery.skipOpening} /></button>}
       </main>
       {!entrance && <nav className="gallery-shell room-navigation" aria-label={gallery.roomNavigation}>
         <a href={roomPath(previous)} data-room={previous.id} aria-label={`${gallery.previousRoom} ${roomLabel(previous)}`} data-text-reveal><span aria-hidden="true">←</span> <RevealWords text={roomLabel(previous)} /></a>

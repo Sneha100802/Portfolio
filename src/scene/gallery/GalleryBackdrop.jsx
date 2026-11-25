@@ -15,7 +15,8 @@ const wallFragment = /* glsl */ `
   uniform sampler2D vault;
   varying vec2 surface;
   void main() {
-    gl_FragColor = texture2D(vault, surface);
+    vec3 glow = texture2D(vault, surface).rgb;
+    gl_FragColor = vec4(glow + vec3(11.0, 11.0, 14.0) / 255.0, 1.0);
   }
 `;
 
@@ -57,8 +58,7 @@ export function GalleryBackdrop({ stage, motes }) {
   return <group ref={stage}>
     <mesh position={[0, 2.36, -3.4]}>
       <planeGeometry args={[11.3, 6.25]} />
-      <shaderMaterial uniforms={wallUniforms} vertexShader={wallVertex} fragmentShader={wallFragment}
-        transparent toneMapped={false} depthWrite={false} blending={AdditiveBlending} />
+      <shaderMaterial uniforms={wallUniforms} vertexShader={wallVertex} fragmentShader={wallFragment} toneMapped={false} />
     </mesh>
     <points ref={motes} frustumCulled={false}>
       <bufferGeometry><bufferAttribute attach="attributes-position" args={[positions, 3]} /></bufferGeometry>

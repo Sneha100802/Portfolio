@@ -44,8 +44,7 @@ h1,h2,h3 { font-family: var(--serif); font-weight: 500; }
   position: absolute;
   inset: 0;
   background: linear-gradient(90deg, #0b0b0ef7 2%, #0b0b0ee8 30%, #0b0b0e77 49%, transparent 67%),
-              linear-gradient(0deg, #0b0b0ef2 0%, #0b0b0e73 15%, transparent 43%),
-              radial-gradient(ellipse at 71% 48%, transparent 31%, #0b0b0eac 95%);
+              linear-gradient(0deg, #0b0b0ef2 0%, #0b0b0e73 15%, transparent 43%, transparent 80%, #0b0b0e69 100%);
   pointer-events: none;
 }
 .gallery-timeline { position: fixed; inset: 50% clamp(10px, 2.3vw, 35px) auto auto; z-index: 5; translate: 0 -50%; }

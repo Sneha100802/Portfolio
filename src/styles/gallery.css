@@ -251,6 +251,7 @@ h1,h2,h3 { font-family: var(--serif); font-weight: 500; }
 .gallery--room:not(.gallery--desktop) .exhibit { min-height: calc(100svh - 76px); padding-block: 112px 39px; }
 .gallery--compact.gallery--room .gallery-scene { position: fixed; height: 100svh; }
 .gallery--compact.gallery--room .exhibit { align-items: start; padding-top: max(255px, 43svh); background: transparent; }
+.gallery--compact.gallery--room .caption { text-shadow: 0 1px 5px #08080b, 0 0 14px #08080b; }
 .gallery--compact.gallery--room[data-scene="ready"] .gallery-scene::after {
   background: linear-gradient(180deg, #08080bb5, transparent 15%, transparent 27%, #08080b78 41%, #08080bed 58%, #08080b 80%);
 }

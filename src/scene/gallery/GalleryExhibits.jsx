@@ -1,0 +1,237 @@
+import { useMemo, useRef } from 'react';
+import { useFrame } from '@react-three/fiber';
+import { Edges, Line, RoundedBox } from '@react-three/drei';
+import { MathUtils, Matrix4, Object3D, SphereGeometry } from 'three';
+import { Glyph } from '../Glyph';
+import { iconsFor } from '../../lib/icons';
+import { AgentNetwork, AvatarVoice, CnnWave, RagPipeline, SemanticSearch, Steles, StockChart } from '../visuals';
+
+const brass = '#c9a45e';
+const teal = '#7fd1c7';
+const stops = Array.from({ length: 72 }, (_, i) => i);
+const tickGeometry = new Object3D();
+const tickMatrix = new Matrix4();
+
+function GaugeFace() {
+  const ticks = useRef();
+  useFrame(() => {
+    if (!ticks.current || ticks.current.userData.painted) return;
+    stops.forEach((index) => {
+      const theta = index * Math.PI / 36;
+      tickGeometry.position.set(Math.cos(theta) * 1.45, Math.sin(theta) * 1.45, 0);
+      tickGeometry.rotation.z = theta;
+      tickGeometry.scale.set(index % 6 ? 0.56 : 1.25, 1, 1);
+      tickGeometry.updateMatrix();
+      tickMatrix.copy(tickGeometry.matrix);
+      ticks.current.setMatrixAt(index, tickMatrix);
+    });
+    ticks.current.instanceMatrix.needsUpdate = true;
+    ticks.current.userData.painted = true;
+  });
+
+  return <instancedMesh ref={ticks} args={[undefined, undefined, stops.length]} frustumCulled={false}>
+    <boxGeometry args={[0.068, 0.012, 0.018]} />
+    <meshStandardMaterial color="#dfbd7f" metalness={0.83} roughness={0.34} />
+  </instancedMesh>;
+}
+
+export function OpticalInstrument({ simple = false, compact = false }) {
+  const lens = useRef();
+  const sweep = useRef();
+
+  useFrame(({ clock }) => {
+    const time = clock.elapsedTime;
+    if (lens.current) lens.current.rotation.y = 0.25 + Math.sin(time * 0.41) * 0.11;
+    if (sweep.current) sweep.current.rotation.z = -0.35 + Math.sin(time * 0.28) * 0.42;
+  });
+
+  return (
+    <group position={[0, simple ? 1.42 : 1.7, 0]} scale={simple ? 0.61 : 1} rotation={[0.1, -0.19, -0.1]}>
+      <group ref={lens}>
+        <mesh rotation={[0.02, -0.08, 0]}>
+          <torusGeometry args={[1.59, 0.075, 16, 150]} />
+          <meshStandardMaterial color={brass} metalness={0.94} roughness={0.29} />
+        </mesh>
+        <mesh position-z={-0.145}>
+          <torusGeometry args={[1.56, 0.066, 12, 140]} />
+          <meshStandardMaterial color="#59482e" metalness={0.88} roughness={0.38} />
+        </mesh>
+        <mesh position-z={0.027}>
+          <torusGeometry args={[1.47, 0.012, 9, 132]} />
+          <meshStandardMaterial color="#ddbd7d" metalness={0.81} roughness={0.32} />
+        </mesh>
+        <GaugeFace />
+        <mesh rotation={[0.89, -0.29, -0.79]}>
+          <torusGeometry args={[1.23, 0.06, 12, 120]} />
+          <meshStandardMaterial color="#d7ab5f" metalness={0.9} roughness={0.26} />
+        </mesh>
+        <mesh rotation={[-0.89, 0.22, 0.5]}>
+          <torusGeometry args={[1.07, 0.045, 12, 112]} />
+          <meshStandardMaterial color="#937749" metalness={0.89} roughness={0.3} />
+        </mesh>
+        {!simple && <mesh scale={[1, 1, 0.53]}>
+          <sphereGeometry args={[0.875, 48, 32]} />
+          <meshPhysicalMaterial color="#313335" roughness={0.17} metalness={0.36} clearcoat={1} clearcoatRoughness={0.18}
+            transmission={compact ? 0 : 0.13} thickness={0.5} />
+        </mesh>}
+        <mesh rotation={[0.45, -0.27, 0.35]}>
+          <torusGeometry args={[0.65, 0.025, 12, 90]} />
+          <meshStandardMaterial color={teal} emissive={teal} emissiveIntensity={1.7} metalness={0.31} roughness={0.37} />
+        </mesh>
+        <group ref={sweep} position-z={0.51}>
+          <mesh>
+            <boxGeometry args={[2.87, 0.014, 0.018]} />
+            <meshStandardMaterial color={brass} metalness={0.85} roughness={0.31} />
+          </mesh>
+          <mesh position-x={1.08}>
+            <sphereGeometry args={[0.043, 12, 8]} />
+            <meshStandardMaterial color={teal} emissive={teal} emissiveIntensity={2.4} />
+          </mesh>
+          <mesh>
+            <cylinderGeometry args={[0.105, 0.105, 0.042, 24]} />
+            <meshStandardMaterial color={brass} metalness={0.91} roughness={0.29} />
+          </mesh>
+        </group>
+      </group>
+    </group>
+  );
+}
+
+function JobExhibit({ data }) {
+  const icons = iconsFor(data.stack, Infinity);
+  const rows = Math.max(1, Math.ceil(icons.length / 4));
+
+  return (
+    <group>
+      {[-1.06, 1.06].map(x => <RoundedBox key={x} position={[x, 0.16, -0.12]} args={[0.25, 0.32, 0.24]} radius={0.021} smoothness={2}>
+        <meshStandardMaterial color="#514531" metalness={0.75} roughness={0.4} />
+      </RoundedBox>)}
+      <RoundedBox position={[0, 1.16, -0.1]} args={[3.35, 1.95, 0.19]} radius={0.085} smoothness={3}>
+        <meshStandardMaterial color="#202127" metalness={0.72} roughness={0.38} />
+        <Edges color="#896c42" threshold={30} />
+      </RoundedBox>
+      <RoundedBox position={[0, 1.16, 0.002]} args={[3.14, 1.75, 0.026]} radius={0.034} smoothness={2}>
+        <meshStandardMaterial color="#121316" metalness={0.41} roughness={0.54} />
+        <Edges color="#c9a45e" threshold={30} />
+      </RoundedBox>
+      {Array.from({ length: rows }, (_, row) => {
+        const page = icons.slice(row * 4, row * 4 + 4);
+        return page.map((icon, index) => (
+          <group key={icon.title} position={[(index - (page.length - 1) / 2) * 0.68, 1.17 + ((rows - 1) / 2 - row) * 0.63, 0.088]}>
+            <Glyph icon={icon} size={0.48} tone={brass} />
+          </group>
+        ));
+      })}
+      {icons.length === 0 && <mesh position={[0, 1.16, 0.055]}>
+        <torusGeometry args={[0.52, 0.034, 10, 12]} />
+        <meshStandardMaterial color={brass} metalness={0.9} roughness={0.33} />
+      </mesh>}
+    </group>
+  );
+}
+
+function SkillsExhibit({ groups, tour }) {
+  const glyphs = useRef(new Map());
+  const rows = groups.map(({ items }) => iconsFor(items, Infinity));
+  useFrame((_, delta) => {
+    for (const [id, glyph] of glyphs.current) {
+      const selected = id === tour.current.skill;
+      glyph.scale.setScalar(MathUtils.damp(glyph.scale.x, selected ? 1.4 : 1, 8, delta));
+    }
+  });
+  return (
+    <group position={[0, 1.46, 0]}>
+      {rows.map((row, index) => {
+        const y = (index - (rows.length - 1) / 2) * 0.38;
+        return (
+          <group key={index} position={[0, -y, 0]}>
+            <Line points={[[-1.44, -0.15, -0.18], [1.44, -0.15, -0.18]]} color="#8a704b" lineWidth={0.65} />
+            {row.map((icon, column) => {
+              const id = `${index}:${icon.title}`;
+              return <group key={id} position={[(column - (row.length - 1) / 2) * 0.48, 0, column % 2 ? 0.16 : 0.02]} ref={(glyph) => {
+                if (glyph) glyphs.current.set(id, glyph);
+                else glyphs.current.delete(id);
+              }}>
+                <Glyph icon={icon} size={0.28} tone={column === 0 ? '#e2caab' : brass} />
+              </group>;
+            })}
+          </group>
+        );
+      })}
+    </group>
+  );
+}
+
+function Folios({ count }) {
+  return (
+    <group position={[0, 0.12, 0]} rotation-y={-0.18}>
+      {Array.from({ length: Math.max(2, count) }, (_, index) => (
+        <group key={index} position={[(index - 1) * 0.22, 0.22 + index * 0.22, 0]} rotation-y={index * -0.11}>
+          <RoundedBox args={[2.25 - index * 0.14, 0.18, 1.48]} radius={0.035} smoothness={2}>
+            <meshStandardMaterial color={index % 2 ? '#29282c' : '#3a3027'} metalness={0.65} roughness={0.44} />
+            <Edges color={brass} />
+          </RoundedBox>
+          <mesh position={[0, 0, 0.75]}>
+            <boxGeometry args={[1.77, 0.1, 0.018]} />
+            <meshStandardMaterial color="#b6a281" roughness={0.68} />
+          </mesh>
+        </group>
+      ))}
+      <mesh position={[0.3, 1.08, 0]}>
+        <icosahedronGeometry args={[0.33, 0]} />
+        <meshStandardMaterial color={brass} metalness={0.89} roughness={0.32} />
+      </mesh>
+    </group>
+  );
+}
+
+function AvatarHead() {
+  const geometry = useMemo(() => {
+    const head = new SphereGeometry(1, 31, 24);
+    const vertices = head.attributes.position;
+    for (let index = 0; index < vertices.count; index++) {
+      const x = vertices.getX(index);
+      const y = vertices.getY(index);
+      const z = vertices.getZ(index);
+      const jaw = y < 0 ? 1 + y * 0.33 : 1;
+      const nose = z > 0 ? Math.exp(-(x * x * 62 + (y + 0.035) ** 2 * 17)) * 0.25 : 0;
+      const eyes = z > 0 ? Math.exp(-((Math.abs(x) - 0.36) ** 2 * 70 + (y - 0.16) ** 2 * 150)) * 0.11 : 0;
+      vertices.setXYZ(index, x * 0.64 * jaw, y * 0.84, z * 0.56 + nose - eyes);
+    }
+    head.computeVertexNormals();
+    return head;
+  }, []);
+  return <group position={[0, 1.5, 0.13]} rotation-y={0.22}>
+    <mesh geometry={geometry} scale={0.85}>
+      <meshStandardMaterial color="#ba995e" metalness={0.66} roughness={0.41} wireframe transparent opacity={0.58} />
+    </mesh>
+  </group>;
+}
+
+const projectExhibits = {
+  'survatra-rag': RagPipeline,
+  'hotel-rag': SemanticSearch,
+  'multi-agent': AgentNetwork,
+  'stock-prediction': StockChart,
+  'ai-avatar': AvatarVoice,
+};
+
+export function GalleryExhibit({ stop, compact, tour }) {
+  const { kind, data } = stop;
+  if (kind === 'hero' || kind === 'contact') return <OpticalInstrument simple={kind === 'contact'} compact={compact} />;
+  if (kind === 'job') return <JobExhibit data={data} />;
+  if (kind === 'skills') return <SkillsExhibit groups={data} tour={tour} />;
+  if (kind === 'education') return <Folios count={data.length + 3} />;
+  if (kind === 'research') return <group>
+    <group position={[0.37, 0.37, -0.66]} rotation-y={-Math.PI / 4} scale={1.44}><Steles count={data.length} /></group>
+    <group position={[-0.52, 0.02, 0.68]} rotation-y={-Math.PI / 4} scale={1.35}><CnnWave /></group>
+  </group>;
+
+  const Artwork = projectExhibits[kind];
+  return (
+    <group>
+      {Artwork && <group rotation-y={kind === 'hotel-rag' || kind === 'multi-agent' ? 0 : -Math.PI / 4} scale={kind === 'stock-prediction' ? [2.03, 3.2, 1.85] : 1.91}><Artwork cinematic /></group>}
+      {kind === 'ai-avatar' && <AvatarHead />}
+    </group>
+  );
+}

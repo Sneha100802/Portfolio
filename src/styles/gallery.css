@@ -91,6 +91,13 @@ h1,h2,h3 { font-family: var(--serif); font-weight: 500; }
 .caption h3 { font-size: 1.55rem; line-height: 1.03; }
 .caption-subtitle { font: 500 clamp(1.25rem, 2vw, 1.6rem)/1.14 var(--serif); color: #eee2ca; margin-bottom: 8px; }
 .caption-location { color: var(--dim); font-size: .71rem; margin-bottom: 16px; }
+.company-exhibit-label { width: fit-content; color: #dec4a3; border-left: 1px solid var(--brass); padding-left: 9px; font-size: .69rem; letter-spacing: .04em; line-height: 1.45; }
+.gallery--room[data-company] { background: #08080b; }
+.gallery--room[data-company][data-scene="ready"] .gallery-scene::after {
+  background: linear-gradient(90deg, #08080bf9 0%, #08080bed 34%, #08080b64 55%, transparent 76%),
+    linear-gradient(0deg, #08080be8, transparent 32%, transparent 81%, #08080b9e 100%);
+}
+.gallery--room[data-company]:not(.gallery--desktop) .exhibit { background: #08080b; }
 .caption-highlights, .caption-tech { list-style: none; margin: 15px 0 0; padding: 0; }
 .caption-highlights { color: var(--dim); font-size: .81rem; line-height: 1.57; display: grid; gap: 7px; }
 .caption-highlights li { position: relative; padding-left: 14px; }

@@ -162,7 +162,8 @@ export function App() {
 
   return (
     <div className={`gallery gallery--${visual ? mode : 'plain'} ${entrance ? 'gallery--entrance' : 'gallery--room'}`}
-      onClick={navigate} data-transit={transit || undefined} data-scene={fullScene && ready ? 'ready' : 'fallback'} data-graphics={failed ? 'unavailable' : graphics}>
+      onClick={navigate} data-company={stop.kind === 'job' ? stop.data.id : undefined} data-transit={transit || undefined}
+      data-scene={fullScene && ready ? 'ready' : 'fallback'} data-graphics={failed ? 'unavailable' : graphics}>
       <a href="#main" className="gallery-skip">{gallery.skip}</a>
       <header className="gallery-header">
         <div className="gallery-shell gallery-masthead">

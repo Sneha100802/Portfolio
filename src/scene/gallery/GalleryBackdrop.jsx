@@ -34,10 +34,11 @@ const wallVertex = /* glsl */ `
 
 const wallFragment = /* glsl */ `
   uniform sampler2D vault;
+  uniform float exposure;
   varying vec2 surface;
   void main() {
     vec3 glow = texture2D(vault, surface).rgb;
-    gl_FragColor = vec4(glow + vec3(11.0, 11.0, 14.0) / 255.0, 1.0);
+    gl_FragColor = vec4(glow * exposure + vec3(11.0, 11.0, 14.0) / 255.0, 1.0);
   }
 `;
 
@@ -65,9 +66,9 @@ const moteFragment = /* glsl */ `
   }
 `;
 
-export function GalleryBackdrop({ stage, motes, compact }) {
+export function GalleryBackdrop({ stage, motes, compact, dim }) {
   const vault = useTexture(`${import.meta.env.BASE_URL}gallery-vault.webp`);
-  const wallUniforms = useMemo(() => ({ vault: { value: vault } }), [vault]);
+  const wallUniforms = useMemo(() => ({ vault: { value: vault }, exposure: { value: dim ? 0.48 : 1 } }), [vault, dim]);
   const positions = useMemo(() => {
     const random = rng(142);
     return new Float32Array(Array.from({ length: 44 }, () => [
@@ -84,7 +85,7 @@ export function GalleryBackdrop({ stage, motes, compact }) {
     <group position={[0, compact ? -0.1 : 0, -2.35]} scale={compact ? 0.79 : 1}>
       <mesh>
         <extrudeGeometry args={[archStone, stoneDepth]} />
-        <meshStandardMaterial color="#262428" roughness={0.55} metalness={0.37} envMapIntensity={0.3} />
+        <meshStandardMaterial color={dim ? '#18171d' : '#262428'} roughness={0.55} metalness={0.37} envMapIntensity={dim ? 0.14 : 0.3} />
       </mesh>
       <mesh position-z={0.429}>
         <extrudeGeometry args={[archBrass, trimDepth]} />

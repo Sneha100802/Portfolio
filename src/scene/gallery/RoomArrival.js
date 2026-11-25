@@ -2,6 +2,19 @@ import { MathUtils } from 'three';
 
 export const arrivalDuration = 2.25;
 
+const companies = {
+  blazetrail: { night: '#07090d', accent: '#d6a45f', rim: '#465b74' },
+  survatra: { night: '#0a070e', accent: '#b294c0', rim: '#57466c' },
+  'idea-company': { night: '#0a080f', accent: '#baa4d3', rim: '#575373' },
+  'iiit-nr': { night: '#060c0d', accent: '#80b9b5', rim: '#375963' },
+  hexnbit: { night: '#0b080d', accent: '#bd95ac', rim: '#584656' },
+  gauravgo: { night: '#08090e', accent: '#c9a777', rim: '#4c586b' },
+};
+
+export function companyLook(stop) {
+  return stop.kind === 'job' ? companies[stop.data.id] : undefined;
+}
+
 // Side of approach, initial height offset, and the detail held in the opening close-up.
 const arrivalShots = {
   job: [-2.8, -0.85, 0.05, 1.38],

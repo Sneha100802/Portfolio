@@ -3,6 +3,8 @@ import { useFrame } from '@react-three/fiber';
 import { Edges, Line, RoundedBox } from '@react-three/drei';
 import { MathUtils, Matrix4, Object3D, SphereGeometry } from 'three';
 import { Glyph } from '../Glyph';
+import { CompanyExhibit } from './CompanyExhibits';
+import { companyLook } from './RoomArrival';
 import { iconsFor } from '../../lib/icons';
 import { AgentNetwork, AvatarVoice, CnnWave, RagPipeline, SemanticSearch, Steles, StockChart } from '../visuals';
 
@@ -99,44 +101,18 @@ export function OpticalInstrument({ simple = false, opticalGlass = false }) {
   );
 }
 
-function JobExhibit({ data }) {
+function JobExhibit({ stop }) {
+  const { data } = stop;
+  const accent = companyLook(stop)?.accent ?? brass;
   const icons = iconsFor(data.stack, Infinity);
-  if (!icons.length) return (
-    <group position={[0, 0.9, 0]} rotation-y={-0.24}>
-      <RoundedBox args={[1.12, 1.72, 1.05]} radius={0.075} smoothness={3}>
-        <meshStandardMaterial color="#21232a" metalness={0.77} roughness={0.38} />
-      </RoundedBox>
-      {[-0.19, 0, 0.19].map(x => <mesh key={x} position={[x, 0.1, 0.534]}>
-        <boxGeometry args={[0.012, 0.96 - Math.abs(x) * 1.3, 0.013]} />
-        <meshStandardMaterial color="#91774c" metalness={0.86} roughness={0.44} />
-      </mesh>)}
-    </group>
-  );
-  const rows = Math.max(1, Math.ceil(icons.length / 4));
-
-  return (
-    <group>
-      {[-1.06, 1.06].map(x => <RoundedBox key={x} position={[x, 0.16, -0.12]} args={[0.25, 0.32, 0.24]} radius={0.021} smoothness={2}>
-        <meshStandardMaterial color="#514531" metalness={0.75} roughness={0.4} />
-      </RoundedBox>)}
-      <RoundedBox position={[0, 1.16, -0.1]} args={[3.35, 1.95, 0.19]} radius={0.085} smoothness={3}>
-        <meshStandardMaterial color="#202127" metalness={0.72} roughness={0.38} />
-        <Edges color="#896c42" threshold={30} />
-      </RoundedBox>
-      <RoundedBox position={[0, 1.16, 0.002]} args={[3.14, 1.75, 0.026]} radius={0.034} smoothness={2}>
-        <meshStandardMaterial color="#121316" metalness={0.41} roughness={0.54} />
-        <Edges color="#c9a45e" threshold={30} />
-      </RoundedBox>
-      {Array.from({ length: rows }, (_, row) => {
-        const page = icons.slice(row * 4, row * 4 + 4);
-        return page.map((icon, index) => (
-          <group key={icon.title} position={[(index - (page.length - 1) / 2) * 0.68, 1.17 + ((rows - 1) / 2 - row) * 0.63, 0.088]}>
-            <Glyph icon={icon} size={0.48} tone={brass} />
-          </group>
-        ));
-      })}
-    </group>
-  );
+  return <group>
+    <CompanyExhibit company={data.id} accent={accent} />
+    {icons.map((icon, index) => (
+      <group key={icon.title} position={[(index - (icons.length - 1) / 2) * 0.36, 0.23, 0.85]}>
+        <Glyph icon={icon} size={0.24} tone={accent} />
+      </group>
+    ))}
+  </group>;
 }
 
 function SkillsExhibit({ groups, tour }) {
@@ -238,7 +214,7 @@ const projectExhibits = {
 export function GalleryExhibit({ stop, opticalGlass, tour }) {
   const { kind, data } = stop;
   if (kind === 'hero' || kind === 'contact') return <OpticalInstrument simple={kind === 'contact'} opticalGlass={opticalGlass} />;
-  if (kind === 'job') return <JobExhibit data={data} />;
+  if (kind === 'job') return <JobExhibit stop={stop} />;
   if (kind === 'skills') return <SkillsExhibit groups={data} tour={tour} />;
   if (kind === 'education') return <Folios count={data.length + 3} />;
   if (kind === 'research') return <group>

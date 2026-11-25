@@ -1,6 +1,6 @@
 import { useMemo, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
-import { AdditiveBlending, MathUtils } from 'three';
+import { AdditiveBlending, Color, MathUtils } from 'three';
 
 const vertexShader = /* glsl */ `
   varying vec2 point;
@@ -13,6 +13,7 @@ const vertexShader = /* glsl */ `
 const fragmentShader = /* glsl */ `
   uniform float visibility;
   uniform float turn;
+  uniform vec3 tint;
   varying vec2 point;
 
   void main() {
@@ -29,8 +30,8 @@ const fragmentShader = /* glsl */ `
     float disk = exp(-abs(diskRadius - 0.49) * 16.0);
     disk *= 1.0 - smoothstep(-0.035, 0.018, band.y) * shadow;
 
-    vec3 warm = vec3(1.0, 0.63, 0.25) * (caustic * 0.28 + disk * (0.62 + 0.16 * ripple));
-    warm += vec3(1.0, 0.86, 0.65) * rim * (0.59 + 0.32 * cos(angle - 0.85));
+    vec3 warm = tint * (caustic * 0.28 + disk * (0.62 + 0.16 * ripple));
+    warm += mix(tint, vec3(1.0), 0.58) * rim * (0.59 + 0.32 * cos(angle - 0.85));
     float alpha = clamp(shadow + rim * 0.8 + caustic * 0.43 + disk * 0.62, 0.0, 1.0) * visibility;
     gl_FragColor = vec4(vec3(0.007, 0.006, 0.010) + warm, alpha);
   }
@@ -60,20 +61,22 @@ const particleVertex = /* glsl */ `
 
 const particleFragment = /* glsl */ `
   varying float glint;
+  uniform vec3 tint;
   void main() {
     float feather = 1.0 - smoothstep(0.10, 0.5, length(gl_PointCoord - 0.5));
-    gl_FragColor = vec4(1.0, 0.72, 0.4, glint * feather);
+    gl_FragColor = vec4(mix(tint, vec3(1.0), 0.38), glint * feather);
   }
 `;
 
-export function SceneAperture({ position = [0, 1.5, 1.15], ready, tour, index, gateway = false }) {
+export function SceneAperture({ position = [0, 1.5, 1.15], ready, tour, index, gateway = false, accent }) {
   const aperture = useRef();
   const shader = useRef();
   const orbit = useRef();
   const particles = useRef();
   const elapsed = useRef(0);
-  const uniforms = useMemo(() => ({ visibility: { value: 0 }, turn: { value: 0 } }), []);
-  const particleUniforms = useMemo(() => ({ time: { value: 0 } }), []);
+  const tint = useMemo(() => new Color(accent ?? '#ffa140').convertLinearToSRGB(), [accent]);
+  const uniforms = useMemo(() => ({ visibility: { value: 0 }, turn: { value: 0 }, tint: { value: tint } }), [tint]);
+  const particleUniforms = useMemo(() => ({ time: { value: 0 }, tint: { value: tint } }), [tint]);
   const duration = gateway ? 1.08 : 1.72;
 
   useFrame(({ camera, clock }, delta) => {
@@ -104,7 +107,7 @@ export function SceneAperture({ position = [0, 1.5, 1.15], ready, tour, index, g
     </mesh>
     <mesh ref={orbit} renderOrder={8}>
       <torusGeometry args={[0.95, 0.013, 6, 64]} />
-      <meshBasicMaterial color="#f4bb77" transparent opacity={0} depthWrite={false} depthTest={false} toneMapped={false} />
+      <meshBasicMaterial color={accent ?? '#f4bb77'} transparent opacity={0} depthWrite={false} depthTest={false} toneMapped={false} />
     </mesh>
     {!gateway && <points ref={particles} frustumCulled={false} renderOrder={9}>
       <bufferGeometry><bufferAttribute attach="attributes-position" args={[particlePositions, 3]} /></bufferGeometry>

@@ -38,10 +38,11 @@ function Tech({ items }) {
 }
 
 function Job({ stop }) {
-  const { company, role, location, start, end, bullets, stack } = stop.data;
+  const { company, role, location, start, end, bullets, stack, exhibit } = stop.data;
   return <>
     <Heading id={`${stop.id}-title`} chapter={stop.chapter} title={company} eyebrow={dateSpan(start, end)} subtitle={role} />
     {location && <p className="caption-location" data-text-reveal>{location}</p>}
+    {exhibit && <p className="company-exhibit-label" data-text-reveal>{exhibit}</p>}
     <ul className="caption-highlights">{bullets.map((item, index) => <li key={item} data-text-reveal style={{ '--reveal-order': index }}>{item}</li>)}</ul>
     <Tech items={stack} />
   </>;

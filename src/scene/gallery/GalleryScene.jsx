@@ -114,7 +114,7 @@ function World({ tour, compact, quality, paintStage, onReady }) {
     drift.current.x = MathUtils.damp(drift.current.x, compact ? 0 : tour.current.pointerX, 3, step);
     drift.current.y = MathUtils.damp(drift.current.y, compact ? 0 : tour.current.pointerY, 3, step);
     const arc = Math.sin(fraction * Math.PI);
-    const entry = compact || goal >= 0.5 ? 0 : (1 - intro.current) ** 3;
+    const entry = goal >= 0.5 ? 0 : (1 - intro.current) ** 3 * (compact ? 0.35 : 1);
     const originShot = shots[stops[index].kind] ?? defaultShot;
     const nextShot = shots[stops[following].kind] ?? defaultShot;
     const distance = compact ? 10.8 : MathUtils.lerp(originShot.distance, nextShot.distance, move);
@@ -122,15 +122,16 @@ function World({ tour, compact, quality, paintStage, onReady }) {
     const focus = MathUtils.lerp(originShot.focus, nextShot.focus, move);
     const side = compact ? 0.92 : MathUtils.lerp(originShot.side, nextShot.side, move);
 
-    camera.position.set(destination.current.x + side + arc * 1.02 + entry * 1.18 + drift.current.x * 0.19,
-      height + entry * 0.55 + drift.current.y * 0.135 + arc * 0.35,
-      destination.current.z + distance + entry * 1.65 + arc * 0.82);
+    camera.position.set(destination.current.x + side + arc * 1.18 + entry * 1.68 + drift.current.x * 0.23,
+      height + entry * 0.69 + drift.current.y * 0.15 + arc * 0.31,
+      destination.current.z + distance + entry * 1.84 + arc * 0.82);
     look.current.set(destination.current.x + arc * 0.13, focus + arc * 0.14, destination.current.z - 0.12);
     camera.lookAt(look.current);
     if (stage.current) stage.current.position.copy(destination.current);
     if (motes.current) motes.current.material.uniforms.time.value = clock.elapsedTime;
     if (keyLight.current) {
-      keyLight.current.position.x = -3.1 + entry * 1.9 + arc * 0.52;
+      keyLight.current.position.x = -3.1 + entry * 2.3 + arc * 0.9;
+      keyLight.current.position.y = 5.8 - entry * 0.55;
       keyLight.current.intensity = (stops[center].kind === 'contact' ? 21 : 34) * (1 - 0.50 * arc ** 9 - entry * 0.54);
     }
     const viewKey = `${size.width}:${size.height}:${compact}`;
@@ -163,8 +164,8 @@ function World({ tour, compact, quality, paintStage, onReady }) {
           resolution={192} mirror={0.19} depthScale={0.75} minDepthThreshold={0.2} maxDepthThreshold={1.5}
         /> : <meshStandardMaterial color="#09090d" metalness={0.06} roughness={0.96} envMapIntensity={0.08} />}
       </mesh>
+      <Suspense fallback={null}><GalleryBackdrop stage={stage} motes={motes} compact={compact} /></Suspense>
       {!compact && <>
-        <Suspense fallback={null}><GalleryBackdrop stage={stage} motes={motes} /></Suspense>
         <Line points={rail} color="#4f3d2f" lineWidth={0.61} />
         <Line points={rail.map(([x, y, z]) => [x + 6.2, y, z])} color="#3d3229" lineWidth={0.52} />
       </>}

@@ -112,7 +112,6 @@ export function GalleryChapter({ stop, onSkill }) {
     <section className="exhibit gallery-hero" id={id} data-stop={id} tabIndex={-1} aria-labelledby="gallery-title">
       <div className="gallery-shell">
         <div className="caption hero-caption">
-          <p className="chapter-kicker" data-text-reveal><i aria-hidden="true" />{gallery.name}</p>
           <h1 id="gallery-title" data-text-reveal><RevealWords text={meta.name} /></h1>
           <p className="hero-role" data-text-reveal><RevealWords text={meta.title} /></p>
           <p className="hero-summary" data-text-reveal>{summary}</p>

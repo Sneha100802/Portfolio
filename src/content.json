@@ -1,6 +1,5 @@
 {
   "gallery": {
-    "name": "Obsidian Gallery",
     "chapters": [
       { "id": "home", "label": "Home" },
       { "id": "experience", "label": "Experience" },

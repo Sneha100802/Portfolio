@@ -1,7 +1,28 @@
 import { useMemo } from 'react';
 import { useTexture } from '@react-three/drei';
-import { AdditiveBlending } from 'three';
+import { AdditiveBlending, Shape } from 'three';
 import { rng } from '../Parts';
+
+function archProfile(width, rise, trim) {
+  const spring = 2.17;
+  const floor = -0.48;
+  const shape = new Shape();
+  shape.moveTo(-width, floor);
+  shape.lineTo(-width, spring);
+  shape.absellipse(0, spring, width, rise, Math.PI, 0, true);
+  shape.lineTo(width, floor);
+  shape.lineTo(width - trim, floor);
+  shape.lineTo(width - trim, spring);
+  shape.absellipse(0, spring, width - trim, rise - trim, 0, Math.PI);
+  shape.lineTo(trim - width, floor);
+  shape.closePath();
+  return shape;
+}
+
+const archStone = archProfile(2.61, 1.95, 0.32);
+const archBrass = archProfile(2.383, 1.72, 0.019);
+const stoneDepth = { depth: 0.38, bevelEnabled: true, bevelSegments: 2, bevelThickness: 0.043, bevelSize: 0.043, curveSegments: 18 };
+const trimDepth = { depth: 0.018, bevelEnabled: false, curveSegments: 18 };
 
 const wallVertex = /* glsl */ `
   varying vec2 surface;
@@ -44,7 +65,7 @@ const moteFragment = /* glsl */ `
   }
 `;
 
-export function GalleryBackdrop({ stage, motes }) {
+export function GalleryBackdrop({ stage, motes, compact }) {
   const vault = useTexture(`${import.meta.env.BASE_URL}gallery-vault.webp`);
   const wallUniforms = useMemo(() => ({ vault: { value: vault } }), [vault]);
   const positions = useMemo(() => {
@@ -60,10 +81,20 @@ export function GalleryBackdrop({ stage, motes }) {
       <planeGeometry args={[11.3, 6.25]} />
       <shaderMaterial uniforms={wallUniforms} vertexShader={wallVertex} fragmentShader={wallFragment} toneMapped={false} />
     </mesh>
-    <points ref={motes} frustumCulled={false}>
+    <group position={[0, compact ? -0.1 : 0, -2.35]} scale={compact ? 0.79 : 1}>
+      <mesh>
+        <extrudeGeometry args={[archStone, stoneDepth]} />
+        <meshStandardMaterial color="#262428" roughness={0.55} metalness={0.37} envMapIntensity={0.3} />
+      </mesh>
+      <mesh position-z={0.429}>
+        <extrudeGeometry args={[archBrass, trimDepth]} />
+        <meshStandardMaterial color="#8b6b3e" metalness={0.79} roughness={0.39} emissive="#604425" emissiveIntensity={0.16} />
+      </mesh>
+    </group>
+    {!compact && <points ref={motes} frustumCulled={false}>
       <bufferGeometry><bufferAttribute attach="attributes-position" args={[positions, 3]} /></bufferGeometry>
       <shaderMaterial uniforms={uniforms} vertexShader={moteVertex} fragmentShader={moteFragment}
         transparent toneMapped={false} depthWrite={false} blending={AdditiveBlending} />
-    </points>
+    </points>}
   </group>;
 }

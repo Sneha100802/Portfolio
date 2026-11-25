@@ -14,6 +14,17 @@
     "previousRoom": "Previous room",
     "nextRoom": "Next room",
     "roomNavigation": "Room navigation",
+    "roomIndex": "Room index",
+    "rooms": "Rooms",
+    "close": "Close",
+    "replayOpening": "Replay opening",
+    "walkthrough": "Walkthrough",
+    "caseStudy": "Case study",
+    "roleLabel": "My role",
+    "constraintLabel": "Constraint",
+    "outcomeLabel": "What I built",
+    "evidenceLabel": "Related work",
+    "illustrativeSample": "Illustrative example",
     "navigation": "Gallery chapters",
     "primaryNavigation": "Main navigation",
     "light": "Light",
@@ -43,6 +54,47 @@
   "experience": [
     {
       "id": "blazetrail",
+      "story": {
+        "role": "Built Kaalfi’s fund discovery and portfolio interfaces and contributed to its Django REST backend.",
+        "constraint": "Fund factsheets came from 45+ companies, with access paths ranging from page scraping to direct GraphQL calls.",
+        "result": "Built fund scanning, filtering, detail tabs and portfolio components, and implemented OTP flows with Redis-backed tokens.",
+        "steps": [
+          {
+            "label": "Scan funds",
+            "detail": "Kaalfi displays funds for discovery. I also built PDF factsheet scrapers using BeautifulSoup, Playwright and direct GraphQL calls.",
+            "position": [
+              -1.05,
+              0.9,
+              0.2
+            ],
+            "sample": "A sample investor opens the fund list to compare available funds."
+          },
+          {
+            "label": "Apply filters",
+            "detail": "I built the filtering interface in Next.js and TypeScript so investors could narrow the fund list.",
+            "position": [
+              0,
+              1.2,
+              0.25
+            ]
+          },
+          {
+            "label": "Inspect a fund",
+            "detail": "Fund detail tabs and portfolio dashboard components present information at the next step of the investment workflow.",
+            "position": [
+              1.04,
+              1.65,
+              0.2
+            ]
+          }
+        ],
+        "links": [
+          {
+            "label": "Open Kaalfi",
+            "url": "https://app.kaalfi.money/"
+          }
+        ]
+      },
       "role": "Frontend & Backend Developer (Internship)",
       "company": "Blazetrail Fintech Solutions",
       "exhibit": "Mutual fund dashboard",
@@ -60,6 +112,46 @@
     },
     {
       "id": "survatra",
+      "story": {
+        "role": "Designed and built the platform as the sole backend developer.",
+        "constraint": "Four-pass document extraction ran on a CPU-only EC2 server with 1.9 GB of RAM. Sensitive fields had to be masked before LLM calls.",
+        "result": "Delivered a FastAPI platform with project-scoped keys and history, approval controls, immutable audit trails and expiring access.",
+        "steps": [
+          {
+            "label": "Ingest files",
+            "detail": "A four-pass workflow extracted data from PDFs, CSVs and scanned files.",
+            "position": [
+              -0.95,
+              1.11,
+              0.32
+            ]
+          },
+          {
+            "label": "Mask fields",
+            "detail": "A combined regex replaced sequential passes to mask protected and identifying information before an LLM could receive it.",
+            "position": [
+              -0.62,
+              1.21,
+              0.25
+            ]
+          },
+          {
+            "label": "Govern access",
+            "detail": "Three levels of admin approval, audit trails and auto-revoking access windows governed access to protected data.",
+            "position": [
+              0.88,
+              1.3,
+              0.34
+            ]
+          }
+        ],
+        "links": [
+          {
+            "label": "See the RAG pipeline",
+            "room": "projects"
+          }
+        ]
+      },
       "role": "Python Developer",
       "company": "Survatra",
       "exhibit": "Document masking and secure storage",
@@ -78,6 +170,49 @@
     },
     {
       "id": "idea-company",
+      "story": {
+        "role": "Built the founder-facing NLP chatbot with LangChain, LLM APIs and structured knowledge bases.",
+        "constraint": "The same chatbot needed to handle questions across legal, financial and operational workflows.",
+        "result": "Delivered a conversational way for founders to explore those three areas.",
+        "steps": [
+          {
+            "label": "Ask a question",
+            "detail": "A founder enters a question in their own words.",
+            "position": [
+              -0.66,
+              1.77,
+              0
+            ],
+            "sample": "Where do I start with a vendor onboarding checklist?"
+          },
+          {
+            "label": "Find relevant guidance",
+            "detail": "The chatbot uses a structured knowledge base to ground guidance in the relevant startup workflow.",
+            "position": [
+              -0.18,
+              1.39,
+              -0.46
+            ],
+            "sample": "Workflow matched: vendor onboarding."
+          },
+          {
+            "label": "Respond",
+            "detail": "LangChain and an LLM API generate a conversational response for the founder.",
+            "position": [
+              0.5,
+              0.99,
+              0.45
+            ],
+            "sample": "Start with a vendor contact, scope and approval checklist."
+          }
+        ],
+        "links": [
+          {
+            "label": "Explore agent routing",
+            "room": "project-multi-agent"
+          }
+        ]
+      },
       "role": "AI Developer",
       "company": "The Idea Company",
       "exhibit": "Chatbot response generation",
@@ -92,6 +227,46 @@
     },
     {
       "id": "iiit-nr",
+      "story": {
+        "role": "Developed a DenseNet combining three CNN models and trained 1D CNN models with Adam and RMSprop.",
+        "constraint": "The research explored COPD detection from pulmonary audio and compared 40 papers published between 2019 and 2024.",
+        "result": "Reported 94% training accuracy with Adam and co-authored two peer-reviewed IEEE conference papers.",
+        "steps": [
+          {
+            "label": "Read pulmonary audio",
+            "detail": "The waveform represents the respiratory audio used as input for the research.",
+            "position": [
+              -0.75,
+              1.15,
+              0.35
+            ]
+          },
+          {
+            "label": "Compare CNNs",
+            "detail": "I developed a DenseNet combining three CNNs and trained 1D CNN variants with Adam and RMSprop.",
+            "position": [
+              0.55,
+              1.15,
+              0
+            ]
+          },
+          {
+            "label": "Review results",
+            "detail": "The Adam model reached 94% training accuracy. The two IEEE publications document the research.",
+            "position": [
+              1.1,
+              1.2,
+              -0.4
+            ]
+          }
+        ],
+        "links": [
+          {
+            "label": "View both IEEE publications",
+            "room": "research"
+          }
+        ]
+      },
       "role": "Summer Research Intern, Data Science",
       "company": "IIIT Naya Raipur",
       "exhibit": "Pulmonary audio and convolution layers",
@@ -107,6 +282,31 @@
     },
     {
       "id": "hexnbit",
+      "story": {
+        "role": "Developed AI and ML prototypes during an early-career industry rotation.",
+        "result": "The rotation gave me hands-on practice in AI and ML prototyping.",
+        "steps": [
+          {
+            "label": "Build a prototype",
+            "detail": "The scene represents the experimental AI and ML prototypes built during the rotation.",
+            "position": [
+              -1.19,
+              0.72,
+              0.1
+            ]
+          },
+          {
+            "label": "Explore model output",
+            "detail": "This stage illustrates what probing a prototype output can look like.",
+            "position": [
+              0,
+              1.23,
+              0
+            ],
+            "sample": "Toy input: a sample record. Toy output: a predicted category."
+          }
+        ]
+      },
       "role": "AI & ML Developer",
       "company": "Hex N Bit",
       "exhibit": "AI and ML prototype",
@@ -121,6 +321,45 @@
     },
     {
       "id": "gauravgo",
+      "story": {
+        "role": "Joined as a web development intern and gained exposure to hosting, deployment pipelines and full-stack fundamentals.",
+        "result": "The internship gave me an overview of how a web project goes from source to a hosted application.",
+        "steps": [
+          {
+            "label": "Prepare the site",
+            "detail": "This stage illustrates how a web interface is prepared for deployment.",
+            "position": [
+              -0.68,
+              1.25,
+              0.34
+            ]
+          },
+          {
+            "label": "Pass through deployment",
+            "detail": "The middle stage represents the pipeline that takes a web build toward a host.",
+            "position": [
+              0.44,
+              1.24,
+              0.15
+            ]
+          },
+          {
+            "label": "Serve the result",
+            "detail": "The last stage shows where visitors reach the hosted application.",
+            "position": [
+              1.02,
+              1.3,
+              -0.1
+            ]
+          }
+        ],
+        "links": [
+          {
+            "label": "See later full-stack work",
+            "room": "experience"
+          }
+        ]
+      },
       "role": "Web Developer Intern",
       "company": "Gauravgo Technologies",
       "exhibit": "Web hosting and deployment",
@@ -137,6 +376,59 @@
   "projects": [
     {
       "id": "survatra-rag",
+      "story": {
+        "role": "Architected and implemented the production RAG backend as Survatra’s sole backend developer.",
+        "constraint": "The platform had to ingest different document formats on CPU-only infrastructure and mask identifying fields before invoking LLM APIs.",
+        "result": "Delivered document extraction, semantic retrieval and model routing on FastAPI, PostgreSQL and AWS.",
+        "steps": [
+          {
+            "label": "Extract content",
+            "detail": "Ingestion handles PDFs, CSVs and scanned files. A four-pass workflow runs on a CPU-only EC2 instance.",
+            "position": [
+              -1.53,
+              1.09,
+              0.14
+            ],
+            "sample": "Uploaded scan contains: Maya Example requests record EX-001."
+          },
+          {
+            "label": "Mask identifiers",
+            "detail": "A combined regular expression masks protected and identifying text before model calls.",
+            "position": [
+              -0.52,
+              1.09,
+              0.14
+            ],
+            "sample": "[NAME] requests record [RECORD ID]."
+          },
+          {
+            "label": "Retrieve context",
+            "detail": "FAISS and ChromaDB provide vector search to surface related document context.",
+            "position": [
+              0.52,
+              1.09,
+              0.14
+            ],
+            "sample": "Example matches: access-guide-01, policy-note-02."
+          },
+          {
+            "label": "Route the query",
+            "detail": "The backend routes the query to an LLM with the retrieved context.",
+            "position": [
+              1.53,
+              1.09,
+              0.14
+            ],
+            "sample": "For record access, follow the steps in access-guide-01."
+          }
+        ],
+        "links": [
+          {
+            "label": "See the Survatra role",
+            "room": "job-survatra"
+          }
+        ]
+      },
       "name": "Multimodal RAG Platform (Survatra)",
       "tag": "Production",
       "description": "Document ingestion, PHI/PII masking, FAISS/ChromaDB retrieval, and LLM query routing on FastAPI, PostgreSQL, and AWS.",
@@ -146,6 +438,53 @@
     },
     {
       "id": "hotel-rag",
+      "story": {
+        "role": "Built the hotel question-answering project using Sentence Transformers, FAISS and Flask.",
+        "constraint": "The interface needed to accept natural-language questions and match them to hotel information by meaning.",
+        "result": "Delivered semantic hotel search through a Flask API.",
+        "steps": [
+          {
+            "label": "Embed the question",
+            "detail": "Sentence Transformers converts the text of a hotel query into a vector.",
+            "position": [
+              1.75,
+              1.35,
+              0.6
+            ],
+            "sample": "Find examples of canceled city hotel bookings."
+          },
+          {
+            "label": "Search by meaning",
+            "detail": "FAISS compares the question vector with indexed hotel information.",
+            "position": [
+              0.57,
+              1.56,
+              0
+            ],
+            "sample": "Example matches: city hotel, canceled booking."
+          },
+          {
+            "label": "Return nearby matches",
+            "detail": "The Flask API exposes the semantic matches to the caller.",
+            "position": [
+              -1.16,
+              0.8,
+              0.2
+            ],
+            "sample": "Example result: a canceled city hotel reservation with a 28-day booking lead time."
+          }
+        ],
+        "links": [
+          {
+            "label": "Explore production retrieval",
+            "room": "projects"
+          },
+          {
+            "label": "Hotel Q&A source code",
+            "url": "https://github.com/Sneha100802/Hotel-Booking-Analytics-Retrieval-Augmented-Question-Answering-RAG-"
+          }
+        ]
+      },
       "name": "Hotel Booking RAG Q&A",
       "tag": "",
       "description": "FAISS + Sentence Transformers semantic search with a Flask API for natural-language querying.",
@@ -155,6 +494,53 @@
     },
     {
       "id": "multi-agent",
+      "story": {
+        "role": "Built Python agents with a Gradio interface and routing based on content type and intent.",
+        "constraint": "Different inputs needed to reach the agent suited to the request.",
+        "result": "Delivered a single Gradio entry point that routes requests to Python agents.",
+        "steps": [
+          {
+            "label": "Receive input",
+            "detail": "Gradio collects the content and the user’s request.",
+            "position": [
+              -1.81,
+              1.12,
+              0.2
+            ],
+            "sample": "Summarize the supplied meeting notes."
+          },
+          {
+            "label": "Resolve intent",
+            "detail": "The routing logic determines which agent fits the content type and intent.",
+            "position": [
+              0,
+              1.47,
+              0.2
+            ],
+            "sample": "Example intent: summarize text."
+          },
+          {
+            "label": "Dispatch to an agent",
+            "detail": "The selected Python agent handles the request.",
+            "position": [
+              0.95,
+              1.5,
+              0.25
+            ],
+            "sample": "Example output: a short list of decisions and action items."
+          }
+        ],
+        "links": [
+          {
+            "label": "See the founder chatbot",
+            "room": "job-idea-company"
+          },
+          {
+            "label": "Multi-agent source code",
+            "url": "https://github.com/Sneha100802/Multi-Agent-AI-System"
+          }
+        ]
+      },
       "name": "Multi-Agent System",
       "tag": "",
       "description": "Python agents with a Gradio interface routing inputs by content type and intent.",
@@ -164,15 +550,91 @@
     },
     {
       "id": "stock-prediction",
+      "story": {
+        "role": "Contributed to a team project that combines text and historical prices for stock forecasting.",
+        "constraint": "The project combined text and model inputs and surfaced outputs across Streamlit, Flask and Grafana.",
+        "result": "Delivered a prediction workflow with dashboard views for the results.",
+        "steps": [
+          {
+            "label": "Combine inputs",
+            "detail": "The hybrid approach combines text with machine-learning inputs. The display shows a sample price history.",
+            "position": [
+              -1.15,
+              1.4,
+              0.2
+            ],
+            "sample": "Toy price series: 100, 102, 101."
+          },
+          {
+            "label": "Show a forecast",
+            "detail": "Streamlit, Flask and Grafana surface model results. The plot illustrates how a forecast can be displayed.",
+            "position": [
+              1.8,
+              2.5,
+              0.3
+            ],
+            "sample": "Toy forecast: 103."
+          }
+        ],
+        "links": [
+          {
+            "label": "Source code and dashboard screenshots",
+            "url": "https://github.com/Sneha100802/Stock-Market-Prediction#grafana-dashboard"
+          }
+        ]
+      },
       "name": "Stock Price Prediction",
       "tag": "",
-      "description": "Hybrid text + ML models (0.99 accuracy) with Streamlit, Flask, and Grafana dashboards.",
+      "description": "A hybrid stock forecasting project using historical prices, text analysis and machine learning, with Streamlit, Flask and Grafana.",
       "exhibit": ["Example price history", "Illustrative forecast"],
       "stack": ["Streamlit", "Flask", "Grafana"],
       "url": "TODO"
     },
     {
       "id": "ai-avatar",
+      "story": {
+        "role": "Built a conversation pipeline connecting Gemini 2.0 Flash, edge-tts and Wav2Lip.",
+        "constraint": "Generated text had to become audio and line up with the avatar’s lip movements.",
+        "result": "Delivered a text-to-speech-to-video pipeline.",
+        "steps": [
+          {
+            "label": "Generate a reply",
+            "detail": "Gemini 2.0 Flash generates the conversational response text.",
+            "position": [
+              0,
+              1.75,
+              0.3
+            ],
+            "sample": "Welcome. Which project would you like to explore?"
+          },
+          {
+            "label": "Synthesize speech",
+            "detail": "edge-tts turns the generated reply into audio.",
+            "position": [
+              0,
+              0.45,
+              1
+            ],
+            "sample": "The reply is rendered as a voice track."
+          },
+          {
+            "label": "Sync the avatar",
+            "detail": "Wav2Lip uses the speech track to align the avatar’s lip movements with the audio.",
+            "position": [
+              0,
+              1.43,
+              0.52
+            ],
+            "sample": "The avatar mouths the same spoken reply."
+          }
+        ],
+        "links": [
+          {
+            "label": "Avatar pipeline source code",
+            "url": "https://github.com/Sneha100802/avatar-assignment"
+          }
+        ]
+      },
       "name": "AI Avatar Conversation Pipeline",
       "tag": "",
       "description": "Gemini 2.0 Flash, edge-tts, and Wav2Lip for text-to-speech-to-video output.",
@@ -201,15 +663,15 @@
   "publications": [
     {
       "title": "Optimized 1D CNNs for Enhanced Early Detection and Accurate Prediction of COPD and Other Pulmonary Diseases",
-      "venue": "15th ICCCNT, IEEE Xplore",
+      "venue": "IEEE TENSYMP",
       "year": "2024",
-      "url": "TODO"
+      "url": "https://doi.org/10.1109/TENSYMP61132.2024.10752156"
     },
     {
       "title": "Enhanced Predictive Modeling Techniques for Early Detection of COPD Utilizing 1D Convolutional Neural Networks",
-      "venue": "IEEE TENSYMP",
+      "venue": "15th ICCCNT, IEEE Xplore",
       "year": "2024",
-      "url": "TODO"
+      "url": "https://doi.org/10.1109/ICCCNT61001.2024.10726000"
     }
   ],
   "certifications": [

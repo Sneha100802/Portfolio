@@ -7,6 +7,7 @@ import { content } from './lib/content';
 import { chapterLabel, roomIndex, roomLabel, roomPath, roomSwapMs, roomTransitionMs, stops } from './lib/gallery';
 import { Timeline } from './ui/gallery/Timeline';
 import { RevealWords } from './ui/gallery/RevealWords';
+import { RoomIndex } from './ui/gallery/RoomIndex';
 import './styles/gallery.css';
 
 const Scene = lazy(() => import('./scene/gallery/GalleryScene'));
@@ -26,10 +27,11 @@ export function App() {
   const [theme, setTheme] = useState(() => document.documentElement.dataset.theme === 'light' ? 'light' : 'dark');
   const light = theme === 'light';
   const [activeIndex, setActiveIndex] = useState(() => roomIndex(window.location));
-  const tour = useRef({ position: activeIndex, pointerX: 0, pointerY: 0, skill: null, jump: 0, departure: 0 });
+  const tour = useRef({ position: activeIndex, pointerX: 0, pointerY: 0, skill: null, step: null, jump: 0, departure: 0 });
   const timers = useRef([]);
   const moveFocus = useRef(false);
   const [transit, setTransit] = useState(false);
+  const [replay, setReplay] = useState(0);
   const [mode, setMode] = useState('plain');
   const [graphics, setGraphics] = useState('checking');
   const [ready, setReady] = useState(false);
@@ -48,10 +50,18 @@ export function App() {
     tour.current.jump += 1;
     tour.current.departure = 0;
     tour.current.skill = null;
+    tour.current.step = null;
     moveFocus.current = true;
     window.scrollTo({ top: 0, behavior: 'instant' });
     setActiveIndex(index);
   }, []);
+
+  function replayOpening() {
+    if (!visual || timers.current.length) return;
+    window.scrollTo({ top: 0, behavior: 'instant' });
+    tour.current.jump += 1;
+    setReplay(value => value + 1);
+  }
 
   useLayoutEffect(() => {
     document.documentElement.dataset.theme = theme;
@@ -161,7 +171,7 @@ export function App() {
     if (!('IntersectionObserver' in window)) return;
     const observer = new IntersectionObserver((entries) => {
       for (const entry of entries) {
-      if (entry.intersectionRatio < 0.16) continue;
+        if (entry.intersectionRatio < 0.16) continue;
         entry.target.dataset.textReveal = 'played';
         observer.unobserve(entry.target);
       }
@@ -171,7 +181,7 @@ export function App() {
       observer.observe(element);
     });
     return () => observer.disconnect();
-  }, [activeIndex]);
+  }, [activeIndex, replay]);
 
   return (
     <div className={`gallery gallery--${visual ? mode : 'plain'} ${entrance ? 'gallery--entrance' : 'gallery--room'}`}
@@ -186,6 +196,7 @@ export function App() {
               {['experience', 'projects', 'contact'].map((id, index) => <a href={roomPath(stops.find(item => item.id === id))} data-room={id} key={id}
                 aria-current={stop.chapter === id ? 'location' : undefined} data-text-reveal style={{ '--reveal-order': index }}><RevealWords text={chapterLabel[id]} /></a>)}
             </nav>
+            <RoomIndex active={stop.id} />
             <button type="button" className="theme-toggle" onClick={toggleTheme} aria-label={light ? gallery.switchToDark : gallery.switchToLight}
               title={light ? gallery.switchToDark : gallery.switchToLight} data-text-reveal>
               <i className="theme-toggle-icon" aria-hidden="true" />
@@ -196,13 +207,14 @@ export function App() {
       </header>
       {visual && <div className="gallery-scene" aria-hidden="true">
         <SceneBoundary onError={sceneFailed}>
-          <Suspense fallback={null}><Scene tour={tour} compact={compact} entrance={entrance} light={light} onReady={sceneReady} onFailure={sceneFailed} /></Suspense>
+          <Suspense fallback={null}><Scene tour={tour} compact={compact} entrance={entrance} light={light} replay={replay} onReady={sceneReady} onFailure={sceneFailed} /></Suspense>
         </SceneBoundary>
       </div>}
       {(!visual || !ready) && stop.chapter === 'projects' && <div className="gallery-scene-still" aria-hidden="true" data-project-still={stop.kind} />}
       {!entrance && <Timeline active={stop.chapter} room={stop.id} />}
       <main id="main" tabIndex={-1}>
-        <GalleryChapter key={stop.id} stop={stop} onSkill={(skill) => { tour.current.skill = skill; }} />
+        <GalleryChapter key={stop.id} stop={stop} onSkill={(skill) => { tour.current.skill = skill; }}
+          onStep={(step) => { tour.current.step = step; }} onReplay={visual && ready ? replayOpening : undefined} />
       </main>
       {!entrance && <nav className="gallery-shell room-navigation" aria-label={gallery.roomNavigation}>
         <a href={roomPath(previous)} data-room={previous.id} aria-label={`${gallery.previousRoom} ${roomLabel(previous)}`} data-text-reveal><span aria-hidden="true">←</span> <RevealWords text={roomLabel(previous)} /></a>

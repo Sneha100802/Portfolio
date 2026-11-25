@@ -2,6 +2,7 @@ import { content } from '../lib/content';
 import { chapterLabel, dateSpan, roomPath, stops } from '../lib/gallery';
 import { iconFor } from '../lib/icons';
 import { RevealWords } from '../ui/gallery/RevealWords';
+import { WorkStory } from '../ui/gallery/WorkStory';
 
 const { gallery, meta, links, summary } = content;
 
@@ -31,14 +32,16 @@ function Tech({ items }) {
   </ul>;
 }
 
-function Job({ stop }) {
+function Job({ stop, onStep }) {
   const { company, role, location, start, end, bullets, stack, exhibit, exhibitSteps } = stop.data;
   return <>
     <Heading id={`${stop.id}-title`} chapter={stop.chapter} title={company} eyebrow={dateSpan(start, end)} subtitle={role} />
     {location && <p className="caption-location" data-text-reveal><RevealWords text={location} /></p>}
     {exhibit && <p className="company-exhibit-label" data-text-reveal><RevealWords text={exhibit} /></p>}
-    {exhibitSteps?.length > 0 && <ExhibitSteps steps={exhibitSteps} />}
-    <ul className="caption-highlights">{bullets.map((item, index) => <li key={item} data-text-reveal style={{ '--reveal-order': index }}><RevealWords text={item} /></li>)}</ul>
+    {stop.data.story ? <WorkStory stop={stop} onStep={onStep} /> : <>
+      {exhibitSteps?.length > 0 && <ExhibitSteps steps={exhibitSteps} />}
+      <ul className="caption-highlights">{bullets.map((item, index) => <li key={item} data-text-reveal style={{ '--reveal-order': index }}><RevealWords text={item} /></li>)}</ul>
+    </>}
     <Tech items={stack} />
   </>;
 }
@@ -49,12 +52,12 @@ function ExhibitSteps({ steps }) {
   </ol>;
 }
 
-function Project({ stop }) {
+function Project({ stop, onStep }) {
   const { name, description, tag, stack, url, exhibit } = stop.data;
   return <>
     <Heading id={`${stop.id}-title`} chapter={stop.chapter} title={name} eyebrow={tag} />
     <p className="caption-description" data-text-reveal><RevealWords text={description} /></p>
-    <ExhibitSteps steps={exhibit} />
+    {stop.data.story ? <WorkStory stop={stop} onStep={onStep} /> : <ExhibitSteps steps={exhibit} />}
     <Tech items={stack} />
     {url && <a className="text-link" href={url} data-text-reveal><RevealWords text={gallery.website} /><ExternalMark /></a>}
   </>;
@@ -109,7 +112,13 @@ function Education({ schools }) {
   </>;
 }
 
-export function GalleryChapter({ stop, onSkill }) {
+function Replay({ run }) {
+  return run ? <button type="button" className="replay-opening" onClick={run} data-text-reveal>
+    <span aria-hidden="true">↻</span> <RevealWords text={gallery.replayOpening} />
+  </button> : null;
+}
+
+export function GalleryChapter({ stop, onSkill, onStep, onReplay }) {
   const { kind, id } = stop;
   if (kind === 'hero') return (
     <section className="exhibit gallery-hero" id={id} data-stop={id} tabIndex={-1} aria-labelledby="gallery-title">
@@ -123,6 +132,7 @@ export function GalleryChapter({ stop, onSkill }) {
             <p className="hero-summary" data-text-reveal><RevealWords text={summary} /></p>
             <ProfileLinks />
             <a className="entry-link" href={roomPath(stops[1])} data-room="experience" data-text-reveal><RevealWords text={gallery.start} /><span aria-hidden="true">↗</span></a>
+            <Replay run={onReplay} />
           </div>
         </div>
       </div>
@@ -135,6 +145,7 @@ export function GalleryChapter({ stop, onSkill }) {
         <div className="caption">
           <Heading id="contact-title" chapter={stop.chapter} title={meta.name} subtitle={meta.location} />
           <ProfileLinks />
+          <Replay run={onReplay} />
           <a className="entry-link" href={roomPath(stops[0])} data-room="home" data-text-reveal><RevealWords text={gallery.back} /><span aria-hidden="true">↑</span></a>
         </div>
       </div>
@@ -145,11 +156,12 @@ export function GalleryChapter({ stop, onSkill }) {
     <section className={`exhibit exhibit--${stop.chapter}`} id={id} data-stop={id} tabIndex={-1} aria-labelledby={`${id}-title`}>
       <div className="gallery-shell">
         <div className="caption">
-          {kind === 'job' && <Job stop={stop} />}
-          {stop.chapter === 'projects' && <Project stop={stop} />}
+          {kind === 'job' && <Job stop={stop} onStep={onStep} />}
+          {stop.chapter === 'projects' && <Project stop={stop} onStep={onStep} />}
           {kind === 'skills' && <Skills groups={stop.data} onSkill={onSkill} />}
           {kind === 'research' && <Research papers={stop.data} />}
           {kind === 'education' && <Education schools={stop.data} />}
+          <Replay run={onReplay} />
         </div>
       </div>
     </section>

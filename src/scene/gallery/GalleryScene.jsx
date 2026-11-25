@@ -72,11 +72,34 @@ function Pedestal() {
 function Fixture({ stop, index, opticalGlass, shadow, tour, keyLight, rimLight, light }) {
   const aim = useMemo(() => new Object3D(), []);
   const grade = companyLook(stop);
+  const focus = useRef();
+  const target = useRef(new Vector3());
+  useFrame(({ camera, clock }, delta) => {
+    if (!focus.current) return;
+    const selected = tour.current.step;
+    const position = selected?.room === stop.id ? selected.position : stop.data.story.steps[0].position;
+    target.current.fromArray(position);
+    const blend = 1 - Math.exp(-6 * delta);
+    aim.position.lerp(target.current, blend);
+    focus.current.position.lerp(target.current, blend);
+    focus.current.quaternion.copy(camera.quaternion);
+    focus.current.scale.setScalar(1 + Math.sin(clock.elapsedTime * 2.3) * 0.055);
+  });
   return (
     <group position={coordinates[index]}>
       {stop.kind === 'hero' && <Pedestal />}
       <GalleryExhibit stop={stop} opticalGlass={opticalGlass} tour={tour} light={light} />
       <primitive object={aim} position={[0, 1.35, 0]} />
+      {stop.data?.story && <group ref={focus} position={stop.data.story.steps[0].position}>
+        <mesh renderOrder={7}>
+          <ringGeometry args={[0.275, 0.289, 48]} />
+          <meshBasicMaterial color={light ? '#82451f' : '#ffca89'} depthTest={false} depthWrite={false} transparent opacity={0.9} toneMapped={false} />
+        </mesh>
+        <mesh renderOrder={6}>
+          <ringGeometry args={[0.303, 0.312, 48]} />
+          <meshBasicMaterial color={light ? '#82451f' : '#ffca89'} depthTest={false} depthWrite={false} transparent opacity={0.32} toneMapped={false} />
+        </mesh>
+      </group>}
       <spotLight ref={keyLight} target={aim} position={[-3.1, 5.8, 3.9]} color={light ? '#fff1dc' : grade?.accent ?? '#ffd497'} intensity={31} angle={0.44} penumbra={0.91} distance={11} />
       <pointLight ref={rimLight} position={[1.55, 2.25, -1.55]} color={light ? '#f6ebd9' : grade?.rim ?? '#88bcbd'} intensity={9} distance={6} decay={2} />
       {shadow && <ContactShadows position={[0, -0.464, 0]} scale={6.1} opacity={0.49} blur={2.7} frames={1} resolution={128} far={3.5} />}
@@ -84,7 +107,7 @@ function Fixture({ stop, index, opticalGlass, shadow, tour, keyLight, rimLight, 
   );
 }
 
-function World({ tour, compact, entrance, light, quality, paintStage, onReady }) {
+function World({ tour, compact, entrance, light, replay, quality, paintStage, onReady }) {
   const journey = useRef(null);
   const look = useRef(new Vector3());
   const destination = useRef(new Vector3());
@@ -192,7 +215,7 @@ function World({ tour, compact, entrance, light, quality, paintStage, onReady })
         <Line points={rail.map(([x, y, z]) => [x + 6.2, y, z])} color="#3d3229" lineWidth={0.52} />
       </>}
       <Fixture key={activeStop.id} stop={activeStop} index={activeIndex} opticalGlass={quality === 2} shadow={quality > 0} tour={tour} keyLight={keyLight} rimLight={rimLight} light={light} />
-      <group key={`opening-${activeStop.id}`} position={coordinates[activeIndex]}>
+      <group key={`opening-${activeStop.id}-${replay}`} position={coordinates[activeIndex]}>
         <SceneAperture ready={lightingReady} tour={tour} index={activeIndex} gateway={entrance} accent={light ? '#b46530' : grade?.accent}
           position={entrance ? undefined : [openingShot.target * 0.8, openingShot.focus, 1.15]} />
       </group>
@@ -202,7 +225,7 @@ function World({ tour, compact, entrance, light, quality, paintStage, onReady })
   );
 }
 
-export default function GalleryScene({ tour, compact, entrance, light, onReady, onFailure }) {
+export default function GalleryScene({ tour, compact, entrance, light, replay, onReady, onFailure }) {
   const [quality, setQuality] = useState(() => compact || window.innerWidth < 1220 ? 0 : 2);
   const [visible, setVisible] = useState(true);
   const wrapper = useRef();
@@ -245,7 +268,7 @@ export default function GalleryScene({ tour, compact, entrance, light, onReady, 
       <PerformanceMonitor flipflops={2} bounds={refresh => [Math.min(57, refresh * 0.93), Math.max(60, refresh * 0.78)]}
         onDecline={() => setQuality(current => Math.max(0, current - 1))}
         onFallback={() => setQuality(0)}>
-        <World tour={tour} compact={compact} entrance={entrance} light={light} quality={quality} paintStage={paintStage} onReady={onReady} />
+        <World tour={tour} compact={compact} entrance={entrance} light={light} replay={replay} quality={quality} paintStage={paintStage} onReady={onReady} />
       </PerformanceMonitor>
     </Canvas>
   </div>;

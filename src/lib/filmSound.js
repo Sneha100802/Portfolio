@@ -62,6 +62,7 @@ export function createFilmSound() {
     },
     paper: () => sweep(1700, 480, .37, .32),
     screen: () => sweep(780, 230, .57, .22),
+    lantern: () => sweep(2300, 890, .24, .16),
     bronze,
   };
 }

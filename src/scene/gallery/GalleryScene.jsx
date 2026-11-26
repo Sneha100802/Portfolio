@@ -12,6 +12,7 @@ import { ArchiveFilm } from './ArchiveFilm';
 import { archiveBeat, archiveCues, archiveCut, archiveDuration, directArchiveCamera } from './ArchiveDirection';
 import { advancePassage, directPassageCamera } from './PassageDirection';
 import { RoomPassage } from './RoomPassage';
+import { companyShot, directCompanyCamera, portraitCameraDuration, portraitOpeningDuration } from './CompanyShots';
 
 const night = '#0b0b0e';
 const daylight = '#ded7c9';
@@ -136,6 +137,8 @@ function World({ tour, documentIndex, paintDesk, compact, entrance, light, repla
     const goal = tour.current.position;
     const archive = stops[goal].kind === 'document-retrieval';
     const company = stops[goal].kind === 'job';
+    const signature = companyShot(stops[goal]);
+    const duration = company ? (signature ? portraitOpeningDuration : companyOpeningDuration) : entrance ? 1.8 : arrivalDuration;
     const passage = tour.current.passage;
     const arrived = passage?.to === goal;
     const crossing = passage?.progress ?? 0;
@@ -148,15 +151,15 @@ function World({ tour, documentIndex, paintDesk, compact, entrance, light, repla
     }
     if (passage !== previousPassage.current) {
       if (!passage && previousPassage.current?.to === goal && tour.current.match === previousPassage.current.kind) {
-        intro.current = companyCameraDuration / companyOpeningDuration;
+        intro.current = (signature ? portraitCameraDuration : companyCameraDuration) / duration;
       }
       previousPassage.current = passage;
       passageCue.current = 0;
     }
     if (passage) {
-      intro.current = arrived ? MathUtils.lerp(.10, companyCameraDuration / companyOpeningDuration, MathUtils.smootherstep(crossing, .48, .95)) : 1;
+      intro.current = arrived ? MathUtils.lerp(.10, (signature ? portraitCameraDuration : companyCameraDuration) / duration, MathUtils.smootherstep(crossing, .48, .95)) : 1;
       if (crossing >= .25 && passageCue.current === 0) {
-        if (passage.kind === 'jali') onFilmCue('screen');
+        onFilmCue(passage.kind === 'jali' ? 'screen' : 'lantern');
         passageCue.current = 1;
       }
       if (arrived && crossing >= .72 && passageCue.current === 1) {
@@ -170,20 +173,24 @@ function World({ tour, documentIndex, paintDesk, compact, entrance, light, repla
         timedOpeningStart.current ??= now;
         intro.current = Math.min((now - timedOpeningStart.current) / (archiveDuration * 1000), 1);
       } else {
-        const duration = company ? companyOpeningDuration : entrance ? 1.8 : arrivalDuration;
         intro.current = Math.min(intro.current + Math.min(step, company ? .24 : .085) / duration, 1);
       }
     }
     const film = !passage && archive && intro.current < 1;
     const credits = company && intro.current < 1;
-    const credit = credits && !passage ? companyCreditAt(intro.current * companyOpeningDuration) : '';
-    const motion = company ? Math.min(1, intro.current * companyOpeningDuration / companyCameraDuration) : intro.current;
+    const companyTime = intro.current * duration;
+    const credit = credits && !passage ? companyCreditAt(companyTime, signature) : '';
+    const motion = company ? Math.min(1, companyTime / (signature ? portraitCameraDuration : companyCameraDuration)) : intro.current;
     const time = intro.current * archiveDuration;
     const beat = film ? archiveBeat(time) : '';
     const insert = film && time < archiveCut;
     let nextCue;
     while (insert && !tour.current.departure && cue.current < archiveCues.length && time >= archiveCues[cue.current].at) {
       nextCue = archiveCues[cue.current].name;
+      cue.current++;
+    }
+    while (signature && credits && !passage && !tour.current.match && !tour.current.departure && cue.current < signature.cues.length && companyTime >= signature.cues[cue.current][0]) {
+      nextCue = signature.cues[cue.current][1];
       cue.current++;
     }
     if (nextCue) onFilmCue(nextCue);
@@ -201,7 +208,8 @@ function World({ tour, documentIndex, paintDesk, compact, entrance, light, repla
     drift.current.y = MathUtils.damp(drift.current.y, compact ? 0 : tour.current.pointerY, 3, step);
     const arc = Math.sin(fraction * Math.PI);
     const entry = entrance ? (1 - intro.current) ** 3 * (compact ? 0.35 : 1) : 0;
-    const arrival = passage || archive || entrance || motion >= 1 ? null : roomArrival(stops[nearest], motion);
+    const signatureShot = signature && !passage && !tour.current.match && motion < 1 && !tour.current.departure;
+    const arrival = signature || passage || archive || entrance || motion >= 1 ? null : roomArrival(stops[nearest], motion);
     const close = arrival?.close ?? 0;
     const depart = !passage && tour.current.departure ? MathUtils.smoothstep(performance.now() - tour.current.departure, 0, roomSwapMs) : 0;
     const originShot = shots[stops[index].kind] ?? defaultShot;
@@ -236,12 +244,18 @@ function World({ tour, documentIndex, paintDesk, compact, entrance, light, repla
     if (insert) directArchiveCamera(time, coordinates[goal], camera, look.current, portrait, widthRatio);
     if (passage) directPassageCamera(passage, crossing, arrived, camera, look.current, destination.current, portrait);
     if (stops[nearest].id === 'job-founder-guidance') deskFocus.copy(look.current);
+    const shotFraming = signatureShot ? directCompanyCamera(signature, companyTime, destination.current, camera, look.current, portrait, deskFocus) : 1;
     if (stage.current) {
       stage.current.position.copy(destination.current);
       stage.current.visible = !insert;
     }
     if (exhibit.current) exhibit.current.visible = !insert;
-    if (screen.current) screen.current.position.x = MathUtils.lerp(compact ? -2.35 : -2.85, -4.8, MathUtils.smoothstep(intro.current, 0.18, 0.96));
+    if (screen.current) {
+      const archiveScreen = signatureShot && stops[goal].id === 'job-document-processing';
+      screen.current.position.x = archiveScreen
+        ? MathUtils.lerp(-2.55, -1.92, MathUtils.smoothstep(companyTime, .70, 1.65)) - 1.91 * MathUtils.smoothstep(companyTime, 2.05, 3.36)
+        : MathUtils.lerp(compact ? -2.35 : -2.85, -4.8, MathUtils.smoothstep(intro.current, 0.18, 0.96));
+    }
     if (motes.current) motes.current.material.uniforms.time.value = clock.elapsedTime * 0.65;
     if (keyLight.current) {
       keyLight.current.position.x = -3.1 + entry * 2.3 + arc * 0.9 - (arrival?.side ?? 0) * 0.85;
@@ -251,7 +265,7 @@ function World({ tour, documentIndex, paintDesk, compact, entrance, light, repla
     }
     if (rimLight.current) rimLight.current.intensity = light ? 5 + close * 4 : 9 + close * 8;
     const crossingCenter = MathUtils.smoothstep(crossing, .04, .29) * (1 - MathUtils.smoothstep(crossing, .79, 1));
-    const framingSettle = passage ? 1 - crossingCenter : film ? MathUtils.smoothstep(time, archiveCut - .15, 10.75) : MathUtils.smoothstep(motion, 0.53, 0.97);
+    const framingSettle = signatureShot ? shotFraming : passage ? 1 - crossingCenter : film ? MathUtils.smoothstep(time, archiveCut - .15, 10.75) : MathUtils.smoothstep(motion, 0.53, 0.97);
     const horizontalFrame = 0.224 - lens.depth * 0.027;
     const offsetX = entrance || compact ? 0 : Math.round(-size.width * horizontalFrame * framingSettle);
     const offsetY = Math.round(size.height * (entrance ? (portrait ? .22 : .14) : compact ? .20 * framingSettle : 0));
@@ -272,7 +286,7 @@ function World({ tour, documentIndex, paintDesk, compact, entrance, light, repla
       }
     } else paintDesk();
     const passageShot = passage ? crossing < .35 ? 'approach' : crossing < .58 ? 'crossing' : 'reveal' : '';
-    paintStage(station, 1 - arc ** 7 * 0.34, Boolean(passage) || film || credits || intro.current < 0.77, beat, credit, passage?.kind ?? '', passageShot);
+    paintStage(station, 1 - arc ** 7 * 0.34, Boolean(passage) || film || credits || intro.current < 0.77, beat, credit, passage?.kind ?? '', passageShot, signatureShot ? stops[goal].data.id : '');
   }, -1);
 
   useFrame((_, delta) => {
@@ -284,7 +298,7 @@ function World({ tour, documentIndex, paintDesk, compact, entrance, light, repla
   const activeStop = stops[activeIndex];
   const openingShot = roomArrival(activeStop, 0);
   const grade = companyLook(activeStop);
-  const roomColor = light ? daylight : grade?.night ?? night;
+  const roomColor = light ? grade?.daylight ?? daylight : grade?.night ?? night;
   return (
     <>
       <color attach="background" args={[roomColor]} />
@@ -311,12 +325,12 @@ function World({ tour, documentIndex, paintDesk, compact, entrance, light, repla
       <RoomPassage tour={tour} />
       {activeStop.kind === 'document-retrieval'
         ? <ArchiveFilm opening={intro} position={coordinates[activeIndex]} light={light} />
-        : !entrance && <group key={`opening-${activeStop.id}-${replay}`} position={coordinates[activeIndex]}>
+        : !entrance && !companyShot(activeStop) && <group key={`opening-${activeStop.id}-${replay}`} position={coordinates[activeIndex]}>
           <SceneAperture ready={lightingReady} tour={tour} index={activeIndex} gateway={entrance} passage={activeStop.id === 'job-document-processing'} accent={light ? '#b46530' : grade?.accent}
             position={entrance ? undefined : [openingShot.target * 0.8, openingShot.focus, 1.15]} />
         </group>}
-      {quality > 0 && !compact && !light && !new URLSearchParams(window.location.search).has('fx', '0') &&
-        <Suspense fallback={null}><Effects quality={quality} hero={center === 0}
+      {quality > 0 && !compact && (!light || (quality === 2 && activeStop.id === 'job-founder-guidance')) && !new URLSearchParams(window.location.search).has('fx', '0') &&
+        <Suspense fallback={null}><Effects quality={quality} hero={center === 0} light={light}
           deskFocus={activeStop.id === 'job-founder-guidance' ? deskFocus : undefined} /></Suspense>}
     </>
   );
@@ -350,7 +364,7 @@ export default function GalleryScene({ tour, documentIndex, paintDesk, compact, 
     else if (/intel.*(?:iris|uhd|hd graphics)/i.test(renderer)) setQuality(0);
   }
 
-  function paintStage(station, opacity, opening, beat, credit, passage, passageShot) {
+  function paintStage(station, opacity, opening, beat, credit, passage, passageShot, signature) {
     const element = wrapper.current;
     if (!element) return;
     if (element.dataset.station !== station) element.dataset.station = station;
@@ -360,6 +374,7 @@ export default function GalleryScene({ tour, documentIndex, paintDesk, compact, 
     if (element.dataset.credit !== credit) element.dataset.credit = credit;
     if (element.dataset.passage !== passage) element.dataset.passage = passage;
     if (element.dataset.passageShot !== passageShot) element.dataset.passageShot = passageShot;
+    if (element.dataset.signature !== signature) element.dataset.signature = signature;
     const alpha = String(Math.round(opacity * 100) / 100);
     if (element.style.opacity !== alpha) element.style.opacity = alpha;
   }

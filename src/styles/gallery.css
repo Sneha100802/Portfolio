@@ -604,6 +604,8 @@ h1,h2,h3 { font-family: var(--display); font-weight: 400; }
 .replay-opening { display: block; margin-top: 12px; }
 .replay-opening > span[aria-hidden] { color: var(--brass); margin-right: 3px; font-size: 1rem; line-height: .7; }
 .company-credit { color: var(--dim); font-size: .92rem; line-height: 1.55; margin: 7px 0 12px; max-width: 49ch; }
+.gallery[data-company] .caption h2 { text-wrap: balance; }
+.gallery[data-company] .caption-subtitle { color: var(--brass); }
 .gallery--entrance .replay-opening { display: inline-block; }
 .gallery--desktop .exhibit:has(.case-study[open]) { padding-bottom: 110px; }
 .gallery--desktop:has(.case-study[open]) .room-navigation { background: var(--night); }
@@ -629,6 +631,7 @@ h1,h2,h3 { font-family: var(--display); font-weight: 400; }
   .gallery--room:has(.gallery-scene [data-opening="true"]) .caption { opacity: 0; visibility: hidden; }
   .gallery--room:has(.gallery-scene [data-opening="true"]) .opening-skip { display: block; }
   .gallery:has(.gallery-scene [data-passage]:not([data-passage=""])) :is(.gallery-timeline, .room-navigation, .guided-tour) { visibility: hidden; }
+  .gallery:has(.gallery-scene [data-signature]:not([data-signature=""])) :is(.gallery-timeline, .room-navigation) { visibility: hidden; }
   .gallery--room:has(.gallery-scene [data-opening="true"]) .caption h2 .reveal-word {
     opacity: 0;
     animation: none;
@@ -644,14 +647,15 @@ h1,h2,h3 { font-family: var(--display); font-weight: 400; }
   }
   .gallery[data-company]:has(.gallery-scene :is([data-credit]:not([data-credit=""]), [data-opening="false"])) .caption h2 .reveal-word {
     opacity: 1;
-    animation: word-exposure .62s cubic-bezier(.22, .75, .28, 1) backwards;
-    animation-delay: var(--word-delay);
+    animation: word-exposure .81s cubic-bezier(.22, .75, .28, 1) backwards;
+    animation-delay: calc(var(--word-delay) * .40);
   }
-  .gallery[data-company]:has(.gallery-scene :is([data-credit="role"], [data-credit="contribution"], [data-opening="false"])) .caption-subtitle {
-    animation: company-credit-in .55s ease-out backwards;
+  .gallery[data-company]:has(.gallery-scene :is([data-credit="role"], [data-credit="contribution"], [data-opening="false"])) .caption-subtitle .reveal-word {
+    animation: company-credit-in .62s ease-out backwards;
   }
-  .gallery[data-company]:has(.gallery-scene :is([data-credit="contribution"], [data-opening="false"])) .company-credit {
-    animation: company-credit-in .65s ease-out backwards;
+  .gallery[data-company]:has(.gallery-scene :is([data-credit="contribution"], [data-opening="false"])) .company-credit .reveal-word {
+    animation: company-credit-in .72s cubic-bezier(.22, .75, .28, 1) backwards;
+    animation-delay: var(--line-delay, 0ms);
   }
   @keyframes company-credit-in {
     from { opacity: 0; transform: translateY(.32em); }
@@ -662,10 +666,10 @@ h1,h2,h3 { font-family: var(--display); font-weight: 400; }
     background: linear-gradient(180deg, color-mix(in srgb, var(--night) 79%, transparent), transparent 18%, transparent 72%, var(--night));
   }
   .gallery--desktop[data-company][data-scene="ready"]:has(.gallery-scene [data-credit]:not([data-credit=""])) .gallery-scene::after {
-    background: linear-gradient(90deg, #0b0b0ef8 2%, #0b0b0ee8 35%, #0b0b0e3b 59%, transparent 74%);
+    background: linear-gradient(90deg, #0d0c1aff 2%, #0d0c1af5 35%, #0d0c1a42 59%, transparent 74%);
   }
   :root[data-theme="light"] .gallery--desktop[data-company][data-scene="ready"]:has(.gallery-scene [data-credit]:not([data-credit=""])) .gallery-scene::after {
-    background: linear-gradient(90deg, #f5f0e6 2%, #f5f0e6fa 43%, #f5f0e69c 57%, transparent 74%);
+    background: linear-gradient(90deg, #f5f0e6 2%, #f5f0e6 42%, #f5f0e69c 58%, transparent 76%);
   }
   .gallery--compact[data-company][data-scene="ready"]:has(.gallery-scene [data-credit]:not([data-credit=""])) .gallery-scene::after {
     background: linear-gradient(180deg, #0b0b0e88, transparent 20%, transparent 30%, #0b0b0ef2 44%, #0b0b0e 60%);
@@ -742,6 +746,8 @@ h1,h2,h3 { font-family: var(--display); font-weight: 400; }
   line-height: 1.09;
   letter-spacing: -.027em;
 }
+:root[data-theme="light"] .gallery[data-company] .caption-subtitle { color: #593518; }
+:root[data-theme="light"] .gallery[data-company] .company-credit { color: #342c30; }
 :root[data-theme="light"] :is(.hero-summary, .caption-description, .company-credit, .walkthrough-step, .rag-demo-output, .case-study dl, .case-study .caption-highlights) {
   color: var(--dim);
   font-size: clamp(1rem, .97rem + .12vw, 1.0625rem);

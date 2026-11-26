@@ -205,7 +205,6 @@ export function App() {
       history.pushState({ guided: continuing }, '', link.href);
       setGuided(continuing);
       showRoom(index, match);
-      if (target === 'job-audio-research' && !match) sound.current?.bronze();
     };
     if (!animated) {
       arrive();

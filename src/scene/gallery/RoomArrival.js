@@ -1,21 +1,22 @@
 import { MathUtils } from 'three';
+import { portraitCameraDuration, portraitOpeningDuration } from './CompanyShots';
 
 export const arrivalDuration = 4;
 export const companyOpeningDuration = 6.6;
 export const companyCameraDuration = 3.15;
 
-export function companyCreditAt(time) {
-  if (time < 3.25 || time >= companyOpeningDuration) return '';
-  if (time < 4.27) return 'name';
-  if (time < 5.23) return 'role';
+export function companyCreditAt(time, signature) {
+  if (time < (signature ? portraitCameraDuration : 3.25) || time >= (signature ? portraitOpeningDuration : companyOpeningDuration)) return '';
+  if (time < (signature ? 5.55 : 4.27)) return 'name';
+  if (time < (signature ? 6.55 : 5.23)) return 'role';
   return 'contribution';
 }
 
 const companies = {
   'fund-discovery': { night: '#07090d', accent: '#d6a45f', daylightAccent: '#895027', rim: '#465b74' },
-  'document-processing': { night: '#0a070e', accent: '#b294c0', daylightAccent: '#6c457c', rim: '#57466c' },
-  'founder-guidance': { night: '#0a080f', accent: '#baa4d3', daylightAccent: '#635083', rim: '#575373' },
-  'audio-research': { night: '#060c0d', accent: '#80b9b5', daylightAccent: '#396d6a', rim: '#375963' },
+  'document-processing': { night: '#10112b', daylight: '#e4d5ba', accent: '#f7be79', rim: '#5c73a5' },
+  'founder-guidance': { night: '#190f25', daylight: '#e3c9a9', accent: '#f6b573', rim: '#826695' },
+  'audio-research': { night: '#091a23', daylight: '#d8ccaf', accent: '#8cd6cf', rim: '#4a7891' },
   'ml-prototyping': { night: '#0b080d', accent: '#bd95ac', daylightAccent: '#855671', rim: '#584656' },
   'web-delivery': { night: '#08090e', accent: '#c9a777', daylightAccent: '#825733', rim: '#4c586b' },
 };

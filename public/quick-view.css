@@ -1,0 +1,70 @@
+:root {
+  color-scheme: light;
+  --paper: #f5f0e6;
+  --ink: #211c19;
+  --body: #38312c;
+  --rule: #bba990;
+  --accent: #70411f;
+  font-family: system-ui, sans-serif;
+  background: var(--paper);
+  color: var(--ink);
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --paper: #121116;
+  --ink: #f5eee3;
+  --body: #d3c9bf;
+  --rule: #615349;
+  --accent: #e2b57d;
+}
+* { box-sizing: border-box; }
+body { margin: 0; }
+main { width: min(100% - 40px, 900px); margin: auto; padding: 32px 0 56px; }
+header { margin-bottom: 23px; }
+.page-actions, .profile { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 20px; }
+.page-actions { justify-content: space-between; padding: 0 0 18px; border-bottom: 1px solid var(--rule); }
+.page-actions button {
+  background: transparent;
+  color: var(--ink);
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  min-height: 36px;
+  padding: 6px 12px;
+  font: inherit;
+  cursor: pointer;
+}
+a { color: var(--accent); text-underline-offset: .16em; }
+a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+h1 { margin: 21px 0 7px; font: 400 clamp(2.7rem, 8vw, 4.4rem)/1 Georgia, serif; letter-spacing: -.041em; }
+.role { font-weight: 600; color: var(--ink); margin: 0 0 12px; }
+h2 { margin: 15px 0 10px; color: var(--ink); font-size: 1.02rem; }
+section { border-top: 1px solid var(--rule); }
+ul { margin: 0 0 18px; padding: 0; list-style: none; }
+li + li { margin-top: 9px; }
+li a { font-weight: 650; }
+li p { margin: 3px 0 0; }
+p, li { color: var(--body); line-height: 1.5; }
+.highlights { padding-left: 18px; list-style: disc; }
+.work-columns { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
+.work-columns li p, .papers p { font-size: .92rem; }
+@media (max-width: 610px) {
+  main { width: calc(100% - 36px); padding-top: 20px; }
+  .work-columns { grid-template-columns: 1fr; gap: 0; }
+}
+@page { margin: 12mm; }
+@media print {
+  :root, :root[data-theme="dark"] { color-scheme: light; --paper: #fff; --ink: #171717; --body: #242424; --accent: #222; --rule: #b3b3b3; }
+  body { font-size: 10pt; }
+  main { width: 100%; max-width: none; padding: 0; }
+  .page-actions { display: none; }
+  header { margin-bottom: 11px; }
+  h1 { margin: 0 0 5px; font-size: 32pt; }
+  h2 { margin: 9px 0 6px; font-size: 11pt; break-after: avoid; }
+  .role { margin-bottom: 5px; }
+  .work-columns { grid-template-columns: 1fr 1fr; gap: 18px; }
+  li + li { margin-top: 5px; }
+  li { break-inside: avoid; }
+  .work-columns li p, .papers p { font-size: 9pt; }
+  ul { margin-bottom: 10px; }
+  a { text-decoration: none; }
+}

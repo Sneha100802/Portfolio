@@ -1,0 +1,709 @@
+{
+  "gallery": {
+    "chapters": [
+      { "id": "home", "label": "Home" },
+      { "id": "experience", "label": "Experience" },
+      { "id": "projects", "label": "Projects" },
+      { "id": "skills", "label": "Skills" },
+      { "id": "research", "label": "Research & publications" },
+      { "id": "education", "label": "Education" },
+      { "id": "contact", "label": "Contact" }
+    ],
+    "skip": "Skip to content",
+    "start": "Explore work",
+    "previousRoom": "Previous room",
+    "nextRoom": "Next room",
+    "roomNavigation": "Room navigation",
+    "roomIndex": "Room index",
+    "rooms": "Rooms",
+    "close": "Close",
+    "replayOpening": "Replay opening",
+    "skipOpening": "Skip opening",
+    "sound": "Sound",
+    "guidedTour": "Guided tour",
+    "startTour": "Start guided tour",
+    "endTour": "End tour",
+    "finishTour": "Finish tour",
+    "tourPrevious": "Back",
+    "tourNext": "Continue",
+    "quickView": "Quick view",
+    "quickViewFull": "Open printable Quick view",
+    "print": "Print",
+    "backToGallery": "Back to gallery",
+    "watchReel": "Watch reel",
+    "portfolioReel": "Portfolio reel",
+    "reelDescription": "A 30-second film made from fictional exhibits in the portfolio.",
+    "reelTranscriptLabel": "Visual description",
+    "reelTranscript": "In Survatra’s illustrative archive, a band of warm light crosses the folio and carved screen. At The Idea Company’s illustrative desk, a swinging lantern gives way to a page in close-up. In the IIIT Naya Raipur research scene, a ring spreads across bronze before a pulse lights translucent layers. The film ends with Sneha Jha’s name.",
+    "results": "Selected results",
+    "demoDocument": "Fictional document",
+    "demoPlay": "Play demo",
+    "demoPause": "Pause demo",
+    "demoResume": "Resume demo",
+    "demoReplay": "Replay demo",
+    "demoMatches": "Retrieved passages",
+    "demoCitation": "View cited passage",
+    "demoIntro": "Runs locally with fictional documents and policy excerpts.",
+    "letterHotspot": "Read letter",
+    "lanternHotspot": "Light the guide",
+    "filmProps": {
+      "archive": ["Archive record", "Maya Example", "Record EX-001", "Access request"],
+      "extracted": ["Access request"],
+      "request": ["Vendor onboarding", "Where do I start?", "Who should approve it?"],
+      "guide": ["Operations folio", "Vendor contact", "Scope and approval", "Review checklist"]
+    },
+    "walkthrough": "Illustrative walkthrough",
+    "caseStudy": "Case study",
+    "roleLabel": "My role",
+    "constraintLabel": "Constraint",
+    "outcomeLabel": "Outcome",
+    "evidenceLabel": "Related work",
+    "illustrativeSample": "Illustrative example",
+    "navigation": "Gallery chapters",
+    "primaryNavigation": "Main navigation",
+    "light": "Light",
+    "dark": "Dark",
+    "switchToLight": "Switch to light mode",
+    "switchToDark": "Switch to dark mode",
+    "profileLinks": "Profile links",
+    "technology": "Technologies",
+    "website": "View project",
+    "paper": "Read publication",
+    "certificates": "Certifications",
+    "back": "Back to the entrance"
+  },
+  "quickResults": [
+    "Architected and built a multimodal RAG backend as the sole backend developer.",
+    "Developed mutual fund scanning and filtering pages, fund detail tabs, and portfolio dashboard components.",
+    "Co-authored two peer-reviewed IEEE papers on pulmonary audio and COPD."
+  ],
+  "ragDemo": {
+    "documents": [
+      { "label": "Record access request", "name": "Maya Example", "reference": "DEMO-014", "question": "How do I request a copy of a record?", "paper": "Copy of a record" },
+      { "label": "Temporary access request", "name": "Aarav Example", "reference": "DEMO-026", "question": "When does temporary reviewer access expire?", "paper": "Temporary access" },
+      { "label": "Correction request", "name": "Isha Example", "reference": "DEMO-038", "question": "How do I correct an archived entry?", "paper": "Archived correction" }
+    ],
+    "sources": [
+      { "id": "ACCESS-01", "title": "Record access guide", "keywords": ["record", "copy", "request"], "excerpt": "Use the records request form and select Copy of record. A reviewer confirms access before release.", "answer": "Open the records request form, select Copy of record, and wait for reviewer approval." },
+      { "id": "REVIEW-02", "title": "Reviewer access policy", "keywords": ["temporary", "reviewer", "expire", "access"], "excerpt": "Temporary reviewer access ends when the approved review window closes. Extensions require a new approval.", "answer": "Temporary access expires when the approved review window closes. Request a new approval if more time is needed." },
+      { "id": "ARCHIVE-03", "title": "Archive correction guide", "keywords": ["correct", "archived", "entry", "correction"], "excerpt": "Submit a correction request for the archived entry with a reason for the change. Preserve the original entry in the audit trail.", "answer": "Submit a correction request with the reason for the change. The original entry stays in the audit trail." }
+    ]
+  },
+  "meta": {
+    "name": "Sneha Jha",
+    "title": "Python Developer · AI/ML Engineer · Generative AI",
+    "location": "New Delhi, India",
+    "siteTitle": "Sneha Jha | Python Developer · AI/ML Engineer · Generative AI",
+    "photo": "TODO"
+  },
+  "summary": "Python developer and AI/ML engineer with IEEE-published research and hands-on experience building production-grade RAG pipelines, LLM integrations, and FastAPI backends across FastAPI, LangChain, FAISS, ChromaDB, PostgreSQL, and AWS.",
+  "links": [
+    { "label": "Email", "url": "mailto:jhasneha344@gmail.com" },
+    { "label": "LinkedIn", "url": "https://linkedin.com/in/sneha-jha-808796261" },
+    { "label": "GitHub", "url": "https://github.com/Sneha100802" }
+  ],
+  "experience": [
+    {
+      "id": "fund-discovery",
+      "story": {
+        "role": "Developed frontend features for a mutual fund investment app and contributed to its Django REST Framework backend.",
+        "result": "Built fund scanning and filtering pages, fund detail tabs, and portfolio dashboard components. Built PDF factsheet scrapers.",
+        "steps": [
+          {
+            "label": "Scan funds",
+            "detail": "The exhibit begins with a list of funds ready for discovery.",
+            "position": [
+              -1.05,
+              0.9,
+              0.2
+            ],
+            "sample": "A sample investor opens the fund list to compare available funds."
+          },
+          {
+            "label": "Apply filters",
+            "detail": "The filter view narrows a list of funds using the selected criteria.",
+            "position": [
+              0,
+              1.2,
+              0.25
+            ]
+          },
+          {
+            "label": "Inspect a fund",
+            "detail": "The detail view brings fund information together to make comparison easier.",
+            "position": [
+              1.04,
+              1.65,
+              0.2
+            ]
+          }
+        ]
+      },
+      "role": "Frontend & Backend Developer (Internship)",
+      "company": "Blazetrail Fintech Solutions",
+      "introCredit": "Developed mutual fund scanning, filtering, and portfolio dashboard features.",
+      "exhibit": "Mutual fund dashboard",
+      "exhibitSteps": [
+        "Scan funds",
+        "Filter results",
+        "Inspect fund details"
+      ],
+      "stack": [
+        "TypeScript",
+        "Django REST Framework"
+      ],
+      "bullets": [
+        "Built product interfaces in TypeScript.",
+        "Contributed to API and database changes.",
+        "Built PDF factsheet scrapers."
+      ]
+    },
+    {
+      "id": "document-processing",
+      "story": {
+        "role": "Architected and built a multimodal RAG platform as the sole backend developer.",
+        "constraint": "Document ingestion had to handle several file formats on a CPU-only server with limited memory.",
+        "result": "Built document ingestion and semantic retrieval, implemented sensitive-field masking before LLM calls, and supported reviewed access and audit trails.",
+        "steps": [
+          {
+            "label": "Ingest files",
+            "detail": "A document pipeline accepts mixed inputs and prepares the text for processing.",
+            "position": [
+              -0.95,
+              1.11,
+              0.32
+            ]
+          },
+          {
+            "label": "Mask fields",
+            "detail": "In this illustration, identifying fields are masked before text is used downstream.",
+            "position": [
+              -0.62,
+              1.21,
+              0.25
+            ]
+          },
+          {
+            "label": "Govern access",
+            "detail": "Review and logging give authorized readers a traceable way to access the information.",
+            "position": [
+              0.88,
+              1.3,
+              0.34
+            ]
+          }
+        ]
+      },
+      "role": "Python Developer",
+      "company": "Survatra",
+      "introCredit": "Architected and built a multimodal RAG backend.",
+      "exhibit": "Document masking and secure storage",
+      "exhibitSteps": [
+        "Ingest documents",
+        "Mask sensitive fields",
+        "Store protected data"
+      ],
+      "stack": [
+        "Python",
+        "FastAPI",
+        "Semantic retrieval"
+      ],
+      "bullets": [
+        "Built document ingestion for structured, unstructured, and scanned inputs.",
+        "Integrated semantic retrieval with a Python API.",
+        "Supported reviewed access and audit logging."
+      ]
+    },
+    {
+      "id": "founder-guidance",
+      "story": {
+        "role": "Built an NLP-powered chatbot with LangChain, LLM APIs, and structured knowledge bases.",
+        "result": "The chatbot guides startup founders through legal, financial, and operational workflows.",
+        "steps": [
+          {
+            "label": "Ask a question",
+            "detail": "The letter introduces a fictional question from a startup founder.",
+            "position": [
+              -0.66,
+              1.28,
+              0.49
+            ],
+            "sample": "Where do I start with a vendor onboarding checklist?"
+          },
+          {
+            "label": "Find relevant guidance",
+            "detail": "The lantern reveals guidance from a fictional operations folio.",
+            "position": [
+              0.53,
+              1.24,
+              -0.25
+            ],
+            "sample": "Workflow matched: vendor onboarding."
+          },
+          {
+            "label": "Respond",
+            "detail": "The assistant presents a short response based on the relevant guidance.",
+            "position": [
+              0.5,
+              0.99,
+              0.45
+            ],
+            "sample": "Start with a vendor contact, scope and approval checklist."
+          }
+        ]
+      },
+      "role": "AI Developer",
+      "company": "The Idea Company",
+      "introCredit": "Built an NLP-powered chatbot for startup founders.",
+      "exhibit": "Chatbot response generation",
+      "exhibitSteps": [
+        "Founder asks a question",
+        "Retrieve relevant knowledge",
+        "Generate a reply"
+      ],
+      "stack": [
+        "LangChain",
+        "LLM APIs",
+        "NLP"
+      ],
+      "bullets": [
+        "Built a conversational workflow around a structured knowledge base and language-model APIs."
+      ]
+    },
+    {
+      "id": "audio-research",
+      "story": {
+        "role": "Developed a DenseNet architecture and 1D CNN models for COPD detection from pulmonary audio.",
+        "result": "Co-authored two peer-reviewed IEEE papers on pulmonary audio and COPD.",
+        "steps": [
+          {
+            "label": "Read pulmonary audio",
+            "detail": "A synthetic waveform illustrates the type of signal studied in the research.",
+            "position": [
+              -1.12,
+              1.15,
+              0.35
+            ]
+          },
+          {
+            "label": "Compare CNNs",
+            "detail": "The layered scene illustrates how a convolutional model processes features.",
+            "position": [
+              0.55,
+              1.15,
+              0
+            ]
+          },
+          {
+            "label": "Review results",
+            "detail": "The final stage represents the results discussed in the published research.",
+            "position": [
+              1.1,
+              1.2,
+              -0.4
+            ]
+          }
+        ]
+      },
+      "role": "Summer Research Intern, Data Science",
+      "company": "IIIT Naya Raipur",
+      "introCredit": "Developed CNN models for COPD detection from pulmonary audio.",
+      "exhibit": "Pulmonary audio and convolution layers",
+      "exhibitSteps": [
+        "Analyze respiratory audio",
+        "Extract CNN features",
+        "Identify COPD patterns"
+      ],
+      "stack": [
+        "DenseNet",
+        "1D CNN",
+        "Adam",
+        "RMSprop"
+      ],
+      "bullets": [
+        "Developed a DenseNet combining three CNN models and 1D CNN models using Adam and RMSprop.",
+        "Co-authored two peer-reviewed IEEE publications."
+      ]
+    },
+    {
+      "id": "ml-prototyping",
+      "story": {
+        "role": "Developed AI/ML prototypes during an early-career industry rotation.",
+        "steps": [
+          {
+            "label": "Build a prototype",
+            "detail": "This exhibit represents the experimental models I built during the rotation.",
+            "position": [
+              -1.19,
+              0.72,
+              0.1
+            ]
+          },
+          {
+            "label": "Explore model output",
+            "detail": "A fictional prediction illustrates how a model output can be inspected.",
+            "position": [
+              0,
+              1.23,
+              0
+            ],
+            "sample": "Toy input: a sample record. Toy output: a predicted category."
+          }
+        ]
+      },
+      "role": "AI & ML Developer",
+      "company": "Hex N Bit",
+      "introCredit": "Developed AI/ML prototypes during an early-career industry rotation.",
+      "exhibit": "AI and ML prototype",
+      "exhibitSteps": [
+        "Prototype a model",
+        "Explore its output"
+      ],
+      "stack": [],
+      "bullets": []
+    },
+    {
+      "id": "web-delivery",
+      "story": {
+        "role": "Web development internship covering full-stack web fundamentals.",
+        "result": "Gained exposure to web hosting and deployment pipelines.",
+        "steps": [
+          {
+            "label": "Prepare the site",
+            "detail": "This stage illustrates preparing a web interface for deployment.",
+            "position": [
+              -0.68,
+              1.25,
+              0.34
+            ]
+          },
+          {
+            "label": "Pass through deployment",
+            "detail": "The middle stage represents a software build moving toward a host.",
+            "position": [
+              0.44,
+              1.24,
+              0.15
+            ]
+          },
+          {
+            "label": "Serve the result",
+            "detail": "The last stage shows where visitors reach the hosted site.",
+            "position": [
+              1.02,
+              1.3,
+              -0.1
+            ]
+          }
+        ]
+      },
+      "role": "Web Developer Intern",
+      "company": "Gauravgo Technologies",
+      "introCredit": "Gained exposure to web hosting and deployment pipelines.",
+      "exhibit": "Web hosting and deployment",
+      "exhibitSteps": [
+        "Build the web interface",
+        "Deploy the build",
+        "Serve it from a host"
+      ],
+      "stack": [],
+      "bullets": [
+        "Gained exposure to hosting, deployment workflows, and full-stack fundamentals."
+      ]
+    }
+  ],
+  "projects": [
+    {
+      "id": "document-retrieval",
+      "story": {
+        "role": "Built an interactive portfolio simulation to explain a document-retrieval workflow.",
+        "constraint": "The scene runs on fictional records and reference passages inside the browser.",
+        "result": "Visitors can step through masking and retrieval, then open the passage cited by the answer.",
+        "steps": [
+          {
+            "label": "Extract content",
+            "detail": "Select a fictional record and view the extracted question.",
+            "position": [
+              -1.53,
+              1.09,
+              0.14
+            ]
+          },
+          {
+            "label": "Mask identifiers",
+            "detail": "The demo replaces the example name and reference number before retrieval.",
+            "position": [
+              -0.52,
+              1.09,
+              0.14
+            ]
+          },
+          {
+            "label": "Retrieve context",
+            "detail": "The demo ranks its sample policy passages against the masked question.",
+            "position": [
+              0.52,
+              1.09,
+              0.14
+            ]
+          },
+          {
+            "label": "Route the query",
+            "detail": "The demo returns an answer with a citation you can open and inspect.",
+            "position": [
+              1.53,
+              1.09,
+              0.14
+            ]
+          }
+        ]
+      },
+      "name": "Document Retrieval Demo",
+      "tag": "Fictional demo",
+      "description": "Follow a fictional record through extraction, identifier masking, retrieval, and a source-backed answer.",
+      "exhibit": [
+        "Scan documents",
+        "Mask sensitive fields",
+        "Retrieve vectors",
+        "Route to the model"
+      ],
+      "stack": [
+        "JavaScript",
+        "WebGL"
+      ],
+      "url": "TODO"
+    },
+    {
+      "id": "hotel-rag",
+      "story": {
+        "role": "Built the hotel question-answering project using Sentence Transformers, FAISS and Flask.",
+        "result": "Delivered semantic hotel search through a Flask API.",
+        "steps": [
+          {
+            "label": "Embed the question",
+            "detail": "Sentence Transformers converts the text of a hotel query into a vector.",
+            "position": [
+              1.75,
+              1.35,
+              0.6
+            ],
+            "sample": "Find examples of canceled city hotel bookings."
+          },
+          {
+            "label": "Search by meaning",
+            "detail": "FAISS compares the question vector with indexed hotel information.",
+            "position": [
+              0.57,
+              1.56,
+              0
+            ],
+            "sample": "Example matches: city hotel, canceled booking."
+          },
+          {
+            "label": "Return nearby matches",
+            "detail": "The Flask API exposes the semantic matches to the caller.",
+            "position": [
+              -1.16,
+              0.8,
+              0.2
+            ],
+            "sample": "Example result: a canceled city hotel reservation with a 28-day booking lead time."
+          }
+        ],
+        "links": [
+          {
+            "label": "Hotel Q&A source code",
+            "url": "https://github.com/Sneha100802/Hotel-Booking-Analytics-Retrieval-Augmented-Question-Answering-RAG-"
+          }
+        ]
+      },
+      "name": "Hotel Booking RAG Q&A",
+      "tag": "",
+      "description": "FAISS + Sentence Transformers semantic search with a Flask API for natural-language querying.",
+      "exhibit": ["Embed the question", "Find nearby matches", "Retrieve hotel results"],
+      "stack": ["FAISS", "Sentence Transformers", "Flask"],
+      "url": "TODO"
+    },
+    {
+      "id": "multi-agent",
+      "story": {
+        "role": "Built Python agents with a Gradio interface and routing based on content type and intent.",
+        "result": "Delivered a single Gradio entry point that routes requests to Python agents.",
+        "steps": [
+          {
+            "label": "Receive input",
+            "detail": "Gradio collects the content and the user’s request.",
+            "position": [
+              -1.81,
+              1.12,
+              0.2
+            ],
+            "sample": "Summarize the supplied meeting notes."
+          },
+          {
+            "label": "Resolve intent",
+            "detail": "The routing logic determines which agent fits the content type and intent.",
+            "position": [
+              0,
+              1.47,
+              0.2
+            ],
+            "sample": "Example intent: summarize text."
+          },
+          {
+            "label": "Dispatch to an agent",
+            "detail": "The selected Python agent handles the request.",
+            "position": [
+              0.95,
+              1.5,
+              0.25
+            ],
+            "sample": "Example output: a short list of decisions and action items."
+          }
+        ],
+        "links": [
+          {
+            "label": "Multi-agent source code",
+            "url": "https://github.com/Sneha100802/Multi-Agent-AI-System"
+          }
+        ]
+      },
+      "name": "Multi-Agent System",
+      "tag": "",
+      "description": "Python agents with a Gradio interface routing inputs by content type and intent.",
+      "exhibit": ["Receive an input", "Route by intent", "Dispatch to an agent"],
+      "stack": ["Python", "Gradio"],
+      "url": "TODO"
+    },
+    {
+      "id": "stock-prediction",
+      "story": {
+        "role": "Worked on a stock price prediction project combining text and machine learning models.",
+        "result": "Used Streamlit, Flask, and Grafana dashboards to present project outputs.",
+        "steps": [
+          {
+            "label": "Combine inputs",
+            "detail": "The hybrid approach combines text with machine-learning inputs. The display shows a sample price history.",
+            "position": [
+              -1.15,
+              1.4,
+              0.2
+            ],
+            "sample": "Toy price series: 100, 102, 101."
+          },
+          {
+            "label": "Show a forecast",
+            "detail": "Streamlit, Flask and Grafana surface model results. The plot illustrates how a forecast can be displayed.",
+            "position": [
+              1.8,
+              2.5,
+              0.3
+            ],
+            "sample": "Toy forecast: 103."
+          }
+        ],
+        "links": [
+          {
+            "label": "Source code and dashboard screenshots",
+            "url": "https://github.com/Sneha100802/Stock-Market-Prediction#grafana-dashboard"
+          }
+        ]
+      },
+      "name": "Stock Price Prediction",
+      "tag": "",
+      "description": "Hybrid text and machine learning models for stock price prediction, with Streamlit, Flask, and Grafana dashboards.",
+      "exhibit": ["Example price history", "Illustrative forecast"],
+      "stack": ["Streamlit", "Flask", "Grafana"],
+      "url": "TODO"
+    },
+    {
+      "id": "ai-avatar",
+      "story": {
+        "role": "Built a conversation pipeline connecting Gemini 2.0 Flash, edge-tts and Wav2Lip.",
+        "result": "Delivered a text-to-speech-to-video pipeline.",
+        "steps": [
+          {
+            "label": "Generate a reply",
+            "detail": "Gemini 2.0 Flash generates the conversational response text.",
+            "position": [
+              0,
+              1.75,
+              0.3
+            ],
+            "sample": "Welcome. Which project would you like to explore?"
+          },
+          {
+            "label": "Synthesize speech",
+            "detail": "edge-tts turns the generated reply into audio.",
+            "position": [
+              0,
+              0.45,
+              1
+            ],
+            "sample": "The reply is rendered as a voice track."
+          },
+          {
+            "label": "Sync the avatar",
+            "detail": "Wav2Lip uses the speech track to align the avatar’s lip movements with the audio.",
+            "position": [
+              0,
+              1.43,
+              0.52
+            ],
+            "sample": "The avatar mouths the same spoken reply."
+          }
+        ],
+        "links": [
+          {
+            "label": "Avatar pipeline source code",
+            "url": "https://github.com/Sneha100802/avatar-assignment"
+          }
+        ]
+      },
+      "name": "AI Avatar Conversation Pipeline",
+      "tag": "",
+      "description": "Gemini 2.0 Flash, edge-tts, and Wav2Lip for text-to-speech-to-video output.",
+      "exhibit": ["Generate text", "Synthesize speech", "Sync the avatar’s lips"],
+      "stack": ["Gemini 2.0 Flash", "edge-tts", "Wav2Lip"],
+      "url": "TODO"
+    }
+  ],
+  "skills": [
+    { "group": "Languages", "items": ["Python", "TypeScript", "JavaScript", "SQL", "HTML/CSS"] },
+    { "group": "AI / LLM", "items": ["LangChain", "RAG pipelines", "FAISS", "ChromaDB", "LLM APIs (Anthropic, Gemini, OpenAI-compatible)", "Qwen (Ollama)", "Prompt Engineering", "NLP"] },
+    { "group": "ML / DL", "items": ["TensorFlow", "Keras", "1D CNN", "DenseNet", "Librosa", "scikit-learn", "Random Forest"] },
+    { "group": "Backend & APIs", "items": ["FastAPI", "Django REST Framework", "Flask", "REST APIs", "Pydantic", "Redis"] },
+    { "group": "Frontend", "items": ["Next.js (App Router)", "React (basics)", "Tailwind CSS", "shadcn/ui"] },
+    { "group": "Databases & Cloud", "items": ["PostgreSQL", "AWS S3", "AWS EC2", "Docker (basic)"] },
+    { "group": "Tools", "items": ["Git", "GitHub", "Postman", "Jira", "Streamlit", "Gradio", "Playwright", "BeautifulSoup"] }
+  ],
+  "education": [
+    {
+      "degree": "B.Tech Honours in Data Science",
+      "school": "Chhattisgarh Swami Vivekanand Technical University",
+      "start": "2021",
+      "end": "2025"
+    }
+  ],
+  "publications": [
+    {
+      "title": "Optimized 1D CNNs for Enhanced Early Detection and Accurate Prediction of COPD and Other Pulmonary Diseases",
+      "venue": "IEEE",
+      "year": "2024",
+      "url": "https://doi.org/10.1109/TENSYMP61132.2024.10752156"
+    },
+    {
+      "title": "Enhanced Predictive Modeling Techniques for Early Detection of COPD Utilizing 1D Convolutional Neural Networks",
+      "venue": "IEEE",
+      "year": "2024",
+      "url": "https://doi.org/10.1109/ICCCNT61001.2024.10726000"
+    }
+  ],
+  "certifications": [
+    "Build Website With AI",
+    "Getting Started with ReactJS Components",
+    "Mobile App Development (Android)",
+    "High Performance Scientific Computing",
+    "Management Information System"
+  ]
+}

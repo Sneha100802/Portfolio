@@ -11,6 +11,7 @@ import { RoomIndex } from './ui/gallery/RoomIndex';
 import { PortfolioReel } from './ui/gallery/PortfolioReel';
 import { GuidedTour } from './ui/gallery/GuidedTour';
 import { createFilmSound } from './lib/filmSound';
+import { passageKind, passageTimeout } from './scene/gallery/PassageDirection';
 import { deskTargets } from './scene/gallery/DeskShots';
 import './styles/gallery.css';
 
@@ -31,8 +32,9 @@ export function App() {
   const [theme, setTheme] = useState(() => document.documentElement.dataset.theme === 'light' ? 'light' : 'dark');
   const light = theme === 'light';
   const [activeIndex, setActiveIndex] = useState(() => roomIndex(window.location));
-  const tour = useRef({ position: activeIndex, pointerX: 0, pointerY: 0, skill: null, step: null, cut: false, match: false, jump: 0, departure: 0 });
+  const tour = useRef({ position: activeIndex, pointerX: 0, pointerY: 0, skill: null, step: null, cut: false, match: false, jump: 0, departure: 0, passage: null });
   const timers = useRef([]);
+  const pendingArrival = useRef(null);
   const moveFocus = useRef(false);
   const desk = useRef(null);
   const reel = useRef(null);
@@ -157,6 +159,27 @@ export function App() {
     changeReel(true);
   }
 
+  const clearTransition = useCallback(() => {
+    timers.current.forEach(window.clearTimeout);
+    timers.current = [];
+    pendingArrival.current = null;
+    tour.current.passage = null;
+  }, []);
+
+  function finishTransition() {
+    clearTransition();
+    setTransit(null);
+  }
+
+  function skipOpening() {
+    if (tour.current.passage) {
+      pendingArrival.current?.();
+      finishTransition();
+    }
+    tour.current.cut = true;
+    document.getElementById(stops[tour.current.position].id)?.focus({ preventScroll: true });
+  }
+
   function navigate(event) {
     const link = event.target.closest('a[data-room]');
     if (!link || event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
@@ -174,32 +197,32 @@ export function App() {
     }
     const target = stops[index].id;
     const animated = visual && !matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const match = animated && (
-      stop.id === 'job-founder-guidance' && target === 'job-audio-research' ? 'ember' :
-      continuing && stop.id === 'projects' && target === 'job-founder-guidance' ? 'folio' : false
-    );
+    const match = animated && ready ? passageKind(stop.id, target) : '';
+    let arrived = false;
     const arrive = () => {
+      if (arrived) return;
+      arrived = true;
       history.pushState({ guided: continuing }, '', link.href);
       setGuided(continuing);
       showRoom(index, match);
-      if (target === 'job-audio-research') sound.current?.bronze();
-      if (match === 'folio') sound.current?.paper();
+      if (target === 'job-audio-research' && !match) sound.current?.bronze();
     };
     if (!animated) {
       arrive();
       return;
     }
     tour.current.departure = performance.now();
-    const lantern = match === 'ember' ? desk.current?.querySelector('[data-desk-step="1"]') : null;
-    setTransit({
-      match,
-      x: lantern?.style.left || '76vw',
-      y: lantern?.style.top || '51vh',
-    });
-    timers.current = [window.setTimeout(arrive, roomSwapMs), window.setTimeout(() => {
-      timers.current = [];
-      setTransit(null);
-    }, roomTransitionMs)];
+    pendingArrival.current = arrive;
+    setTransit(match || 'portal');
+    if (match) {
+      tour.current.passage = { kind: match, to: index, progress: 0, project: stop.id === 'projects', arrive, finish: finishTransition };
+      timers.current = [window.setTimeout(() => {
+        arrive();
+        finishTransition();
+      }, passageTimeout)];
+    } else {
+      timers.current = [window.setTimeout(arrive, roomSwapMs), window.setTimeout(finishTransition, roomTransitionMs)];
+    }
   }
 
   useEffect(() => {
@@ -249,10 +272,6 @@ export function App() {
     if (stops.some(item => location.hash === `#${item.id}`)) {
       history.replaceState(null, '', roomPath(stops[roomIndex(location)]) + location.search);
     }
-    function clearTransition() {
-      timers.current.forEach(window.clearTimeout);
-      timers.current = [];
-    }
     function restore() {
       clearTransition();
       setTransit(null);
@@ -264,7 +283,7 @@ export function App() {
       clearTransition();
       window.removeEventListener('popstate', restore);
     };
-  }, [showRoom]);
+  }, [showRoom, clearTransition]);
 
   useEffect(() => {
     document.title = entrance ? meta.siteTitle : `${roomLabel(stop)} | ${meta.name}`;
@@ -334,18 +353,16 @@ export function App() {
             <i aria-hidden="true" /><span><RevealWords text={gallery[label]} /></span>
           </button>)}
         </div>}
-        {visual && ready && !entrance && <button type="button" className="opening-skip" onClick={() => {
-          tour.current.cut = true;
-          document.getElementById(stop.id)?.focus({ preventScroll: true });
-        }}><RevealWords text={gallery.skipOpening} /></button>}
+        {visual && ready && !entrance && <button type="button" className="opening-skip" onClick={skipOpening}>
+          <RevealWords text={gallery.skipOpening} />
+        </button>}
       </main>
       {!entrance && <nav className="gallery-shell room-navigation" aria-label={gallery.roomNavigation}>
         <a href={roomPath(previous)} data-room={previous.id} aria-label={`${gallery.previousRoom} ${roomLabel(previous)}`} data-text-reveal><span aria-hidden="true">←</span> <RevealWords text={roomLabel(previous)} /></a>
         {next && <a href={roomPath(next)} data-room={next.id} aria-label={`${gallery.nextRoom} ${roomLabel(next)}`} data-text-reveal><RevealWords text={roomLabel(next)} /> <span aria-hidden="true">→</span></a>}
       </nav>}
       {guidedIndex >= 0 && <GuidedTour index={guidedIndex} onEnd={endTour} />}
-      {transit && <div className={`room-transit${transit.match ? ` room-transit--${transit.match}` : ''}`} aria-hidden="true"
-        style={{ '--room-transition': `${roomTransitionMs}ms`, '--ember-x': transit.x, '--ember-y': transit.y }} />}
+      {transit === 'portal' && <div className="room-transit" aria-hidden="true" style={{ '--room-transition': `${roomTransitionMs}ms` }} />}
     </div>
   );
 }

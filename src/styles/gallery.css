@@ -451,28 +451,6 @@ h1,h2,h3 { font-family: var(--display); font-weight: 400; }
 }
 .film-hotspots button:is(:hover, :focus-visible, [aria-pressed="true"]) i { background: var(--brass); }
 .film-hotspots button:focus-visible { outline: 2px solid var(--brass); outline-offset: 1px; }
-.room-transit--ember::before {
-  background: radial-gradient(ellipse at 48% 52%, #2b1c14, #0a0809 67%);
-  animation: ember-shade var(--room-transition) both;
-}
-.room-transit--ember::after {
-  width: 44px;
-  top: var(--ember-y);
-  left: var(--ember-x);
-  background: radial-gradient(circle, #fff7d7 0 7%, #f7c487 12%, #c5753ca3 26%, #91412b47 40%, transparent 69%);
-  animation: ember-crossing var(--room-transition) cubic-bezier(.42, 0, .32, 1) both;
-}
-@keyframes ember-shade {
-  0%, 100% { opacity: 0; }
-  48%, 57% { opacity: 1; }
-}
-@keyframes ember-crossing {
-  0% { opacity: 0; transform: translate(-50%, -50%) scale(.55); }
-  15% { opacity: 1; }
-  56% { left: 48%; top: 47%; transform: translate(-50%, -50%) scale(1.18); }
-  78% { opacity: .85; }
-  100% { opacity: 0; left: 41%; top: 51%; transform: translate(-50%, -50%) scale(.5); }
-}
 .room-index {
   width: min(730px, calc(100% - 32px));
   max-height: 84dvh;
@@ -559,25 +537,6 @@ h1,h2,h3 { font-family: var(--display); font-weight: 400; }
 .gallery[data-guided] .opening-skip { bottom: 146px; }
 .gallery--desktop[data-guided] .exhibit { padding-bottom: 155px; }
 .gallery:not(.gallery--desktop)[data-guided] .room-navigation { margin-bottom: 140px; }
-.room-transit--folio::before { animation: ember-shade var(--room-transition) both; background: #171015; }
-.room-transit--folio::after {
-  width: min(36vw, 220px);
-  aspect-ratio: .72;
-  border-radius: 2px;
-  border: 2px solid #c09867;
-  background:
-    repeating-linear-gradient(0deg, transparent 0 15px, #87644388 16px 17px, transparent 18px 26px) center / 64% 61% no-repeat,
-    linear-gradient(125deg, #e6d7ad, #b9976c);
-  box-shadow: 0 10px 50px #0c080c, 0 0 38px #b1915c62;
-  animation: folio-crossing var(--room-transition) cubic-bezier(.43, 0, .29, 1) both;
-}
-@keyframes folio-crossing {
-  0% { opacity: 0; transform: translate(35vw, 4vh) rotate(24deg) scale(.33); }
-  20% { opacity: 1; }
-  53% { transform: translate(-50%, -50%) rotate(-12deg) scale(1.14); }
-  72% { opacity: .97; }
-  100% { opacity: 0; transform: translate(-56%, 22vh) rotate(7deg) scale(.66); }
-}
 .work-story { margin-top: 17px; }
 .caption .walkthrough h3 {
   font: 600 .72rem/1.4 Inter, system-ui, sans-serif;
@@ -669,6 +628,7 @@ h1,h2,h3 { font-family: var(--display); font-weight: 400; }
   .gallery--room[data-scene="ready"] .caption { transition: opacity .65s ease-out; }
   .gallery--room:has(.gallery-scene [data-opening="true"]) .caption { opacity: 0; visibility: hidden; }
   .gallery--room:has(.gallery-scene [data-opening="true"]) .opening-skip { display: block; }
+  .gallery:has(.gallery-scene [data-passage]:not([data-passage=""])) :is(.gallery-timeline, .room-navigation, .guided-tour) { visibility: hidden; }
   .gallery--room:has(.gallery-scene [data-opening="true"]) .caption h2 .reveal-word {
     opacity: 0;
     animation: none;

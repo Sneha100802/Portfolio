@@ -4,6 +4,7 @@ import { Line, RoundedBox } from '@react-three/drei';
 import { CanvasTexture, DataTexture, DoubleSide, LinearFilter, MathUtils, SRGBColorSpace } from 'three';
 import { content } from '../../lib/content';
 import { documents } from '../../lib/ragDemo';
+import { BronzeMembrane } from './BronzeMembrane';
 
 const brass = '#b88a4f';
 const ink = '#312740';
@@ -50,7 +51,7 @@ function Paper({ lines, width = 0.84, height = 1.04, inkLayer, overlay = false }
   </mesh>;
 }
 
-function Lantern({ at, glow }) {
+export function Lantern({ at, glow }) {
   return <group position={at}>
     <Board size={[0.32, 0.06, 0.32]} at={[0, -0.25, 0]} color={brass} metalness={0.55} />
     <mesh position-y={0.24} rotation-y={Math.PI / 4}>
@@ -147,6 +148,7 @@ function WritingDesk({ tour, opening, light }) {
   const requestInk = useRef();
   const guide = useRef();
   const lamp = useRef();
+  const swing = useRef();
   const shade = useRef();
   const fade = useMemo(() => {
     const size = 32;
@@ -176,13 +178,21 @@ function WritingDesk({ tour, opening, light }) {
     requestInk.current.opacity = step(0.24, 0.48, t) * inkReveal;
     guide.current.rotation.y = MathUtils.damp(guide.current.rotation.y, -1.42 * (1 - step(0.48, 0.84, t)), 8, delta);
     const flicker = Math.sin(clock.elapsedTime * 4.6) * 0.18 + Math.sin(clock.elapsedTime * 13.2) * 0.12;
-    lamp.current.intensity = MathUtils.damp(lamp.current.intensity, (light ? 0.35 : 1.2) + (light ? 2.4 : 10) * step(0.38, 0.80, t) + flicker, 7, delta);
+    const passage = tour.current.passage;
+    const travel = passage?.progress ?? 0;
+    const lanternLift = passage?.kind === 'ember' ? step(.02, .41, travel) * (1 - step(.37, .52, travel)) : 0;
+    const lanternReveal = passage?.kind === 'jali' ? Math.sin(Math.PI * step(.49, .91, travel)) : 0;
+    swing.current.rotation.z = MathUtils.damp(swing.current.rotation.z, -.28 * lanternLift + .12 * lanternReveal, 7, delta);
+    swing.current.position.y = MathUtils.damp(swing.current.position.y, 1.56 + .16 * lanternLift, 7, delta);
+    lamp.current.intensity = MathUtils.damp(lamp.current.intensity, (light ? 0.35 : 1.2) + (light ? 2.4 : 10) * step(0.38, 0.80, t) + flicker + 6 * (lanternLift + lanternReveal), 7, delta);
     shade.current.rotation.z = (light ? 0.32 : -0.33) + Math.sin(clock.elapsedTime * 1.6) * 0.022;
     shade.current.position.x = 0.52 + Math.sin(clock.elapsedTime * 1.3) * 0.055;
   });
   return <group>
     <Desk />
-    <Lantern at={[1.24, 1.24, 0.01]} glow={lamp} />
+    <group ref={swing} position={[1.24, 1.56, .01]}>
+      <Lantern at={[0, -.32, 0]} glow={lamp} />
+    </group>
     {light && <group>
       <pointLight position={[-2.05, 2.65, 1.8]} color="#ffc78b" intensity={17} distance={8} decay={2} />
       {[-0.45, 0, 0.45].map((x, index) => <mesh key={x} position={[x - 0.63, 1.83, -0.68 - index * 0.18]} rotation-z={0.66}>
@@ -217,19 +227,31 @@ const wave = Array.from({ length: 61 }, (_, i) => {
 
 function AcousticLab({ tour, opening }) {
   const phase = useRef(0);
-  const diaphragm = useRef();
+  const impact = useRef(-1);
+  const impactStart = useRef(null);
+  const lastOpening = useRef(0);
   const pulse = useRef();
+  const flare = useRef();
   const layers = useRef([]);
-  useFrame(({ clock }, delta) => {
-    const t = scenePhase(phase, opening.current, tour.current.step?.index, [0.46, 0.76, 1], delta);
-    const strike = step(0.12, 0.38, t) * (1 - step(0.42, 0.67, t));
-    diaphragm.current.scale.y = 1 + Math.sin(clock.elapsedTime * 55) * strike * 0.42;
+  useFrame((_, delta) => {
+    const now = performance.now();
+    const selected = tour.current.step;
+    const t = scenePhase(phase, opening.current, selected?.index, [0.46, 0.76, 1], delta);
+    if (opening.current < lastOpening.current) impactStart.current = null;
+    if (lastOpening.current < .29 && opening.current >= .29 && opening.current < 1) impactStart.current = now;
+    lastOpening.current = opening.current;
+    const start = selected?.index === 0 ? selected.time : impactStart.current;
+    impact.current = start === null ? -1 : (now - start) / 1000;
     const travel = step(0.31, 0.96, t);
     pulse.current.position.set(-1.1 + travel * 2.4, 1.14 + Math.sin(travel * 28) * (1 - travel) * 0.15, 0.36 - travel * 0.83);
     if (tour.current.match === 'ember' && opening.current < 0.29) {
       const impact = step(0, 0.29, opening.current);
       pulse.current.position.set(0.64 - 1.75 * impact, 1.86 - 0.72 * impact, 1.25 - 0.89 * impact);
     }
+    const torch = tour.current.match === 'ember' ? step(.10, .21, opening.current) * (1 - step(.29, .43, opening.current)) : 0;
+    flare.current.position.copy(pulse.current.position);
+    flare.current.position.z += .22;
+    flare.current.intensity = torch * 6.5;
     layers.current.forEach((layer, index) => {
       const glow = step(0.54 + index * 0.09, 0.63 + index * 0.09, t);
       layer.material.emissiveIntensity = MathUtils.damp(layer.material.emissiveIntensity, glow * 0.61, 9, delta);
@@ -239,10 +261,11 @@ function AcousticLab({ tour, opening }) {
     <Board size={[3.4, 0.15, 1.45]} at={[0, 0.23, 0]} color="#59423c" />
     <group position={[-1.12, 1.14, 0.25]} rotation-y={0.28}>
       <Board size={[0.1, 0.61, 0.17]} at={[0, -0.63, -0.08]} color={sandstone} />
-      <mesh ref={diaphragm} rotation-x={Math.PI / 2}>
+      <mesh rotation-x={Math.PI / 2}>
         <cylinderGeometry args={[0.53, 0.48, 0.075, 40]} />
         <meshStandardMaterial color="#a06b40" metalness={0.76} roughness={0.34} />
       </mesh>
+      <BronzeMembrane impact={impact} radius={.507} depth={.055} color="#ac7549" />
       {[0.14, 0.31, 0.52].map(radius => <mesh key={radius} position-z={0.049}>
         <torusGeometry args={[radius, 0.014, 6, 40]} /><meshStandardMaterial color={brass} metalness={0.58} roughness={0.35} />
       </mesh>)}
@@ -250,6 +273,7 @@ function AcousticLab({ tour, opening }) {
     <Line points={wave} color="#a6d7d1" lineWidth={1.35} transparent opacity={0.82} />
     <Line points={[[0.3, 1.15, 0.06], [1.32, 1.15, -0.48]]} color={brass} lineWidth={1.05} />
     <mesh ref={pulse}><sphereGeometry args={[0.045, 10, 8]} /><meshBasicMaterial color="#f7dfad" /></mesh>
+    <pointLight ref={flare} intensity={0} color="#ffb360" distance={2.9} />
     {[0, 1, 2, 3].map(i => <group key={i} position={[0.34 + i * 0.24, 1.11, -0.02 - i * 0.15]} rotation-y={-0.58}>
       <mesh ref={node => { layers.current[i] = node; }}>
         <boxGeometry args={[0.04, 1.15 - i * 0.14, 0.88 - i * 0.12]} />

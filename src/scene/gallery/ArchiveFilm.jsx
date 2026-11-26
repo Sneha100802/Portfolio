@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
-import { CatmullRomCurve3, CanvasTexture, Color, MathUtils, Path, RepeatWrapping, Shape, SRGBColorSpace, TubeGeometry, Vector3 } from 'three';
+import { CatmullRomCurve3, CanvasTexture, Color, DoubleSide, MathUtils, Path, RepeatWrapping, Shape, SRGBColorSpace, TubeGeometry, Vector3 } from 'three';
 import { archiveBeat, archiveCut, archiveDuration, bronzeCut, latticeCut } from './ArchiveDirection';
 import { rng } from '../Parts';
+import { BronzeMembrane } from './BronzeMembrane';
 
 const smooth = MathUtils.smoothstep;
 const gold = '#d5a261';
@@ -62,29 +63,39 @@ function paintedTexture(surface) {
 }
 
 const paperVertex = `
+  uniform float curl;
+  uniform float ripple;
   varying vec2 page;
   void main() {
     page = uv;
-    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+    vec3 bend = position;
+    bend.z += (1.0 - cos(uv.x * 1.57)) * curl * (.84 + .16 * cos((uv.y - .5) * 3.14));
+    bend.z += ripple * pow(uv.x, 1.7) * sin(uv.y * 6.28 + uv.x * 2.0);
+    bend.x -= abs(curl) * uv.x * uv.x * .20;
+    gl_Position = projectionMatrix * modelViewMatrix * vec4(bend, 1.0);
   }
 `;
 const paperFragment = `
   uniform sampler2D parchment;
   uniform float stroke;
   uniform float bleed;
+  uniform float curl;
   varying vec2 page;
   float hash(vec2 p) { return fract(sin(dot(p, vec2(127.1,311.7))) * 43758.5453); }
   void main() {
     vec3 fibre = texture2D(parchment, page).rgb;
     float u = (page.x - .13) / .76;
     float curve = .52 + .14 * sin(u * 4.2 - .35) + .03 * sin(u * 10.8);
-    float roughness = hash(floor(page * 370.0));
-    float edge = abs(page.y - curve);
-    float spread = .009 + (.018 + roughness * .021) * bleed;
-    float trace = (1.0 - smoothstep(stroke - .025, stroke, u)) * smoothstep(.0, .016, u);
-    float stain = (1.0 - smoothstep(.006, spread, edge)) * trace;
-    float soak = (1.0 - smoothstep(spread, spread * 2.6, edge)) * trace * bleed * .30;
+    float roughness = hash(floor(page * vec2(440.0, 520.0)));
+    float thread = hash(floor((page + vec2(.0, page.x * .08)) * vec2(95.0, 690.0)));
+    float edge = abs(page.y - curve + (thread - .5) * .008);
+    float soakAge = bleed * smoothstep(.0, .32, stroke - u);
+    float spread = .009 + (.017 + roughness * .011) * soakAge;
+    float trace = (1.0 - smoothstep(stroke - .026, stroke + thread * .004, u)) * smoothstep(.0, .016, u);
+    float stain = (1.0 - smoothstep(.006, spread, edge)) * trace * (.92 + roughness * .08);
+    float soak = (1.0 - smoothstep(spread, spread * 2.3 + thread * .017, edge)) * trace * soakAge * .32;
     float shade = .72 + .30 * exp(-length((page - vec2(.42,.60)) * vec2(1.1,.8)) * 2.0);
+    shade += sin(page.x * 4.2 - .6) * abs(curl) * .23 - smoothstep(.62, 1.0, page.x) * abs(curl) * .26;
     vec3 ink = mix(vec3(.065,.096,.16), vec3(.106,.14,.20), roughness * .48);
     gl_FragColor = vec4(mix(fibre * shade, ink, clamp(stain + soak, 0.0, 1.0)), 1.0);
     #include <tonemapping_fragment>
@@ -96,15 +107,17 @@ function Folio({ opening, duration = archiveDuration }) {
   const leaf = useRef();
   const material = useRef();
   const paper = useMemo(() => paintedTexture('paper'), []);
-  const uniforms = useMemo(() => ({ parchment: { value: paper }, stroke: { value: 0 }, bleed: { value: 0 } }), [paper]);
+  const uniforms = useMemo(() => ({ parchment: { value: paper }, stroke: { value: 0 }, bleed: { value: 0 }, curl: { value: 0 }, ripple: { value: 0 } }), [paper]);
   useEffect(() => () => paper.dispose(), [paper]);
   useFrame(() => {
     const time = opening.current * duration;
-    if (time >= latticeCut) return;
     const turn = smooth(time, .28, 2.32);
     leaf.current.rotation.y = -1.04 * (1 - turn) + Math.sin(turn * Math.PI * 1.5) * (1 - turn) * .09;
     material.current.uniforms.stroke.value = smooth(time, .24, 2.79);
     material.current.uniforms.bleed.value = smooth(time, .89, 3.3);
+    const settle = Math.max(0, time - 2.10);
+    material.current.uniforms.curl.value = .46 * Math.sin(turn * Math.PI) + Math.sin(settle * 15) * Math.exp(-settle * 7) * .047;
+    material.current.uniforms.ripple.value = Math.sin(turn * 8) * (1 - turn) * .066;
   });
   return <group position={[0, 1.36, .15]} rotation-x={-.12}>
     <mesh position={[0, 0, -.17]}>
@@ -121,8 +134,8 @@ function Folio({ opening, duration = archiveDuration }) {
     </mesh>
     <group ref={leaf}>
       <mesh position={[.64, 0, 0]}>
-        <planeGeometry args={[1.27, 1.5]} />
-        <shaderMaterial ref={material} uniforms={uniforms} vertexShader={paperVertex} fragmentShader={paperFragment} />
+        <planeGeometry args={[1.27, 1.5, 32, 22]} />
+        <shaderMaterial ref={material} uniforms={uniforms} vertexShader={paperVertex} fragmentShader={paperFragment} side={DoubleSide} />
       </mesh>
     </group>
     <mesh position={[0, 0, .033]}>
@@ -216,16 +229,16 @@ const bronzeLine = Array.from({ length: 28 }, (_, index) => {
 });
 
 function Resonance({ opening }) {
-  const centre = useRef();
+  const impact = useRef(-1);
   const ripple = useRef();
   const bronze = useMemo(() => paintedTexture('bronze'), []);
   useEffect(() => () => bronze.dispose(), [bronze]);
   useFrame(() => {
     const elapsed = opening.current * archiveDuration;
-    if (elapsed >= archiveCut) return;
     const time = elapsed - bronzeCut;
+    impact.current = elapsed < archiveCut ? time : -1;
+    if (time < 0 || elapsed >= archiveCut) return;
     const energy = Math.exp(-Math.max(time, 0) * 1.65);
-    centre.current.position.z = Math.sin(time * 38) * energy * .052;
     ripple.current.scale.setScalar(.22 + smooth(time, .02, 1.54) * 1.42);
     ripple.current.material.opacity = energy * .72;
   });
@@ -234,11 +247,8 @@ function Resonance({ opening }) {
       <cylinderGeometry args={[.98, .92, .12, 72]} />
       <meshStandardMaterial color="#6f573d" roughness={.46} metalness={.79} />
     </mesh>
-    <group ref={centre}>
-      <mesh position-z={.081}>
-        <circleGeometry args={[.94, 80]} />
-        <meshStandardMaterial map={bronze} bumpMap={bronze} bumpScale={.04} metalness={.63} roughness={.45} />
-      </mesh>
+    <group>
+      <BronzeMembrane impact={impact} radius={.94} depth={.081} map={bronze} />
       {[.23, .48, .75, .92, .979].map((radius, index) => <mesh key={radius} position-z={.095}>
         <torusGeometry args={[radius, index === 4 ? .026 : .011, 8, 72]} />
         <meshStandardMaterial color={index % 2 ? '#795636' : gold} metalness={.71} roughness={.39} />

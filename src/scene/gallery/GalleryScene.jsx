@@ -10,6 +10,8 @@ import { arrivalDuration, companyCameraDuration, companyCreditAt, companyLook, c
 import { deskTargets } from './DeskShots';
 import { ArchiveFilm } from './ArchiveFilm';
 import { archiveBeat, archiveCues, archiveCut, archiveDuration, directArchiveCamera } from './ArchiveDirection';
+import { advancePassage, directPassageCamera } from './PassageDirection';
+import { RoomPassage } from './RoomPassage';
 
 const night = '#0b0b0e';
 const daylight = '#ded7c9';
@@ -108,6 +110,8 @@ function World({ tour, documentIndex, paintDesk, compact, entrance, light, repla
   const timedOpeningStart = useRef(null);
   const jump = useRef(0);
   const cue = useRef(0);
+  const previousPassage = useRef(null);
+  const passageCue = useRef(0);
   const exhibit = useRef();
   const lightingReady = useRef(false);
   const stage = useRef();
@@ -132,6 +136,9 @@ function World({ tour, documentIndex, paintDesk, compact, entrance, light, repla
     const goal = tour.current.position;
     const archive = stops[goal].kind === 'document-retrieval';
     const company = stops[goal].kind === 'job';
+    const passage = tour.current.passage;
+    const arrived = passage?.to === goal;
+    const crossing = passage?.progress ?? 0;
     if (jump.current !== tour.current.jump) {
       jump.current = tour.current.jump;
       journey.current = goal;
@@ -139,8 +146,25 @@ function World({ tour, documentIndex, paintDesk, compact, entrance, light, repla
       timedOpeningStart.current = null;
       cue.current = 0;
     }
+    if (passage !== previousPassage.current) {
+      if (!passage && previousPassage.current?.to === goal && tour.current.match === previousPassage.current.kind) {
+        intro.current = companyCameraDuration / companyOpeningDuration;
+      }
+      previousPassage.current = passage;
+      passageCue.current = 0;
+    }
     if (tour.current.cut) intro.current = 1;
-    else if (lightingReady.current) {
+    else if (passage) {
+      intro.current = arrived ? MathUtils.lerp(.10, companyCameraDuration / companyOpeningDuration, MathUtils.smootherstep(crossing, .48, .95)) : 1;
+      if (crossing >= .25 && passageCue.current === 0) {
+        if (passage.kind === 'jali') onFilmCue('screen');
+        passageCue.current = 1;
+      }
+      if (arrived && crossing >= .72 && passageCue.current === 1) {
+        onFilmCue(passage.kind === 'jali' ? 'paper' : 'bronze');
+        passageCue.current = 2;
+      }
+    } else if (lightingReady.current) {
       if (archive) {
         const now = performance.now();
         timedOpeningStart.current ??= now;
@@ -150,9 +174,9 @@ function World({ tour, documentIndex, paintDesk, compact, entrance, light, repla
         intro.current = Math.min(intro.current + Math.min(step, company ? .24 : .085) / duration, 1);
       }
     }
-    const film = archive && intro.current < 1;
+    const film = !passage && archive && intro.current < 1;
     const credits = company && intro.current < 1;
-    const credit = credits ? companyCreditAt(intro.current * companyOpeningDuration) : '';
+    const credit = credits && !passage ? companyCreditAt(intro.current * companyOpeningDuration) : '';
     const motion = company ? Math.min(1, intro.current * companyOpeningDuration / companyCameraDuration) : intro.current;
     const time = intro.current * archiveDuration;
     const beat = film ? archiveBeat(time) : '';
@@ -177,9 +201,9 @@ function World({ tour, documentIndex, paintDesk, compact, entrance, light, repla
     drift.current.y = MathUtils.damp(drift.current.y, compact ? 0 : tour.current.pointerY, 3, step);
     const arc = Math.sin(fraction * Math.PI);
     const entry = entrance ? (1 - intro.current) ** 3 * (compact ? 0.35 : 1) : 0;
-    const arrival = archive || entrance || motion >= 1 ? null : roomArrival(stops[nearest], motion);
+    const arrival = passage || archive || entrance || motion >= 1 ? null : roomArrival(stops[nearest], motion);
     const close = arrival?.close ?? 0;
-    const depart = tour.current.departure ? MathUtils.smoothstep(performance.now() - tour.current.departure, 0, roomSwapMs) : 0;
+    const depart = !passage && tour.current.departure ? MathUtils.smoothstep(performance.now() - tour.current.departure, 0, roomSwapMs) : 0;
     const originShot = shots[stops[index].kind] ?? defaultShot;
     const nextShot = shots[stops[following].kind] ?? defaultShot;
     const portrait = compact && size.width < size.height * .9;
@@ -193,7 +217,7 @@ function World({ tour, documentIndex, paintDesk, compact, entrance, light, repla
     const side = compact ? 0.65 : MathUtils.lerp(originShot.side, nextShot.side, move);
     const framing = compact && !entrance ? 0.5 : 1;
     const selected = tour.current.step;
-    const examining = intro.current >= 1 && !tour.current.departure && selected?.room === stops[nearest].id &&
+    const examining = !passage && intro.current >= 1 && !tour.current.departure && selected?.room === stops[nearest].id &&
       (selected.room === 'job-founder-guidance' || portraitLab);
     const detail = examining && portraitDesk && selected.index === 1 ? portraitGuide : selected?.position;
     const lens = deskLens.current;
@@ -207,10 +231,11 @@ function World({ tour, documentIndex, paintDesk, compact, entrance, light, repla
       destination.current.z + distance - close * 2.65 * framing + entry * 1.84 + arc * 0.82 - depart * 3.8 - lens.depth - titlePush);
     look.current.set(destination.current.x + lens.x + (arrival?.target ?? 0) * framing + arc * 0.13,
       MathUtils.lerp(focus, arrival?.focus ?? focus, close) + arc * 0.14 + lens.y, destination.current.z - 0.12);
-    if (stops[nearest].id === 'job-founder-guidance') deskFocus.copy(look.current);
     camera.lookAt(look.current);
     if (arrival) camera.rotateZ(Math.sign(arrival.side) * close * 0.075);
     if (insert) directArchiveCamera(time, coordinates[goal], camera, look.current, portrait, widthRatio);
+    if (passage) directPassageCamera(passage, crossing, arrived, camera, look.current, destination.current, portrait);
+    if (stops[nearest].id === 'job-founder-guidance') deskFocus.copy(look.current);
     if (stage.current) {
       stage.current.position.copy(destination.current);
       stage.current.visible = !insert;
@@ -225,7 +250,8 @@ function World({ tour, documentIndex, paintDesk, compact, entrance, light, repla
       keyLight.current.intensity = exposure * (1 - 0.50 * arc ** 9 - entry * 0.54) * MathUtils.lerp(0.21, 1, arrival?.light ?? 1);
     }
     if (rimLight.current) rimLight.current.intensity = light ? 5 + close * 4 : 9 + close * 8;
-    const framingSettle = film ? MathUtils.smoothstep(time, archiveCut - .15, 10.75) : MathUtils.smoothstep(motion, 0.53, 0.97);
+    const crossingCenter = MathUtils.smoothstep(crossing, .04, .29) * (1 - MathUtils.smoothstep(crossing, .79, 1));
+    const framingSettle = passage ? 1 - crossingCenter : film ? MathUtils.smoothstep(time, archiveCut - .15, 10.75) : MathUtils.smoothstep(motion, 0.53, 0.97);
     const horizontalFrame = 0.224 - lens.depth * 0.027;
     const offsetX = entrance || compact ? 0 : Math.round(-size.width * horizontalFrame * framingSettle);
     const offsetY = Math.round(size.height * (entrance ? (portrait ? .22 : .14) : compact ? .20 * framingSettle : 0));
@@ -234,7 +260,7 @@ function World({ tour, documentIndex, paintDesk, compact, entrance, light, repla
       view.current = viewKey;
       camera.setViewOffset(size.width, size.height, offsetX, offsetY, size.width, size.height);
     }
-    const atExhibit = nearest === center && Math.abs(journey.current - goal) < 0.045 && intro.current > 0.90 && !film && !credits;
+    const atExhibit = !passage && nearest === center && Math.abs(journey.current - goal) < 0.045 && intro.current > 0.90 && !film && !credits;
     const station = atExhibit ? stops[nearest].id : '';
     if (station === 'job-founder-guidance') {
       camera.updateMatrixWorld();
@@ -245,8 +271,14 @@ function World({ tour, documentIndex, paintDesk, compact, entrance, light, repla
         paintDesk(control, x, y, x >= 24 && x <= size.width - 22 && y >= 74 && y <= size.height - 74);
       }
     } else paintDesk();
-    paintStage(station, 1 - arc ** 7 * 0.34, film || credits || intro.current < 0.77, beat, credit);
+    const passageShot = passage ? crossing < .35 ? 'approach' : crossing < .58 ? 'crossing' : 'reveal' : '';
+    paintStage(station, 1 - arc ** 7 * 0.34, Boolean(passage) || film || credits || intro.current < 0.77, beat, credit, passage?.kind ?? '', passageShot);
   }, -1);
+
+  useFrame((_, delta) => {
+    const passage = tour.current.passage;
+    if (passage) advancePassage(passage, passage.to === tour.current.position, delta);
+  }, -2);
 
   const activeIndex = center;
   const activeStop = stops[activeIndex];
@@ -276,6 +308,7 @@ function World({ tour, documentIndex, paintDesk, compact, entrance, light, repla
         <Line points={rail.map(([x, y, z]) => [x + 6.2, y, z])} color="#3d3229" lineWidth={0.52} />
       </>}
       <Fixture key={activeStop.id} stop={activeStop} index={activeIndex} shadow={quality > 0} tour={tour} opening={intro} keyLight={keyLight} rimLight={rimLight} light={light} documentIndex={documentIndex} rig={exhibit} />
+      <RoomPassage tour={tour} />
       {activeStop.kind === 'document-retrieval'
         ? <ArchiveFilm opening={intro} position={coordinates[activeIndex]} light={light} />
         : !entrance && <group key={`opening-${activeStop.id}-${replay}`} position={coordinates[activeIndex]}>
@@ -317,7 +350,7 @@ export default function GalleryScene({ tour, documentIndex, paintDesk, compact, 
     else if (/intel.*(?:iris|uhd|hd graphics)/i.test(renderer)) setQuality(0);
   }
 
-  function paintStage(station, opacity, opening, beat, credit) {
+  function paintStage(station, opacity, opening, beat, credit, passage, passageShot) {
     const element = wrapper.current;
     if (!element) return;
     if (element.dataset.station !== station) element.dataset.station = station;
@@ -325,6 +358,8 @@ export default function GalleryScene({ tour, documentIndex, paintDesk, compact, 
     if (element.dataset.opening !== openingState) element.dataset.opening = openingState;
     if (element.dataset.filmBeat !== beat) element.dataset.filmBeat = beat;
     if (element.dataset.credit !== credit) element.dataset.credit = credit;
+    if (element.dataset.passage !== passage) element.dataset.passage = passage;
+    if (element.dataset.passageShot !== passageShot) element.dataset.passageShot = passageShot;
     const alpha = String(Math.round(opacity * 100) / 100);
     if (element.style.opacity !== alpha) element.style.opacity = alpha;
   }

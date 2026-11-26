@@ -82,11 +82,12 @@ export function RoomPassage({ tour }) {
       jali.current.rotation.z = cross * .065;
     } else {
       const swing = Math.sin(cross * 1.42);
-      holder.current.position.set(swing * width * 1.35, .16 + Math.abs(swing) * .36, .05);
+      holder.current.position.set(swing * width * 1.35, .015 + Math.abs(swing) * .30, .025);
       holder.current.rotation.z = swing * .49;
       holder.current.rotation.y = -swing * .53;
-      holder.current.scale.setScalar(MathUtils.lerp(.43, 1.07, 1 - Math.abs(cross)));
-      lamp.current.intensity = 7 + Math.sin(progress * 61) * 1.4;
+      const close = 1 - Math.abs(cross);
+      holder.current.scale.setScalar(MathUtils.lerp(.35, Math.min(.66, width + .08), close));
+      lamp.current.intensity = 1.55 + Math.sin(progress * 61) * .23;
       shade.current.uniforms.cover.value = MathUtils.smoothstep(progress, .27, .45) * (1 - MathUtils.smoothstep(progress, .54, .68));
       shade.current.uniforms.flame.value = .5 + swing * .19;
     }

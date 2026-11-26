@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { Line, RoundedBox } from '@react-three/drei';
-import { CanvasTexture, DataTexture, DoubleSide, LinearFilter, MathUtils, SRGBColorSpace } from 'three';
+import { CanvasTexture, DataTexture, DoubleSide, LinearFilter, MathUtils, SRGBColorSpace, Vector2 } from 'three';
 import { content } from '../../lib/content';
 import { documents } from '../../lib/ragDemo';
 import { BronzeMembrane } from './BronzeMembrane';
@@ -51,6 +51,8 @@ function Paper({ lines, width = 0.84, height = 1.04, inkLayer, overlay = false }
   </mesh>;
 }
 
+const flameProfile = [[0, -.12], [.039, -.09], [.057, -.04], [.061, -.002], [.049, .038], [.029, .085], [.013, .135], [0, .175]].map(([x, y]) => new Vector2(x, y));
+
 export function Lantern({ at, glow }) {
   return <group position={at}>
     <Board size={[0.32, 0.06, 0.32]} at={[0, -0.25, 0]} color={brass} metalness={0.55} />
@@ -60,9 +62,13 @@ export function Lantern({ at, glow }) {
     </mesh>
     {[-1, 1].flatMap(x => [-1, 1].map(z => <Board key={`${x}:${z}`} size={[0.029, 0.48, 0.029]}
       at={[x * 0.132, 0, z * 0.132]} color={brass} metalness={0.53} />))}
-    <mesh scale={[0.09, 0.16, 0.09]}>
-      <sphereGeometry args={[1, 12, 8]} />
-      <meshStandardMaterial color="#f4aa54" emissive="#ff9b38" emissiveIntensity={1.3} />
+    <mesh rotation-z={-.12}>
+      <latheGeometry args={[flameProfile, 24]} />
+      <meshStandardMaterial color="#ee8831" emissive="#ff8c2b" emissiveIntensity={1.55} transparent opacity={.78} depthWrite={false} />
+    </mesh>
+    <mesh position-y={-.028} scale={[.53, .59, .53]} rotation-z={-.12}>
+      <latheGeometry args={[flameProfile, 18]} />
+      <meshBasicMaterial color="#fff0ba" />
     </mesh>
     <pointLight ref={glow} color="#ffac58" intensity={4} distance={4} decay={2} />
   </group>;

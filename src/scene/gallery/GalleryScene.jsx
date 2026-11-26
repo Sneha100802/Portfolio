@@ -66,7 +66,7 @@ function Fixture({ stop, index, shadow, tour, opening, keyLight, rimLight, light
   useFrame(({ camera, clock }, delta) => {
     if (!focus.current) return;
     const selected = tour.current.step;
-    focus.current.visible = opening.current > (stop.kind === 'job' ? 0.999 : 0.93);
+    focus.current.visible = !tour.current.passage && opening.current > (stop.kind === 'job' ? 0.999 : 0.93);
     const position = selected?.room === stop.id ? selected.position : stop.data.story.steps[0].position;
     target.current.fromArray(position);
     const blend = 1 - Math.exp(-6 * delta);
@@ -153,8 +153,7 @@ function World({ tour, documentIndex, paintDesk, compact, entrance, light, repla
       previousPassage.current = passage;
       passageCue.current = 0;
     }
-    if (tour.current.cut) intro.current = 1;
-    else if (passage) {
+    if (passage) {
       intro.current = arrived ? MathUtils.lerp(.10, companyCameraDuration / companyOpeningDuration, MathUtils.smootherstep(crossing, .48, .95)) : 1;
       if (crossing >= .25 && passageCue.current === 0) {
         if (passage.kind === 'jali') onFilmCue('screen');
@@ -164,7 +163,8 @@ function World({ tour, documentIndex, paintDesk, compact, entrance, light, repla
         onFilmCue(passage.kind === 'jali' ? 'paper' : 'bronze');
         passageCue.current = 2;
       }
-    } else if (lightingReady.current) {
+    } else if (tour.current.cut) intro.current = 1;
+    else if (lightingReady.current) {
       if (archive) {
         const now = performance.now();
         timedOpeningStart.current ??= now;

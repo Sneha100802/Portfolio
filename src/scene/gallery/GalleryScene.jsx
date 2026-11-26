@@ -226,7 +226,7 @@ function World({ tour, documentIndex, paintDesk, compact, entrance, light, repla
     const framing = compact && !entrance ? 0.5 : 1;
     const selected = tour.current.step;
     const examining = !passage && intro.current >= 1 && !tour.current.departure && selected?.room === stops[nearest].id &&
-      (selected.room === 'job-founder-guidance' || portraitLab);
+      (selected.room === 'job-founder-guidance' || selected.room === 'projects' || portraitLab);
     const detail = examining && portraitDesk && selected.index === 1 ? portraitGuide : selected?.position;
     const lens = deskLens.current;
     lens.x = MathUtils.damp(lens.x, examining ? detail[0] * (portrait ? .79 : .68) : portraitLab ? -.23 : 0, 4, step);

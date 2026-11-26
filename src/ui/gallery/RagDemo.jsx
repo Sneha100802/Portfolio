@@ -28,7 +28,7 @@ export function RagDemo({ active, onStep, documentIndex, onDocument }) {
       setPlaying(false);
       return;
     }
-    if (active === stageCount - 1) onStep(0);
+    if (active === 0 || active === stageCount - 1) onStep(0);
     setPlaying(true);
   }
 

@@ -119,7 +119,7 @@ function Replay({ run }) {
   </button> : null;
 }
 
-export function GalleryChapter({ stop, onSkill, onStep, activeStep, onReplay, demo }) {
+export function GalleryChapter({ stop, onSkill, onStep, activeStep, onReplay, onWatchReel, demo }) {
   const { kind, id } = stop;
   if (kind === 'hero') return (
     <section className="exhibit gallery-hero" id={id} data-stop={id} tabIndex={-1} aria-labelledby="gallery-title">
@@ -127,12 +127,18 @@ export function GalleryChapter({ stop, onSkill, onStep, activeStep, onReplay, de
         <div className="caption hero-caption">
           <div className="hero-identity">
             <h1 id="gallery-title" data-text-reveal><RevealWords text={meta.name} headline /></h1>
-            <p className="hero-role" data-text-reveal><RevealWords text={meta.title} /></p>
+            <p className="hero-role" data-text-reveal><RevealWords text={gallery.homeRole} /></p>
           </div>
           <div className="hero-context">
             <p className="hero-summary" data-text-reveal><RevealWords text={summary} linewise /></p>
             <ProfileLinks />
-            <a className="entry-link" href={roomPath(stops[1])} data-room="experience" data-text-reveal><RevealWords text={gallery.start} /><span aria-hidden="true">↗</span></a>
+            <div className="hero-actions">
+              <a className="entry-link" href={roomPath(stops[1])} data-room="experience" data-text-reveal>
+                <RevealWords text={gallery.start} /><span aria-hidden="true">↗</span>
+              </a>
+              <button type="button" className="theme-toggle hero-reel" aria-haspopup="dialog" aria-controls="portfolio-reel"
+                data-text-reveal onClick={onWatchReel}><RevealWords text={gallery.watchReel} /><span aria-hidden="true">▷</span></button>
+            </div>
             <Replay run={onReplay} />
           </div>
         </div>

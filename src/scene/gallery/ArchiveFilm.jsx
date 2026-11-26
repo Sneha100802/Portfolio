@@ -92,14 +92,14 @@ const paperFragment = `
   }
 `;
 
-function Folio({ opening }) {
+function Folio({ opening, duration = archiveDuration }) {
   const leaf = useRef();
   const material = useRef();
   const paper = useMemo(() => paintedTexture('paper'), []);
   const uniforms = useMemo(() => ({ parchment: { value: paper }, stroke: { value: 0 }, bleed: { value: 0 } }), [paper]);
   useEffect(() => () => paper.dispose(), [paper]);
   useFrame(() => {
-    const time = opening.current * archiveDuration;
+    const time = opening.current * duration;
     if (time >= latticeCut) return;
     const turn = smooth(time, .28, 2.32);
     leaf.current.rotation.y = -1.04 * (1 - turn) + Math.sin(turn * Math.PI * 1.5) * (1 - turn) * .09;
@@ -130,6 +130,12 @@ function Folio({ opening }) {
       <meshStandardMaterial color="#805035" metalness={.16} roughness={.69} />
     </mesh>
     <pointLight color="#ffd39b" intensity={13} distance={5} position={[-1.35, 1.08, 1.5]} />
+  </group>;
+}
+
+export function HomeFolio({ opening }) {
+  return <group position-y={-.32} scale={1.48} rotation-y={-.12}>
+    <Folio opening={opening} duration={latticeCut - .02} />
   </group>;
 }
 

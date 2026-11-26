@@ -15,18 +15,24 @@ const shots = [
     beat: 'folio', from: 0, to: latticeCut,
     camera: [[-0.57, 2.03, 2.5], [0.42, 1.68, 3.82]],
     focus: [[-0.12, 1.52, 0.30], [0.38, 1.38, 0.07]],
+    portraitCamera: [[.41, 1.78, 3.75], [.84, 1.66, 4.75]],
+    portraitFocus: [[.43, 1.43, .28], [.72, 1.40, .08]],
     roll: 0.09,
   },
   {
     beat: 'lattice', from: latticeCut, to: bronzeCut,
     camera: [[4.45, 1.82, 3.26], [6.73, 1.92, 3.47]],
     focus: [[5.06, 1.52, 0.23], [6.26, 1.46, -0.2]],
+    portraitCamera: [[4.38, 1.72, 4.08], [6.91, 1.80, 4.63]],
+    portraitFocus: [[4.43, 1.44, .48], [6.83, 1.48, -.04]],
     roll: -0.025,
   },
   {
     beat: 'bronze', from: bronzeCut, to: archiveCut,
     camera: [[11.03, 1.62, 3.52], [11.71, 1.98, 3.78]],
     focus: [[11.28, 1.54, 0.15], [11.77, 1.48, 0.04]],
+    portraitCamera: [[11.28, 1.72, 5.55], [11.74, 1.87, 5.9]],
+    portraitFocus: [[11.51, 1.52, .12], [11.65, 1.5, .06]],
     roll: 0.04,
   },
 ];
@@ -34,16 +40,16 @@ const shots = [
 const shotAt = (time) => shots.find(({ to }) => time < to);
 export const archiveBeat = (time) => shotAt(time)?.beat ?? 'title';
 
-export function directArchiveCamera(time, origin, camera, target, compact) {
+export function directArchiveCamera(time, origin, camera, target, portrait, widthRatio = 1) {
   const shot = shotAt(time);
   if (!shot) return;
   const pace = MathUtils.smootherstep(time, shot.from, shot.to);
-  const [start, end] = shot.camera;
-  const [near, far] = shot.focus;
+  const [start, end] = portrait ? shot.portraitCamera : shot.camera;
+  const [near, far] = portrait ? shot.portraitFocus : shot.focus;
   camera.position.set(
     origin.x + MathUtils.lerp(start[0], end[0], pace),
     MathUtils.lerp(start[1], end[1], pace),
-    origin.z + MathUtils.lerp(start[2], end[2], pace) * (compact ? 1.54 : 1),
+    origin.z + MathUtils.lerp(start[2], end[2], pace) * widthRatio,
   );
   target.set(
     origin.x + MathUtils.lerp(near[0], far[0], pace),

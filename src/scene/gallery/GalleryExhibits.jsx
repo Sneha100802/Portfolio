@@ -6,6 +6,7 @@ import { Glyph } from '../Glyph';
 import { Pulse } from '../Parts';
 import { CompanyExhibit } from './CompanyExhibits';
 import { FilmExhibit } from './FilmSets';
+import { HomeFolio } from './ArchiveFilm';
 import { companyLook, hasFilmExhibit } from './RoomArrival';
 import { iconsFor } from '../../lib/icons';
 import { AgentNetwork, AvatarVoice, CnnWave, SemanticSearch, Steles, StockChart } from '../visuals';
@@ -240,9 +241,9 @@ const projectExhibits = {
   'ai-avatar': AvatarVoice,
 };
 
-export function GalleryExhibit({ stop, opticalGlass, tour, light, opening, documentIndex }) {
+export function GalleryExhibit({ stop, tour, light, opening, documentIndex }) {
   const { kind, data } = stop;
-  if (kind === 'hero') return <OpticalInstrument opticalGlass={opticalGlass} />;
+  if (kind === 'hero') return <HomeFolio opening={opening} />;
   if (kind === 'contact') return <ContactPaths />;
   if (kind === 'job') return <JobExhibit stop={stop} light={light} tour={tour} opening={opening} />;
   if (hasFilmExhibit(stop)) return <FilmExhibit stop={stop} tour={tour} opening={opening} light={light} documentIndex={documentIndex} />;

@@ -8,6 +8,7 @@ import { chapterLabel, guidedStops, roomIndex, roomLabel, roomPath, roomSwapMs, 
 import { Timeline } from './ui/gallery/Timeline';
 import { RevealWords } from './ui/gallery/RevealWords';
 import { RoomIndex } from './ui/gallery/RoomIndex';
+import { PortfolioReel } from './ui/gallery/PortfolioReel';
 import { GuidedTour } from './ui/gallery/GuidedTour';
 import { createFilmSound } from './lib/filmSound';
 import { deskTargets } from './scene/gallery/DeskShots';
@@ -34,6 +35,7 @@ export function App() {
   const timers = useRef([]);
   const moveFocus = useRef(false);
   const desk = useRef(null);
+  const reel = useRef(null);
   const sound = useRef(null);
   const [soundOn, setSoundOn] = useState(false);
   const [activeStep, setActiveStep] = useState(0);
@@ -148,6 +150,11 @@ export function App() {
     setReelOpen(open);
     const audio = sound.current;
     if (audio) (open ? audio.pause() : audio.resume()).catch(() => {});
+  }
+
+  function watchReel() {
+    reel.current.showModal();
+    changeReel(true);
   }
 
   function navigate(event) {
@@ -296,7 +303,7 @@ export function App() {
               {['experience', 'projects', 'contact'].map((id, index) => <a href={roomPath(stops.find(item => item.id === id))} data-room={id} key={id}
                 aria-current={stop.chapter === id ? 'location' : undefined} data-text-reveal style={{ '--reveal-order': index }}><RevealWords text={chapterLabel[id]} /></a>)}
             </nav>
-            <RoomIndex active={stop.id} onReelChange={changeReel} />
+            <RoomIndex active={stop.id} onWatchReel={watchReel} />
             {Boolean(window.AudioContext ?? window.webkitAudioContext) && <button type="button" className="theme-toggle film-sound"
               aria-label={gallery.sound} aria-pressed={soundOn} onClick={toggleSound} data-text-reveal>
               <span aria-hidden="true">♪</span><span className="film-sound-label"><RevealWords text={gallery.sound} /></span>
@@ -309,6 +316,7 @@ export function App() {
           </div>
         </div>
       </header>
+      <PortfolioReel dialog={reel} onClose={() => changeReel(false)} />
       {visual && <div className="gallery-scene" aria-hidden="true">
         <SceneBoundary onError={sceneFailed}>
           <Suspense fallback={null}><Scene tour={tour} documentIndex={documentIndex} paintDesk={paintDesk} compact={compact} entrance={entrance} light={light} replay={replay} paused={reelOpen} onReady={sceneReady} onFailure={sceneFailed} onFilmCue={playFilmCue} /></Suspense>
@@ -317,7 +325,7 @@ export function App() {
       {(!visual || !ready) && stop.chapter === 'projects' && <div className="gallery-scene-still" aria-hidden="true" data-project-still={stop.kind} />}
       {!entrance && <Timeline active={stop.chapter} room={stop.id} />}
       <main id="main" tabIndex={-1}>
-        <GalleryChapter key={stop.id} stop={stop} onSkill={(skill) => { tour.current.skill = skill; }}
+        <GalleryChapter key={stop.id} stop={stop} onWatchReel={watchReel} onSkill={(skill) => { tour.current.skill = skill; }}
           activeStep={activeStep} onStep={selectStep} onReplay={visual && ready ? replayOpening : undefined}
           demo={stop.kind === 'document-retrieval' ? { documentIndex, onDocument: setDocumentIndex } : undefined} />
         {visual && ready && stop.id === 'job-founder-guidance' && <div className="film-hotspots" ref={desk}>

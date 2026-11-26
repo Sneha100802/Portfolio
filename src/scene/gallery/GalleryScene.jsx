@@ -1,6 +1,6 @@
 import { Component, lazy, Suspense, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
-import { ContactShadows, Environment, Lightformer, MeshReflectorMaterial, PerformanceMonitor, RoundedBox, Line, useEnvironment } from '@react-three/drei';
+import { ContactShadows, Environment, Lightformer, MeshReflectorMaterial, PerformanceMonitor, Line, useEnvironment } from '@react-three/drei';
 import { MathUtils, Object3D, Vector3 } from 'three';
 import { roomSwapMs, stops } from '../../lib/gallery';
 import { GalleryBackdrop } from './GalleryBackdrop';
@@ -11,7 +11,6 @@ import { deskTargets } from './DeskShots';
 import { ArchiveFilm } from './ArchiveFilm';
 import { archiveBeat, archiveCues, archiveCut, archiveDuration, directArchiveCamera } from './ArchiveDirection';
 
-const brass = '#c9a45e';
 const night = '#0b0b0e';
 const daylight = '#ded7c9';
 const base = import.meta.env.BASE_URL;
@@ -19,8 +18,9 @@ const coordinates = stops.map((_, index) => new Vector3(Math.sin(index * 0.64) *
 const rail = coordinates.map(({ x, z }) => [x - 3.1, -0.47, z]);
 const Effects = lazy(() => import('./GalleryEffects'));
 const defaultShot = { distance: 7.45, height: 2.5, focus: 1.45, side: 0.92 };
+const portraitGuide = [1.12, 1.24, .05];
 const shots = {
-  hero: { distance: 7.38, height: 2.34, focus: 1.62, side: 1.37 },
+  hero: { distance: 6.48, height: 2.35, focus: 1.47, side: 0.92 },
   'document-retrieval': { distance: 8.14, height: 2.96, focus: 1.35, side: 1.08 },
   'hotel-rag': { distance: 7.30, height: 2.43, focus: 1.48, side: 1.5 },
   'multi-agent': { distance: 7.73, height: 3.12, focus: 1.42, side: -0.83 },
@@ -56,23 +56,7 @@ function StudioLight({ ready }) {
   return <Environment map={map} environmentIntensity={0.48} />;
 }
 
-function Pedestal() {
-  return (
-    <group>
-      <RoundedBox args={[3.76, 0.36, 2.61]} position-y={-0.29} radius={0.035} smoothness={2}>
-        <meshStandardMaterial color="#242529" metalness={0.52} roughness={0.34} />
-      </RoundedBox>
-      <RoundedBox args={[3.68, 0.068, 2.55]} position-y={-0.11} radius={0.025} smoothness={2}>
-        <meshStandardMaterial color={brass} metalness={0.91} roughness={0.37} />
-      </RoundedBox>
-      <RoundedBox args={[3.59, 0.065, 2.49]} position-y={-0.057} radius={0.025} smoothness={2}>
-        <meshStandardMaterial color="#101115" metalness={0.25} roughness={0.74} envMapIntensity={0.18} />
-      </RoundedBox>
-    </group>
-  );
-}
-
-function Fixture({ stop, index, opticalGlass, shadow, tour, opening, keyLight, rimLight, light, documentIndex, rig }) {
+function Fixture({ stop, index, shadow, tour, opening, keyLight, rimLight, light, documentIndex, rig }) {
   const aim = useMemo(() => new Object3D(), []);
   const grade = companyLook(stop);
   const focus = useRef();
@@ -91,8 +75,7 @@ function Fixture({ stop, index, opticalGlass, shadow, tour, opening, keyLight, r
   });
   return (
     <group ref={rig} position={coordinates[index]}>
-      {stop.kind === 'hero' && <Pedestal />}
-      <GalleryExhibit stop={stop} opticalGlass={opticalGlass} tour={tour} light={light} opening={opening} documentIndex={documentIndex} />
+      <GalleryExhibit stop={stop} tour={tour} light={light} opening={opening} documentIndex={documentIndex} />
       <primitive object={aim} position={[0, 1.35, 0]} />
       {stop.data?.story && <group ref={focus} position={stop.data.story.steps[0].position}>
         <mesh renderOrder={7}>
@@ -199,17 +182,24 @@ function World({ tour, documentIndex, paintDesk, compact, entrance, light, repla
     const depart = tour.current.departure ? MathUtils.smoothstep(performance.now() - tour.current.departure, 0, roomSwapMs) : 0;
     const originShot = shots[stops[index].kind] ?? defaultShot;
     const nextShot = shots[stops[following].kind] ?? defaultShot;
-    const distance = compact ? (entrance ? 10.8 : Math.max(8.8, 6.3 * size.height / size.width)) : MathUtils.lerp(originShot.distance, nextShot.distance, move);
+    const portrait = compact && size.width < size.height * .9;
+    const portraitDesk = portrait && stops[nearest].id === 'job-founder-guidance';
+    const portraitLab = portrait && stops[nearest].id === 'job-audio-research';
+    const widthRatio = portrait ? Math.max(1, .46 * size.height / size.width) : 1;
+    const roomDistance = (portraitDesk ? 5.72 : portraitLab ? 5.93 : 6.3) * size.height / size.width;
+    const distance = compact ? (entrance ? 11.7 * widthRatio : Math.max(8.6, roomDistance)) : MathUtils.lerp(originShot.distance, nextShot.distance, move);
     const height = MathUtils.lerp(originShot.height, nextShot.height, move);
     const focus = MathUtils.lerp(originShot.focus, nextShot.focus, move);
     const side = compact ? 0.65 : MathUtils.lerp(originShot.side, nextShot.side, move);
     const framing = compact && !entrance ? 0.5 : 1;
     const selected = tour.current.step;
-    const examining = intro.current >= 1 && !tour.current.departure && selected?.room === 'job-founder-guidance';
+    const examining = intro.current >= 1 && !tour.current.departure && selected?.room === stops[nearest].id &&
+      (selected.room === 'job-founder-guidance' || portraitLab);
+    const detail = examining && portraitDesk && selected.index === 1 ? portraitGuide : selected?.position;
     const lens = deskLens.current;
-    lens.x = MathUtils.damp(lens.x, examining ? selected.position[0] * 0.68 : 0, 4, step);
-    lens.y = MathUtils.damp(lens.y, examining ? (selected.position[1] - focus) * 0.73 : 0, 4, step);
-    lens.depth = MathUtils.damp(lens.depth, examining ? (compact ? 0.65 : 1.46) : 0, 4, step);
+    lens.x = MathUtils.damp(lens.x, examining ? detail[0] * (portrait ? .79 : .68) : portraitLab ? -.23 : 0, 4, step);
+    lens.y = MathUtils.damp(lens.y, examining ? (detail[1] - focus) * 0.73 : 0, 4, step);
+    lens.depth = MathUtils.damp(lens.depth, examining ? (portrait ? 2.12 : compact ? .65 : 1.46) : 0, 4, step);
 
     const titlePush = beat === 'title' ? .65 * (1 - MathUtils.smootherstep(time, archiveCut, 11.7)) : 0;
     camera.position.set(destination.current.x + lens.x * 0.28 + side * (1 - depart * 0.55 - close * 0.4) + (arrival?.side ?? 0) * framing + arc * 1.18 + entry * 1.68 + drift.current.x * 0.23,
@@ -220,7 +210,7 @@ function World({ tour, documentIndex, paintDesk, compact, entrance, light, repla
     if (stops[nearest].id === 'job-founder-guidance') deskFocus.copy(look.current);
     camera.lookAt(look.current);
     if (arrival) camera.rotateZ(Math.sign(arrival.side) * close * 0.075);
-    if (insert) directArchiveCamera(time, coordinates[goal], camera, look.current, compact);
+    if (insert) directArchiveCamera(time, coordinates[goal], camera, look.current, portrait, widthRatio);
     if (stage.current) {
       stage.current.position.copy(destination.current);
       stage.current.visible = !insert;
@@ -238,7 +228,7 @@ function World({ tour, documentIndex, paintDesk, compact, entrance, light, repla
     const framingSettle = film ? MathUtils.smoothstep(time, archiveCut - .15, 10.75) : MathUtils.smoothstep(motion, 0.53, 0.97);
     const horizontalFrame = 0.224 - lens.depth * 0.027;
     const offsetX = entrance || compact ? 0 : Math.round(-size.width * horizontalFrame * framingSettle);
-    const offsetY = Math.round(size.height * (entrance ? 0.14 : compact ? 0.20 * framingSettle : 0));
+    const offsetY = Math.round(size.height * (entrance ? (portrait ? .22 : .14) : compact ? .20 * framingSettle : 0));
     const viewKey = `${size.width}:${size.height}:${offsetX}:${offsetY}`;
     if (view.current !== viewKey) {
       view.current = viewKey;
@@ -285,10 +275,10 @@ function World({ tour, documentIndex, paintDesk, compact, entrance, light, repla
         <Line points={rail} color="#4f3d2f" lineWidth={0.61} />
         <Line points={rail.map(([x, y, z]) => [x + 6.2, y, z])} color="#3d3229" lineWidth={0.52} />
       </>}
-      <Fixture key={activeStop.id} stop={activeStop} index={activeIndex} opticalGlass={quality === 2} shadow={quality > 0} tour={tour} opening={intro} keyLight={keyLight} rimLight={rimLight} light={light} documentIndex={documentIndex} rig={exhibit} />
+      <Fixture key={activeStop.id} stop={activeStop} index={activeIndex} shadow={quality > 0} tour={tour} opening={intro} keyLight={keyLight} rimLight={rimLight} light={light} documentIndex={documentIndex} rig={exhibit} />
       {activeStop.kind === 'document-retrieval'
         ? <ArchiveFilm opening={intro} position={coordinates[activeIndex]} light={light} />
-        : <group key={`opening-${activeStop.id}-${replay}`} position={coordinates[activeIndex]}>
+        : !entrance && <group key={`opening-${activeStop.id}-${replay}`} position={coordinates[activeIndex]}>
           <SceneAperture ready={lightingReady} tour={tour} index={activeIndex} gateway={entrance} passage={activeStop.id === 'job-document-processing'} accent={light ? '#b46530' : grade?.accent}
             position={entrance ? undefined : [openingShot.target * 0.8, openingShot.focus, 1.15]} />
         </group>}

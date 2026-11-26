@@ -2,12 +2,25 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { roomLabel, roomSlug, stops } from './src/lib/gallery.js'
 import { content } from './src/lib/content.js'
+import { htmlEscape, renderQuickView } from './src/lib/quickViewPage.js'
 
-const htmlEscape = value => value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;')
+const portfolioUrl = 'https://sneha100802.github.io/Portfolio/'
 
 function staticRooms() {
+  let base
   return {
     name: 'gallery-static-rooms',
+    configResolved(config) {
+      base = config.base
+    },
+    configureServer(server) {
+      server.middlewares.use((request, response, next) => {
+        const route = request.url?.split('?')[0]
+        if (route !== `${base}quick-view/` && route !== `${base}quick-view`) return next()
+        response.setHeader('Content-Type', 'text/html; charset=utf-8')
+        response.end(renderQuickView(base, new URL('quick-view/', portfolioUrl).href))
+      })
+    },
     generateBundle: {
       order: 'post',
       handler(_, bundle) {
@@ -22,6 +35,11 @@ function staticRooms() {
             .replace(/((?:rel="canonical" href|property="og:url" content)=")([^"]+)"/g, (_, attribute, url) => `${attribute}${new URL(slug, url).href}"`)
           this.emitFile({ type: 'asset', fileName: `${slug}index.html`, source })
         }
+        this.emitFile({
+          type: 'asset',
+          fileName: 'quick-view/index.html',
+          source: renderQuickView(base, new URL('quick-view/', portfolioUrl).href),
+        })
       },
     },
   }

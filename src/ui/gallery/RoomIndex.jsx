@@ -3,14 +3,12 @@ import { content } from '../../lib/content';
 import { chapterIds, chapterLabel, guidedStops, roomLabel, roomPath, stops } from '../../lib/gallery';
 import { RevealWords } from './RevealWords';
 import { QuickView } from './QuickView';
-import { PortfolioReel } from './PortfolioReel';
 
 const { gallery } = content;
 const sections = chapterIds.map(chapter => ({ chapter, rooms: stops.filter(stop => stop.chapter === chapter) }));
 
-export function RoomIndex({ active, onReelChange }) {
+export function RoomIndex({ active, onWatchReel }) {
   const dialog = useRef();
-  const reel = useRef();
   const [quick, setQuick] = useState(false);
 
   function closeForNavigation(event) {
@@ -30,12 +28,14 @@ export function RoomIndex({ active, onReelChange }) {
         <button type="button" className="theme-toggle" onClick={() => setQuick(value => !value)} data-text-reveal>
           <RevealWords text={quick ? gallery.roomIndex : gallery.quickView} />
         </button>
+        <a href={`${import.meta.env.BASE_URL}quick-view/`} className="theme-toggle" data-text-reveal>
+          <RevealWords text={gallery.quickViewFull} />
+        </a>
         <a href={roomPath(guidedStops[0])} data-room={guidedStops[0].id} data-tour-start className="theme-toggle"
           onClick={closeForNavigation} data-text-reveal><RevealWords text={gallery.startTour} /> <span aria-hidden="true">→</span></a>
         <button type="button" className="theme-toggle" aria-haspopup="dialog" aria-controls="portfolio-reel" data-text-reveal onClick={() => {
           dialog.current.close();
-          reel.current.showModal();
-          onReelChange(true);
+          onWatchReel();
         }}><RevealWords text={gallery.watchReel} /></button>
       </div>
       {quick ? <QuickView onNavigate={closeForNavigation} /> : <nav className="room-index-grid" aria-label={gallery.roomIndex}>
@@ -50,6 +50,5 @@ export function RoomIndex({ active, onReelChange }) {
         </section>)}
       </nav>}
     </dialog>
-    <PortfolioReel dialog={reel} onClose={() => onReelChange(false)} />
   </>;
 }

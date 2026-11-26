@@ -37,8 +37,10 @@ export function WorkStory({ stop, onStep, active = 0, demo }) {
           <dt data-text-reveal><RevealWords text={gallery.constraintLabel} /></dt>
           <dd data-text-reveal><RevealWords text={story.constraint} linewise /></dd>
         </>}
-        <dt data-text-reveal><RevealWords text={gallery.outcomeLabel} /></dt>
-        <dd data-text-reveal><RevealWords text={story.result} linewise /></dd>
+        {story.result && <>
+          <dt data-text-reveal><RevealWords text={gallery.outcomeLabel} /></dt>
+          <dd data-text-reveal><RevealWords text={story.result} linewise /></dd>
+        </>}
       </dl>
       {bullets?.length > 0 && <ul className="caption-highlights">{bullets.map(item => <li key={item} data-text-reveal><RevealWords text={item} linewise /></li>)}</ul>}
     </details>

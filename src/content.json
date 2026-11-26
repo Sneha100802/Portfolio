@@ -11,7 +11,6 @@
     ],
     "skip": "Skip to content",
     "start": "Explore work",
-    "homeRole": "Python & AI/ML Developer",
     "previousRoom": "Previous room",
     "nextRoom": "Next room",
     "roomNavigation": "Room navigation",
@@ -53,11 +52,11 @@
       "request": ["Vendor onboarding", "Where do I start?", "Who should approve it?"],
       "guide": ["Operations folio", "Vendor contact", "Scope and approval", "Review checklist"]
     },
-    "walkthrough": "Walkthrough",
+    "walkthrough": "Illustrative walkthrough",
     "caseStudy": "Case study",
     "roleLabel": "My role",
     "constraintLabel": "Constraint",
-    "outcomeLabel": "What I built",
+    "outcomeLabel": "Outcome",
     "evidenceLabel": "Related work",
     "illustrativeSample": "Illustrative example",
     "navigation": "Gallery chapters",
@@ -74,8 +73,8 @@
     "back": "Back to the entrance"
   },
   "quickResults": [
-    "Built a Python backend for document processing and semantic retrieval.",
-    "Developed financial product interfaces and automated collection of public factsheets.",
+    "Architected and built a multimodal RAG backend as the sole backend developer.",
+    "Developed mutual fund scanning and filtering pages, fund detail tabs, and portfolio dashboard components.",
     "Co-authored two peer-reviewed IEEE papers on pulmonary audio and COPD."
   ],
   "ragDemo": {
@@ -94,7 +93,7 @@
     "name": "Sneha Jha",
     "title": "Python Developer · AI/ML Engineer · Generative AI",
     "location": "New Delhi, India",
-    "siteTitle": "Sneha Jha | AI/ML Engineer & Python Developer",
+    "siteTitle": "Sneha Jha | Python Developer · AI/ML Engineer · Generative AI",
     "photo": "TODO"
   },
   "summary": "Python developer and AI/ML engineer with IEEE-published research and hands-on experience building production-grade RAG pipelines, LLM integrations, and FastAPI backends across FastAPI, LangChain, FAISS, ChromaDB, PostgreSQL, and AWS.",
@@ -107,9 +106,8 @@
     {
       "id": "fund-discovery",
       "story": {
-        "role": "Built fund discovery screens and contributed to the API behind them.",
-        "constraint": "The interface had to make dense financial information easy to compare.",
-        "result": "Built discovery, filtering, and portfolio views and automated the collection of public fund factsheets.",
+        "role": "Developed frontend features for a mutual fund investment app and contributed to its Django REST Framework backend.",
+        "result": "Built fund scanning and filtering pages, fund detail tabs, and portfolio dashboard components. Built PDF factsheet scrapers.",
         "steps": [
           {
             "label": "Scan funds",
@@ -141,9 +139,9 @@
           }
         ]
       },
-      "role": "Full-stack Development Internship",
+      "role": "Frontend & Backend Developer (Internship)",
       "company": "Blazetrail Fintech Solutions",
-      "introCredit": "Built fund discovery interfaces and automated factsheet collection.",
+      "introCredit": "Developed mutual fund scanning, filtering, and portfolio dashboard features.",
       "exhibit": "Mutual fund dashboard",
       "exhibitSteps": [
         "Scan funds",
@@ -152,21 +150,20 @@
       ],
       "stack": [
         "TypeScript",
-        "Web APIs",
-        "Data extraction"
+        "Django REST Framework"
       ],
       "bullets": [
         "Built product interfaces in TypeScript.",
         "Contributed to API and database changes.",
-        "Automated collection of public factsheets."
+        "Built PDF factsheet scrapers."
       ]
     },
     {
       "id": "document-processing",
       "story": {
-        "role": "Designed and built a backend for document processing and semantic retrieval.",
-        "constraint": "The pipeline had to handle several document formats with limited compute.",
-        "result": "Built a searchable workflow that removes sensitive fields from input and supports reviewed access.",
+        "role": "Architected and built a multimodal RAG platform as the sole backend developer.",
+        "constraint": "Document ingestion had to handle several file formats on a CPU-only server with limited memory.",
+        "result": "Built document ingestion and semantic retrieval, implemented sensitive-field masking before LLM calls, and supported reviewed access and audit trails.",
         "steps": [
           {
             "label": "Ingest files",
@@ -199,7 +196,7 @@
       },
       "role": "Python Developer",
       "company": "Survatra",
-      "introCredit": "Built a Python backend for document processing and semantic retrieval.",
+      "introCredit": "Architected and built a multimodal RAG backend.",
       "exhibit": "Document masking and secure storage",
       "exhibitSteps": [
         "Ingest documents",
@@ -220,9 +217,8 @@
     {
       "id": "founder-guidance",
       "story": {
-        "role": "Built a conversational interface that helps founders navigate business topics.",
-        "constraint": "Questions needed to connect with the right part of a structured knowledge base.",
-        "result": "Built a question-to-guidance workflow for common startup operations.",
+        "role": "Built an NLP-powered chatbot with LangChain, LLM APIs, and structured knowledge bases.",
+        "result": "The chatbot guides startup founders through legal, financial, and operational workflows.",
         "steps": [
           {
             "label": "Ask a question",
@@ -258,7 +254,7 @@
       },
       "role": "AI Developer",
       "company": "The Idea Company",
-      "introCredit": "Built a conversational guide for startup founders.",
+      "introCredit": "Built an NLP-powered chatbot for startup founders.",
       "exhibit": "Chatbot response generation",
       "exhibitSteps": [
         "Founder asks a question",
@@ -277,8 +273,7 @@
     {
       "id": "audio-research",
       "story": {
-        "role": "Developed and compared convolutional models for classifying pulmonary audio.",
-        "constraint": "The study compared different training approaches on time-series audio features.",
+        "role": "Developed a DenseNet architecture and 1D CNN models for COPD detection from pulmonary audio.",
         "result": "Co-authored two peer-reviewed IEEE papers on pulmonary audio and COPD.",
         "steps": [
           {
@@ -310,9 +305,9 @@
           }
         ]
       },
-      "role": "Data Science Research Internship",
+      "role": "Summer Research Intern, Data Science",
       "company": "IIIT Naya Raipur",
-      "introCredit": "Co-authored two IEEE papers on pulmonary audio analysis.",
+      "introCredit": "Developed CNN models for COPD detection from pulmonary audio.",
       "exhibit": "Pulmonary audio and convolution layers",
       "exhibitSteps": [
         "Analyze respiratory audio",
@@ -320,22 +315,20 @@
         "Identify COPD patterns"
       ],
       "stack": [
-        "TensorFlow",
-        "Keras",
         "DenseNet",
         "1D CNN",
-        "Librosa"
+        "Adam",
+        "RMSprop"
       ],
       "bullets": [
-        "Compared convolutional model architectures and training approaches.",
+        "Developed a DenseNet combining three CNN models and 1D CNN models using Adam and RMSprop.",
         "Co-authored two peer-reviewed IEEE publications."
       ]
     },
     {
       "id": "ml-prototyping",
       "story": {
-        "role": "Developed small machine learning prototypes during an early-career rotation.",
-        "result": "Gained hands-on experience with AI and ML prototyping.",
+        "role": "Developed AI/ML prototypes during an early-career industry rotation.",
         "steps": [
           {
             "label": "Build a prototype",
@@ -358,24 +351,22 @@
           }
         ]
       },
-      "role": "AI/ML Development Rotation",
+      "role": "AI & ML Developer",
       "company": "Hex N Bit",
-      "introCredit": "Developed small AI and machine learning prototypes.",
+      "introCredit": "Developed AI/ML prototypes during an early-career industry rotation.",
       "exhibit": "AI and ML prototype",
       "exhibitSteps": [
         "Prototype a model",
         "Explore its output"
       ],
       "stack": [],
-      "bullets": [
-        "Developed small AI and ML prototypes."
-      ]
+      "bullets": []
     },
     {
       "id": "web-delivery",
       "story": {
-        "role": "Gained exposure to hosting, deployment workflows, and full-stack web fundamentals.",
-        "result": "Learned how a web project moves from its source files to a hosted site.",
+        "role": "Web development internship covering full-stack web fundamentals.",
+        "result": "Gained exposure to web hosting and deployment pipelines.",
         "steps": [
           {
             "label": "Prepare the site",
@@ -406,9 +397,9 @@
           }
         ]
       },
-      "role": "Web Development Internship",
+      "role": "Web Developer Intern",
       "company": "Gauravgo Technologies",
-      "introCredit": "Gained hands-on experience with web hosting and deployment.",
+      "introCredit": "Gained exposure to web hosting and deployment pipelines.",
       "exhibit": "Web hosting and deployment",
       "exhibitSteps": [
         "Build the web interface",
@@ -486,7 +477,6 @@
       "id": "hotel-rag",
       "story": {
         "role": "Built the hotel question-answering project using Sentence Transformers, FAISS and Flask.",
-        "constraint": "The interface needed to accept natural-language questions and match them to hotel information by meaning.",
         "result": "Delivered semantic hotel search through a Flask API.",
         "steps": [
           {
@@ -538,7 +528,6 @@
       "id": "multi-agent",
       "story": {
         "role": "Built Python agents with a Gradio interface and routing based on content type and intent.",
-        "constraint": "Different inputs needed to reach the agent suited to the request.",
         "result": "Delivered a single Gradio entry point that routes requests to Python agents.",
         "steps": [
           {
@@ -589,9 +578,8 @@
     {
       "id": "stock-prediction",
       "story": {
-        "role": "Contributed to a team project that combines text and historical prices for stock forecasting.",
-        "constraint": "The project combined text and model inputs and surfaced outputs across Streamlit, Flask and Grafana.",
-        "result": "Delivered a prediction workflow with dashboard views for the results.",
+        "role": "Worked on a stock price prediction project combining text and machine learning models.",
+        "result": "Used Streamlit, Flask, and Grafana dashboards to present project outputs.",
         "steps": [
           {
             "label": "Combine inputs",
@@ -623,7 +611,7 @@
       },
       "name": "Stock Price Prediction",
       "tag": "",
-      "description": "A hybrid stock forecasting project using historical prices, text analysis and machine learning, with Streamlit, Flask and Grafana.",
+      "description": "Hybrid text and machine learning models for stock price prediction, with Streamlit, Flask, and Grafana dashboards.",
       "exhibit": ["Example price history", "Illustrative forecast"],
       "stack": ["Streamlit", "Flask", "Grafana"],
       "url": "TODO"
@@ -632,7 +620,6 @@
       "id": "ai-avatar",
       "story": {
         "role": "Built a conversation pipeline connecting Gemini 2.0 Flash, edge-tts and Wav2Lip.",
-        "constraint": "Generated text had to become audio and line up with the avatar’s lip movements.",
         "result": "Delivered a text-to-speech-to-video pipeline.",
         "steps": [
           {
@@ -701,13 +688,13 @@
   "publications": [
     {
       "title": "Optimized 1D CNNs for Enhanced Early Detection and Accurate Prediction of COPD and Other Pulmonary Diseases",
-      "venue": "IEEE TENSYMP",
+      "venue": "IEEE",
       "year": "2024",
       "url": "https://doi.org/10.1109/TENSYMP61132.2024.10752156"
     },
     {
       "title": "Enhanced Predictive Modeling Techniques for Early Detection of COPD Utilizing 1D Convolutional Neural Networks",
-      "venue": "15th ICCCNT, IEEE Xplore",
+      "venue": "IEEE",
       "year": "2024",
       "url": "https://doi.org/10.1109/ICCCNT61001.2024.10726000"
     }

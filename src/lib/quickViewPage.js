@@ -6,7 +6,7 @@ export const htmlEscape = value => String(value).replace(/&/g, '&amp;').replace(
 export function renderQuickView(base, canonical) {
   const { gallery, meta, publications, quickResults, links } = content;
   const pageTitle = htmlEscape(`${gallery.quickView} | ${meta.name}`);
-  const description = htmlEscape(`${meta.name} · ${gallery.homeRole}. Selected experience, projects, and published research.`);
+  const description = htmlEscape(`${meta.name} · ${meta.title}. Selected experience, projects, and published research.`);
   const path = stop => htmlEscape(base + roomSlug(stop));
   const entries = chapter => stops.filter(stop => stop.chapter === chapter && stop.kind !== 'document-retrieval').map(stop => `
     <li><a href="${path(stop)}">${htmlEscape(roomLabel(stop))}</a>
@@ -38,7 +38,7 @@ export function renderQuickView(base, canonical) {
         <button type="button" id="print-page">${htmlEscape(gallery.print)}</button>
       </nav>
       <h1>${htmlEscape(meta.name)}</h1>
-      <p class="role">${htmlEscape(gallery.homeRole)}</p>
+      <p class="role">${htmlEscape(meta.title)}</p>
       <nav aria-label="${htmlEscape(gallery.profileLinks)}" class="profile">${links.map(link => `<a href="${htmlEscape(link.url)}">${htmlEscape(link.label)}</a>`).join('')}</nav>
     </header>
     <section aria-labelledby="highlights">

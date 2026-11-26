@@ -127,7 +127,7 @@ export function GalleryChapter({ stop, onSkill, onStep, activeStep, onReplay, on
         <div className="caption hero-caption">
           <div className="hero-identity">
             <h1 id="gallery-title" data-text-reveal><RevealWords text={meta.name} headline /></h1>
-            <p className="hero-role" data-text-reveal><RevealWords text={gallery.homeRole} /></p>
+            <p className="hero-role" data-text-reveal><RevealWords text={meta.title} /></p>
           </div>
           <div className="hero-context">
             <p className="hero-summary" data-text-reveal><RevealWords text={summary} linewise /></p>

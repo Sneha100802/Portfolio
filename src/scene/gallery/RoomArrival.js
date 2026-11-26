@@ -1,6 +1,15 @@
 import { MathUtils } from 'three';
 
 export const arrivalDuration = 4;
+export const companyOpeningDuration = 6.6;
+export const companyCameraDuration = 3.15;
+
+export function companyCreditAt(time) {
+  if (time < 3.25 || time >= companyOpeningDuration) return '';
+  if (time < 4.27) return 'name';
+  if (time < 5.23) return 'role';
+  return 'contribution';
+}
 
 const companies = {
   'fund-discovery': { night: '#07090d', accent: '#d6a45f', daylightAccent: '#895027', rim: '#465b74' },

@@ -33,9 +33,10 @@ function Tech({ items }) {
 }
 
 function Job({ stop, onStep, activeStep }) {
-  const { company, role, location, start, end, bullets, stack, exhibit, exhibitSteps } = stop.data;
+  const { company, role, location, start, end, bullets, stack, exhibit, exhibitSteps, introCredit } = stop.data;
   return <>
     <Heading id={`${stop.id}-title`} chapter={stop.chapter} title={company} eyebrow={dateSpan(start, end)} subtitle={role} />
+    {introCredit && <p className="company-credit" data-text-reveal><RevealWords text={introCredit} linewise /></p>}
     {location && <p className="caption-location" data-text-reveal><RevealWords text={location} /></p>}
     {exhibit && <p className="company-exhibit-label" data-text-reveal><RevealWords text={exhibit} /></p>}
     {stop.data.story ? <WorkStory stop={stop} onStep={onStep} active={activeStep} /> : <>

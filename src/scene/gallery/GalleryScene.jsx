@@ -1,4 +1,4 @@
-import { Component, lazy, Suspense, useEffect, useMemo, useRef, useState } from 'react';
+import { Component, lazy, Suspense, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { ContactShadows, Environment, Lightformer, MeshReflectorMaterial, PerformanceMonitor, RoundedBox, Line, useEnvironment } from '@react-three/drei';
 import { MathUtils, Object3D, Vector3 } from 'three';
@@ -6,7 +6,7 @@ import { roomSwapMs, stops } from '../../lib/gallery';
 import { GalleryBackdrop } from './GalleryBackdrop';
 import { GalleryExhibit } from './GalleryExhibits';
 import { SceneAperture } from './SceneAperture';
-import { arrivalDuration, companyLook, roomArrival, roomSet } from './RoomArrival';
+import { arrivalDuration, companyCameraDuration, companyCreditAt, companyLook, companyOpeningDuration, roomArrival, roomSet } from './RoomArrival';
 import { deskTargets } from './DeskShots';
 import { ArchiveFilm } from './ArchiveFilm';
 import { archiveBeat, archiveCues, archiveCut, archiveDuration, directArchiveCamera } from './ArchiveDirection';
@@ -80,7 +80,7 @@ function Fixture({ stop, index, opticalGlass, shadow, tour, opening, keyLight, r
   useFrame(({ camera, clock }, delta) => {
     if (!focus.current) return;
     const selected = tour.current.step;
-    focus.current.visible = opening.current > 0.93;
+    focus.current.visible = opening.current > (stop.kind === 'job' ? 0.999 : 0.93);
     const position = selected?.room === stop.id ? selected.position : stop.data.story.steps[0].position;
     target.current.fromArray(position);
     const blend = 1 - Math.exp(-6 * delta);
@@ -111,7 +111,7 @@ function Fixture({ stop, index, opticalGlass, shadow, tour, opening, keyLight, r
   );
 }
 
-function World({ tour, documentIndex, paintDesk, compact, entrance, light, replay, quality, paintStage, onReady, onFilmCue }) {
+function World({ tour, documentIndex, paintDesk, compact, entrance, light, replay, paused, quality, paintStage, onReady, onFilmCue }) {
   const journey = useRef(null);
   const look = useRef(new Vector3());
   const destination = useRef(new Vector3());
@@ -122,7 +122,7 @@ function World({ tour, documentIndex, paintDesk, compact, entrance, light, repla
   const [center, setCenter] = useState(0);
   const view = useRef('');
   const intro = useRef(0);
-  const archiveStart = useRef(null);
+  const timedOpeningStart = useRef(null);
   const jump = useRef(0);
   const cue = useRef(0);
   const exhibit = useRef();
@@ -136,29 +136,41 @@ function World({ tour, documentIndex, paintDesk, compact, entrance, light, repla
     lightingReady.current = true;
     onReady();
   }, [onReady]);
+  useLayoutEffect(() => {
+    if (!paused) return;
+    const began = performance.now();
+    return () => {
+      if (timedOpeningStart.current !== null) timedOpeningStart.current += performance.now() - began;
+    };
+  }, [paused]);
 
   useFrame(({ camera, size, clock }, delta) => {
     const step = Math.min(delta, 1.5);
     const goal = tour.current.position;
     const archive = stops[goal].kind === 'document-retrieval';
+    const company = stops[goal].kind === 'job';
     if (jump.current !== tour.current.jump) {
       jump.current = tour.current.jump;
       journey.current = goal;
       intro.current = 0;
-      archiveStart.current = null;
+      timedOpeningStart.current = null;
       cue.current = 0;
     }
     if (tour.current.cut) intro.current = 1;
     else if (lightingReady.current) {
       if (archive) {
         const now = performance.now();
-        archiveStart.current ??= now;
-        intro.current = Math.min((now - archiveStart.current) / (archiveDuration * 1000), 1);
+        timedOpeningStart.current ??= now;
+        intro.current = Math.min((now - timedOpeningStart.current) / (archiveDuration * 1000), 1);
       } else {
-        intro.current = Math.min(intro.current + Math.min(step, .085) / (entrance ? 1.8 : arrivalDuration), 1);
+        const duration = company ? companyOpeningDuration : entrance ? 1.8 : arrivalDuration;
+        intro.current = Math.min(intro.current + Math.min(step, company ? .24 : .085) / duration, 1);
       }
     }
     const film = archive && intro.current < 1;
+    const credits = company && intro.current < 1;
+    const credit = credits ? companyCreditAt(intro.current * companyOpeningDuration) : '';
+    const motion = company ? Math.min(1, intro.current * companyOpeningDuration / companyCameraDuration) : intro.current;
     const time = intro.current * archiveDuration;
     const beat = film ? archiveBeat(time) : '';
     const insert = film && time < archiveCut;
@@ -182,7 +194,7 @@ function World({ tour, documentIndex, paintDesk, compact, entrance, light, repla
     drift.current.y = MathUtils.damp(drift.current.y, compact ? 0 : tour.current.pointerY, 3, step);
     const arc = Math.sin(fraction * Math.PI);
     const entry = entrance ? (1 - intro.current) ** 3 * (compact ? 0.35 : 1) : 0;
-    const arrival = archive || entrance || intro.current >= 1 ? null : roomArrival(stops[nearest], intro.current);
+    const arrival = archive || entrance || motion >= 1 ? null : roomArrival(stops[nearest], motion);
     const close = arrival?.close ?? 0;
     const depart = tour.current.departure ? MathUtils.smoothstep(performance.now() - tour.current.departure, 0, roomSwapMs) : 0;
     const originShot = shots[stops[index].kind] ?? defaultShot;
@@ -223,7 +235,7 @@ function World({ tour, documentIndex, paintDesk, compact, entrance, light, repla
       keyLight.current.intensity = exposure * (1 - 0.50 * arc ** 9 - entry * 0.54) * MathUtils.lerp(0.21, 1, arrival?.light ?? 1);
     }
     if (rimLight.current) rimLight.current.intensity = light ? 5 + close * 4 : 9 + close * 8;
-    const framingSettle = film ? MathUtils.smoothstep(time, archiveCut - .15, 10.75) : MathUtils.smoothstep(intro.current, 0.53, 0.97);
+    const framingSettle = film ? MathUtils.smoothstep(time, archiveCut - .15, 10.75) : MathUtils.smoothstep(motion, 0.53, 0.97);
     const horizontalFrame = 0.224 - lens.depth * 0.027;
     const offsetX = entrance || compact ? 0 : Math.round(-size.width * horizontalFrame * framingSettle);
     const offsetY = Math.round(size.height * (entrance ? 0.14 : compact ? 0.20 * framingSettle : 0));
@@ -232,7 +244,7 @@ function World({ tour, documentIndex, paintDesk, compact, entrance, light, repla
       view.current = viewKey;
       camera.setViewOffset(size.width, size.height, offsetX, offsetY, size.width, size.height);
     }
-    const atExhibit = nearest === center && Math.abs(journey.current - goal) < 0.045 && intro.current > 0.90 && !film;
+    const atExhibit = nearest === center && Math.abs(journey.current - goal) < 0.045 && intro.current > 0.90 && !film && !credits;
     const station = atExhibit ? stops[nearest].id : '';
     if (station === 'job-founder-guidance') {
       camera.updateMatrixWorld();
@@ -243,7 +255,7 @@ function World({ tour, documentIndex, paintDesk, compact, entrance, light, repla
         paintDesk(control, x, y, x >= 24 && x <= size.width - 22 && y >= 74 && y <= size.height - 74);
       }
     } else paintDesk();
-    paintStage(station, 1 - arc ** 7 * 0.34, film || intro.current < 0.77, beat);
+    paintStage(station, 1 - arc ** 7 * 0.34, film || credits || intro.current < 0.77, beat, credit);
   }, -1);
 
   const activeIndex = center;
@@ -287,7 +299,7 @@ function World({ tour, documentIndex, paintDesk, compact, entrance, light, repla
   );
 }
 
-export default function GalleryScene({ tour, documentIndex, paintDesk, compact, entrance, light, replay, onReady, onFailure, onFilmCue }) {
+export default function GalleryScene({ tour, documentIndex, paintDesk, compact, entrance, light, replay, paused, onReady, onFailure, onFilmCue }) {
   const [quality, setQuality] = useState(() => compact || window.innerWidth < 1220 ? 0 : 2);
   const [visible, setVisible] = useState(true);
   const wrapper = useRef();
@@ -315,25 +327,26 @@ export default function GalleryScene({ tour, documentIndex, paintDesk, compact, 
     else if (/intel.*(?:iris|uhd|hd graphics)/i.test(renderer)) setQuality(0);
   }
 
-  function paintStage(station, opacity, opening, beat) {
+  function paintStage(station, opacity, opening, beat, credit) {
     const element = wrapper.current;
     if (!element) return;
     if (element.dataset.station !== station) element.dataset.station = station;
     const openingState = String(opening);
     if (element.dataset.opening !== openingState) element.dataset.opening = openingState;
     if (element.dataset.filmBeat !== beat) element.dataset.filmBeat = beat;
+    if (element.dataset.credit !== credit) element.dataset.credit = credit;
     const alpha = String(Math.round(opacity * 100) / 100);
     if (element.style.opacity !== alpha) element.style.opacity = alpha;
   }
 
   return <div ref={wrapper} style={{ width: '100%', height: '100%' }}>
     <Canvas dpr={[1, 1.5]} gl={{ antialias: quality === 0, powerPreference: 'high-performance' }}
-      frameloop={visible ? 'always' : 'never'}
+      frameloop={visible && !paused ? 'always' : 'never'}
       camera={{ position: [0.9, 2.1, 7], fov: 38, near: 0.12, far: 86 }} onCreated={start}>
       <PerformanceMonitor flipflops={2} bounds={refresh => [Math.min(57, refresh * 0.93), Math.max(60, refresh * 0.78)]}
         onDecline={() => setQuality(current => Math.max(0, current - 1))}
         onFallback={() => setQuality(0)}>
-        <World tour={tour} documentIndex={documentIndex} paintDesk={paintDesk} compact={compact} entrance={entrance} light={light} replay={replay} quality={quality} paintStage={paintStage} onReady={onReady} onFilmCue={onFilmCue} />
+        <World tour={tour} documentIndex={documentIndex} paintDesk={paintDesk} compact={compact} entrance={entrance} light={light} replay={replay} paused={paused} quality={quality} paintStage={paintStage} onReady={onReady} onFilmCue={onFilmCue} />
       </PerformanceMonitor>
     </Canvas>
   </div>;

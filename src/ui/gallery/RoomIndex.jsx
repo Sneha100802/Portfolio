@@ -3,12 +3,14 @@ import { content } from '../../lib/content';
 import { chapterIds, chapterLabel, guidedStops, roomLabel, roomPath, stops } from '../../lib/gallery';
 import { RevealWords } from './RevealWords';
 import { QuickView } from './QuickView';
+import { PortfolioReel } from './PortfolioReel';
 
 const { gallery } = content;
 const sections = chapterIds.map(chapter => ({ chapter, rooms: stops.filter(stop => stop.chapter === chapter) }));
 
-export function RoomIndex({ active }) {
+export function RoomIndex({ active, onReelChange }) {
   const dialog = useRef();
+  const reel = useRef();
   const [quick, setQuick] = useState(false);
 
   function closeForNavigation(event) {
@@ -30,6 +32,11 @@ export function RoomIndex({ active }) {
         </button>
         <a href={roomPath(guidedStops[0])} data-room={guidedStops[0].id} data-tour-start className="theme-toggle"
           onClick={closeForNavigation} data-text-reveal><RevealWords text={gallery.startTour} /> <span aria-hidden="true">→</span></a>
+        <button type="button" className="theme-toggle" aria-haspopup="dialog" aria-controls="portfolio-reel" data-text-reveal onClick={() => {
+          dialog.current.close();
+          reel.current.showModal();
+          onReelChange(true);
+        }}><RevealWords text={gallery.watchReel} /></button>
       </div>
       {quick ? <QuickView onNavigate={closeForNavigation} /> : <nav className="room-index-grid" aria-label={gallery.roomIndex}>
         {sections.map(({ chapter, rooms }) => <section key={chapter} aria-labelledby={`index-${chapter}`}>
@@ -43,5 +50,6 @@ export function RoomIndex({ active }) {
         </section>)}
       </nav>}
     </dialog>
+    <PortfolioReel dialog={reel} onClose={() => onReelChange(false)} />
   </>;
 }

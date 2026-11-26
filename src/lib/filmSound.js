@@ -55,6 +55,7 @@ export function createFilmSound() {
 
   return {
     resume: () => context.resume(),
+    pause: () => context.suspend(),
     close: () => {
       master.disconnect();
       return context.close();

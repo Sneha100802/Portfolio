@@ -41,6 +41,7 @@ export function App() {
   const [guided, setGuided] = useState(() => Boolean(history.state?.guided));
   const [transit, setTransit] = useState(null);
   const [replay, setReplay] = useState(0);
+  const [reelOpen, setReelOpen] = useState(false);
   const [mode, setMode] = useState('plain');
   const [graphics, setGraphics] = useState('checking');
   const [ready, setReady] = useState(false);
@@ -141,6 +142,12 @@ export function App() {
     history.replaceState({ ...history.state, guided: false }, '');
     setGuided(false);
     document.getElementById(stop.id)?.focus({ preventScroll: true });
+  }
+
+  function changeReel(open) {
+    setReelOpen(open);
+    const audio = sound.current;
+    if (audio) (open ? audio.pause() : audio.resume()).catch(() => {});
   }
 
   function navigate(event) {
@@ -289,7 +296,7 @@ export function App() {
               {['experience', 'projects', 'contact'].map((id, index) => <a href={roomPath(stops.find(item => item.id === id))} data-room={id} key={id}
                 aria-current={stop.chapter === id ? 'location' : undefined} data-text-reveal style={{ '--reveal-order': index }}><RevealWords text={chapterLabel[id]} /></a>)}
             </nav>
-            <RoomIndex active={stop.id} />
+            <RoomIndex active={stop.id} onReelChange={changeReel} />
             {Boolean(window.AudioContext ?? window.webkitAudioContext) && <button type="button" className="theme-toggle film-sound"
               aria-label={gallery.sound} aria-pressed={soundOn} onClick={toggleSound} data-text-reveal>
               <span aria-hidden="true">♪</span><span className="film-sound-label"><RevealWords text={gallery.sound} /></span>
@@ -304,7 +311,7 @@ export function App() {
       </header>
       {visual && <div className="gallery-scene" aria-hidden="true">
         <SceneBoundary onError={sceneFailed}>
-          <Suspense fallback={null}><Scene tour={tour} documentIndex={documentIndex} paintDesk={paintDesk} compact={compact} entrance={entrance} light={light} replay={replay} onReady={sceneReady} onFailure={sceneFailed} onFilmCue={playFilmCue} /></Suspense>
+          <Suspense fallback={null}><Scene tour={tour} documentIndex={documentIndex} paintDesk={paintDesk} compact={compact} entrance={entrance} light={light} replay={replay} paused={reelOpen} onReady={sceneReady} onFailure={sceneFailed} onFilmCue={playFilmCue} /></Suspense>
         </SceneBoundary>
       </div>}
       {(!visual || !ready) && stop.chapter === 'projects' && <div className="gallery-scene-still" aria-hidden="true" data-project-still={stop.kind} />}

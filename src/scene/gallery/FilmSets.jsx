@@ -1,11 +1,12 @@
 import { useEffect, useMemo, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { Line, RoundedBox } from '@react-three/drei';
-import { CanvasTexture, DataTexture, DoubleSide, LinearFilter, MathUtils, SRGBColorSpace, Vector2 } from 'three';
+import { CanvasTexture, DataTexture, DoubleSide, LinearFilter, MathUtils, SRGBColorSpace, Vector2, Vector3 } from 'three';
 import { content } from '../../lib/content';
-import { documents } from '../../lib/ragDemo';
+import { documents, traceDocument } from '../../lib/ragDemo';
 import { BronzeMembrane } from './BronzeMembrane';
 import { bronzeStrike, portraitOpeningDuration } from './CompanyShots';
+import { ArchiveShelves, CarvedDesk, Chamber } from './SetDressing';
 import { rng } from '../Parts';
 
 const brass = '#b88a4f';
@@ -20,35 +21,40 @@ function Board({ size, at, color, metalness = 0, rotation }) {
   </RoundedBox>;
 }
 
-function Paper({ lines, width = 0.84, height = 1.04, inkLayer, overlay = false }) {
+function Paper({ lines, width = 0.84, height = 1.04, inkLayer, overlay = false, slip = false }) {
   const map = useMemo(() => {
     const canvas = document.createElement('canvas');
     canvas.width = 384;
-    canvas.height = 480;
+    canvas.height = slip ? 192 : 480;
     const ctx = canvas.getContext('2d');
-    const paper = ctx.createLinearGradient(0, 0, 384, 480);
+    const paper = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
     paper.addColorStop(0, '#ece0b9');
     paper.addColorStop(1, '#bea078');
     ctx.fillStyle = paper;
-    ctx.fillRect(0, 0, 384, 480);
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
     const grain = rng(731);
     for (let i = 0; i < 5500; i++) {
       ctx.fillStyle = i % 2 ? '#68452d19' : '#fff0be32';
-      ctx.fillRect(grain() * 384, grain() * 480, .5 + grain() * 5, .45 + grain());
+      ctx.fillRect(grain() * canvas.width, grain() * canvas.height, .5 + grain() * 5, .45 + grain());
     }
     ctx.strokeStyle = '#836342';
-    ctx.strokeRect(19, 18, 346, 444);
-    ctx.strokeRect(25, 24, 334, 432);
-    ctx.font = '28px Georgia';
+    ctx.strokeRect(19, 18, 346, canvas.height - 36);
+    ctx.strokeRect(25, 24, 334, canvas.height - 48);
     ctx.fillStyle = '#362532';
-    lines.forEach((line, index) => ctx.fillText(line, 47, 107 + index * 62, 289));
+    lines.forEach((line, index) => {
+      ctx.font = slip ? (index === 0 ? 'bold 43px Georgia' : '31px Georgia') : '28px Georgia';
+      const y = slip ? (lines.length === 1 ? 111 : 80 + index * 61) : 107 + index * 62;
+      ctx.fillText(line, 47, y, 289);
+    });
     ctx.fillStyle = '#96784f';
-    ctx.fillRect(47, 365, 180, 3);
-    ctx.fillRect(47, 384, 123, 2);
+    if (!slip) {
+      ctx.fillRect(47, 365, 180, 3);
+      ctx.fillRect(47, 384, 123, 2);
+    }
     const texture = new CanvasTexture(canvas);
     texture.colorSpace = SRGBColorSpace;
     return texture;
-  }, [lines]);
+  }, [lines, slip]);
   useEffect(() => () => map.dispose(), [map]);
 
   return <mesh>
@@ -60,13 +66,23 @@ function Paper({ lines, width = 0.84, height = 1.04, inkLayer, overlay = false }
 
 const flameProfile = [[0, -.12], [.039, -.09], [.057, -.04], [.061, -.002], [.049, .038], [.029, .085], [.013, .135], [0, .175]].map(([x, y]) => new Vector2(x, y));
 
-export function Lantern({ at, glow }) {
+export function Lantern({ at, glow, hanging = false }) {
   return <group position={at}>
     <Board size={[0.32, 0.06, 0.32]} at={[0, -0.25, 0]} color={brass} metalness={0.55} />
     <mesh position-y={0.24} rotation-y={Math.PI / 4}>
       <coneGeometry args={[0.251, 0.17, 4]} />
       <meshStandardMaterial color={brass} metalness={0.58} roughness={0.43} />
     </mesh>
+    {hanging && <>
+      <mesh position-y={.365}>
+        <torusGeometry args={[.054, .012, 7, 20]} />
+        <meshStandardMaterial color="#9e683e" metalness={.77} roughness={.39} />
+      </mesh>
+      {[.44, .54, .64, .74, .84, .94, 1.04, 1.14].map((y, index) => <mesh key={y} position-y={y} rotation-y={index % 2 ? Math.PI / 2 : 0} scale={[.58, 1, .58]}>
+        <torusGeometry args={[.049, .009, 6, 13]} />
+        <meshStandardMaterial color="#886044" metalness={.72} roughness={.48} />
+      </mesh>)}
+    </>}
     {[-1, 1].flatMap(x => [-1, 1].map(z => <Board key={`${x}:${z}`} size={[0.029, 0.48, 0.029]}
       at={[x * 0.132, 0, z * 0.132]} color={brass} metalness={0.53} />))}
     <mesh rotation-z={-.12}>
@@ -94,7 +110,13 @@ function Desk({ wide = false }) {
 const { archive, extracted, request: question, guide: playbook } = content.gallery.filmProps;
 const blankLines = [];
 const documentPages = documents.map(({ label, name, reference, paper }) => [label, name, reference, paper]);
-const documentSlips = documents.map(({ paper }) => [paper]);
+const maskedPages = documents.map(({ label, paper }) => [label, '[NAME]', '[REFERENCE]', paper]);
+const citedSources = documents.map(document => traceDocument(document).answer);
+const documentSlips = documents.map(({ paper }, index) => [[paper], ['[NAME]', paper], [citedSources[index].id, citedSources[index].title], [citedSources[index].id]]);
+const documentStations = [
+  new Vector3(-1.53, 1.20, .48), new Vector3(-.51, 1.31, .46),
+  new Vector3(.54, 1.42, .43), new Vector3(1.54, 1.30, .48),
+];
 function scenePhase(phase, opening, selected, stages, delta) {
   phase.current = opening < 1 ? opening : MathUtils.damp(phase.current, stages[selected ?? 0] ?? 1, 6, delta);
   return phase.current;
@@ -117,6 +139,33 @@ const shaftFragment = `
   }
 `;
 
+const shadowFragment = `
+  varying vec2 beam;
+  uniform float exposure;
+  uniform float offset;
+  uniform float lantern;
+  void main() {
+    vec2 p = beam - vec2(.5);
+    vec2 tilted = vec2(p.x + p.y * .58, p.y - p.x * .43);
+    vec2 part = abs(fract((tilted + vec2(offset, .015)) * vec2(3.8, 4.6)) - .5);
+    float jali = smoothstep(.27, .36, part.x + part.y);
+    vec2 shade = vec2((p.x - offset) * 1.14 + p.y * .48, p.y * 1.45);
+    float rails = (1.0 - smoothstep(.014, .044, abs(abs(shade.x) - .13))) * (1.0 - smoothstep(.18, .32, abs(shade.y)));
+    float bar = (1.0 - smoothstep(.015, .059, abs(abs(shade.y) - .21))) * (1.0 - smoothstep(.13, .24, abs(shade.x)));
+    float edge = 1.0 - smoothstep(.33, .63, length(p * vec2(1.2, 1.0)));
+    gl_FragColor = vec4(.075, .026, .038, mix(jali, max(rails, bar), lantern) * edge * exposure);
+  }
+`;
+
+function PropShadow({ shadow, width, height, lantern = false, ...placement }) {
+  const uniforms = useMemo(() => ({ exposure: { value: 0 }, offset: { value: 0 }, lantern: { value: Number(lantern) } }), [lantern]);
+  return <mesh {...placement}>
+    <planeGeometry args={[width, height]} />
+    <shaderMaterial ref={shadow} uniforms={uniforms} vertexShader={shaftVertex} fragmentShader={shadowFragment}
+      transparent depthWrite={false} side={DoubleSide} />
+  </mesh>;
+}
+
 function Archive({ tour, opening, project, documentIndex, light }) {
   const phase = useRef(0);
   const leaf = useRef();
@@ -125,6 +174,9 @@ function Archive({ tour, opening, project, documentIndex, light }) {
   const network = useRef();
   const sunlight = useRef();
   const sweep = useRef();
+  const jaliShadow = useRef();
+  const maskedPage = useRef();
+  const route = useRef({ interaction: null, document: 0, from: new Vector3(), age: 0 });
   const shaft = useMemo(() => ({ exposure: { value: 0 } }), []);
   const x = project ? -1.53 : -0.95;
   const width = project ? 1 : 0.84;
@@ -134,11 +186,37 @@ function Archive({ tour, opening, project, documentIndex, light }) {
     const opened = project ? step(.22, .45, t) : step(0, .17, t);
     leaf.current.rotation.y = MathUtils.damp(leaf.current.rotation.y, (project ? -1.22 : -.31) * (1 - opened), 8, delta);
     bars.current.scale.x = MathUtils.damp(bars.current.scale.x, Math.max(0.001, step(0.48, 0.64, t)), 11, delta);
-    const pass = step(0.63, 0.99, t);
-    signal.current.visible = pass > 0.006;
-    signal.current.position.set(MathUtils.lerp(x + 0.35, project ? 1.53 : 0.88, pass), 1.1 + Math.sin(pass * Math.PI) * 0.37, 0.49);
-    signal.current.rotation.z = -0.16 + Math.sin(pass * Math.PI * 2) * 0.24;
+    const selected = tour.current.step;
+    const followingDocument = project && opening.current >= 1 && selected?.room === 'projects';
+    if (!followingDocument) {
+      const pass = step(.63, .99, t);
+      signal.current.visible = pass > .006;
+      signal.current.position.set(MathUtils.lerp(x + .35, project ? 1.53 : .88, pass), 1.1 + Math.sin(pass * Math.PI) * .37, .49);
+      signal.current.rotation.z = -.16 + Math.sin(pass * Math.PI * 2) * .24;
+    }
     network.current.rotation.y = clock.elapsedTime * 0.32;
+    if (project) maskedPage.current.visible = followingDocument && selected.index > 0;
+    if (followingDocument) {
+      const trip = route.current;
+      if (trip.interaction !== selected) {
+        trip.interaction = selected;
+        if (!signal.current.visible || trip.document !== documentIndex || selected.index === 0) {
+          trip.from.set(-1.89, 1.89, -.92);
+        } else trip.from.copy(signal.current.position);
+        trip.document = documentIndex;
+        trip.age = 0;
+      }
+      trip.age += Math.min(delta, .1);
+      const travel = step(0, 1.18, trip.age);
+      signal.current.visible = true;
+      signal.current.position.lerpVectors(trip.from, documentStations[selected.index], travel);
+      signal.current.position.y += Math.sin(travel * Math.PI) * .31;
+      signal.current.rotation.z = (1 - travel) * -.24 + Math.sin(travel * Math.PI) * .13;
+      signal.current.children.forEach((slip, index) => { slip.visible = index === selected.index; });
+    } else if (project) {
+      route.current.interaction = null;
+      signal.current.children.forEach((slip, index) => { slip.visible = index === 0; });
+    }
     if (!project) {
       const time = opening.current * portraitOpeningDuration;
       const move = step(.78, 3.45, time);
@@ -148,12 +226,19 @@ function Archive({ tour, opening, project, documentIndex, light }) {
       for (const beam of sweep.current.children) beam.material.uniforms.exposure.value = bronzeLight * (light ? .21 : .33);
       sunlight.current.position.x = MathUtils.lerp(-1.30, .36, move);
       sunlight.current.intensity = (light ? 12 : 8) + bronzeLight * (light ? 8 : 6);
+      jaliShadow.current.uniforms.offset.value = -.38 + move * .72;
+      jaliShadow.current.uniforms.exposure.value = bronzeLight * (light ? .52 : .59);
     }
   });
   return <group>
+    <ArchiveShelves light={light} />
     <Desk wide />
     <group ref={leaf} position={[x, 1.13, 0.28]} rotation-y={project ? -1.22 : -.31}>
       <Paper lines={project ? documentPages[documentIndex] : archive} width={width} />
+      {project && <group ref={maskedPage} position-z={.003} visible={false}>
+        <Paper lines={maskedPages[documentIndex]} width={width} />
+      </group>}
+      {!project && <PropShadow shadow={jaliShadow} width={width} height={1.04} position-z={.009} />}
       <group ref={bars} position={[-width * 0.384, 0, 0.012]} scale-x={0.001}>
         {[0.169, 0.034].map(y => <mesh key={y} position={[width * 0.28, y, 0]}>
           <planeGeometry args={[width * 0.56, 0.075]} />
@@ -163,7 +248,9 @@ function Archive({ tour, opening, project, documentIndex, light }) {
     </group>
     <Line points={[[x + 0.28, 1.1, 0.38], [-0.21, 1.1, 0.38], [0.54, 1.1, 0.38], [1.51, 1.1, 0.38]]} color={brass} transparent opacity={0.5} lineWidth={1} />
     <group ref={signal} visible={false}>
-      <Paper lines={project ? documentSlips[documentIndex] : extracted} width={0.34} height={0.2} />
+      {project ? documentSlips[documentIndex].map((lines, index) => <group key={index} visible={index === 0}>
+        <Paper lines={lines} width={.61} height={.27} slip />
+      </group>) : <Paper lines={extracted} width={.34} height={.20} />}
     </group>
     {project && <group position={[-0.52, 1.1, 0.18]}>
       <Board size={[0.54, 0.65, 0.085]} at={[0, 0, -0.02]} color={ink} />
@@ -181,6 +268,7 @@ function Archive({ tour, opening, project, documentIndex, light }) {
       <icosahedronGeometry args={[0.32, 1]} /><meshStandardMaterial color={gold} metalness={0.66} roughness={0.25} wireframe />
     </mesh>}
     <Lantern at={[1.85, 0.89, -0.53]} />
+    {project && <Board size={[.66, .34, .065]} at={[1.54, 1.29, .29]} color="#533c42" />}
     <pointLight position={[-0.55, 2, -0.9]} color="#718bc4" intensity={6} distance={4} decay={2} />
     {!project && <>
       <pointLight ref={sunlight} position={[-1.30, 1.65, 1.12]} color={light ? '#ffe8bd' : '#ffc58b'} intensity={light ? 12 : 8} distance={4.2} />
@@ -202,6 +290,7 @@ function WritingDesk({ tour, opening, light }) {
   const lamp = useRef();
   const swing = useRef();
   const shade = useRef();
+  const deskShadow = useRef();
   const fade = useMemo(() => {
     const size = 32;
     const pixels = new Uint8Array(size * size * 4);
@@ -235,18 +324,30 @@ function WritingDesk({ tour, opening, light }) {
     const lanternLift = passage?.kind === 'ember' ? step(.02, .41, travel) * (1 - step(.37, .52, travel)) : 0;
     const lanternReveal = passage?.kind === 'jali' ? Math.sin(Math.PI * step(.49, .91, travel)) : 0;
     const time = opening.current * portraitOpeningDuration;
-    const openingSwing = !passage && !tour.current.match ? .32 * Math.cos(time * 4.8) * (1 - step(.24, 2.72, time)) : 0;
-    swing.current.rotation.z = MathUtils.damp(swing.current.rotation.z, -.28 * lanternLift + .12 * lanternReveal + openingSwing, 7, delta);
-    swing.current.position.y = MathUtils.damp(swing.current.position.y, 1.56 + .16 * lanternLift, 7, delta);
+    const openingSwing = !passage && !tour.current.match ? .20 * Math.cos(time * 4.8) * (1 - step(.24, 2.72, time)) : 0;
+    swing.current.rotation.z = MathUtils.damp(swing.current.rotation.z, -.18 * lanternLift + .08 * lanternReveal + openingSwing, 7, delta);
+    swing.current.position.y = MathUtils.damp(swing.current.position.y, 2.40 + .11 * lanternLift, 7, delta);
     const focusGlow = !passage && !tour.current.match ? 1 - step(1.24, 2.85, time) : 0;
     lamp.current.intensity = MathUtils.damp(lamp.current.intensity, (light ? .65 : 1.8) + (light ? 2.4 : 10) * step(.38, .80, t) + flicker + 5 * focusGlow + 6 * (lanternLift + lanternReveal), 7, delta);
     shade.current.rotation.z = (light ? 0.32 : -0.33) + Math.sin(clock.elapsedTime * 1.6) * 0.022;
     shade.current.position.x = 0.52 + Math.sin(clock.elapsedTime * 1.3) * 0.055;
+    deskShadow.current.uniforms.offset.value = .19 + swing.current.rotation.z * 1.19;
+    deskShadow.current.uniforms.exposure.value = (light ? .32 : .51) + flicker * .14;
   });
   return <group>
-    <Desk />
-    <group ref={swing} position={[1.24, 1.56, .01]}>
-      <Lantern at={[0, -.32, 0]} glow={lamp} />
+    <CarvedDesk />
+    <PropShadow shadow={deskShadow} width={2.97} height={.97} lantern position={[0, .581, -.07]} rotation-x={-Math.PI / 2} />
+    <Board size={[.74, .021, .53]} at={[-.18, .585, .07]} color="#392d48" />
+    <mesh position={[.75, .63, .33]}>
+      <cylinderGeometry args={[.059, .078, .095, 16]} />
+      <meshStandardMaterial color="#a7754d" metalness={.66} roughness={.43} />
+    </mesh>
+    <mesh position={[.56, .626, .23]} rotation-z={1.42} rotation-x={.26}>
+      <cylinderGeometry args={[.004, .014, .29, 8]} />
+      <meshStandardMaterial color="#9f7749" metalness={.48} />
+    </mesh>
+    <group ref={swing} position={[1.24, 2.40, .01]}>
+      <Lantern at={[0, -1.16, 0]} glow={lamp} hanging />
     </group>
     {light && <group>
       <pointLight position={[-2.05, 2.65, 1.8]} color="#ffc78b" intensity={17} distance={8} decay={2} />
@@ -280,7 +381,7 @@ const wave = Array.from({ length: 61 }, (_, i) => {
   return [-1.11 + fraction * 1.41, 1.15 + Math.sin(i * 0.69) * Math.sin(fraction * Math.PI) ** 2 * 0.24, 0.36 - fraction * 0.3];
 });
 
-function AcousticLab({ tour, opening }) {
+function AcousticLab({ tour, opening, light }) {
   const phase = useRef(0);
   const impact = useRef(-1);
   const impactStart = useRef(null);
@@ -288,6 +389,7 @@ function AcousticLab({ tour, opening }) {
   const pulse = useRef();
   const flare = useRef();
   const ripple = useRef();
+  const reflected = useRef();
   const layers = useRef([]);
   useFrame((_, delta) => {
     const now = performance.now();
@@ -304,6 +406,9 @@ function AcousticLab({ tour, opening }) {
     const ring = step(.03, 1.16, rippleTime);
     ripple.current.scale.setScalar(.18 + ring * 1.02);
     ripple.current.material.opacity = step(0, .13, rippleTime) * (1 - step(.38, 1.30, rippleTime)) * .82;
+    const aftershock = step(.14, 1.78, rippleTime);
+    reflected.current.scale.setScalar(.27 + aftershock * 2.25);
+    reflected.current.material.opacity = step(.14, .46, rippleTime) * (1 - step(.70, 1.75, rippleTime)) * (light ? .38 : .56);
     const travel = direct ? step(1.41, 4.48, time) : step(.31, .96, t);
     pulse.current.position.set(-1.1 + travel * 2.4, 1.14 + Math.sin(travel * 28) * (1 - travel) * 0.15, 0.36 - travel * 0.83);
     if (tour.current.match === 'ember' && opening.current < 0.29) {
@@ -320,9 +425,22 @@ function AcousticLab({ tour, opening }) {
     });
   });
   return <group>
+    <Chamber light={light} />
+    <mesh ref={reflected} position={[-1.0, 1.15, -1.05]}>
+      <torusGeometry args={[.52, .021, 10, 66]} />
+      <meshBasicMaterial color={light ? '#d79250' : '#93d2c9'} transparent opacity={0} depthWrite={false} />
+    </mesh>
     <Board size={[3.4, 0.15, 1.45]} at={[0, 0.23, 0]} color="#59423c" />
     <group position={[-1.12, 1.14, 0.25]} rotation-y={0.28}>
-      <Board size={[0.1, 0.61, 0.17]} at={[0, -0.63, -0.08]} color={sandstone} />
+      <Board size={[.77, .065, .13]} at={[0, 1.40, -.14]} color={sandstone} />
+      <mesh position-y={.976}>
+        <cylinderGeometry args={[.014, .014, .88, 8]} />
+        <meshStandardMaterial color="#876342" metalness={.62} roughness={.49} />
+      </mesh>
+      <mesh position-y={.566}>
+        <torusGeometry args={[.058, .013, 7, 21]} />
+        <meshStandardMaterial color={brass} metalness={.72} roughness={.38} />
+      </mesh>
       <mesh rotation-x={Math.PI / 2}>
         <cylinderGeometry args={[0.53, 0.48, 0.075, 40]} />
         <meshStandardMaterial color="#a06b40" metalness={0.76} roughness={0.34} />
@@ -352,6 +470,6 @@ function AcousticLab({ tour, opening }) {
 
 export function FilmExhibit({ stop, tour, opening, light, documentIndex }) {
   if (stop.id === 'job-founder-guidance') return <WritingDesk tour={tour} opening={opening} light={light} />;
-  if (stop.id === 'job-audio-research') return <AcousticLab tour={tour} opening={opening} />;
+  if (stop.id === 'job-audio-research') return <AcousticLab tour={tour} opening={opening} light={light} />;
   return <Archive tour={tour} opening={opening} project={stop.kind === 'document-retrieval'} documentIndex={documentIndex} light={light} />;
 }
